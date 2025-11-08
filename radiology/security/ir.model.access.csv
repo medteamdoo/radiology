@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_radiologist,radiologist,radiology.model_radiology_radiologist,,1,1,1,1
+access_hospital,hospital,radiology.model_radiology_hospital,,1,1,1,1
+access_mission,mission,radiology.model_radiology_mission,,1,1,1,1
+access_application,application,radiology.model_radiology_application,,1,1,1,1

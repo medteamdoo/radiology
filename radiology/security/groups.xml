@@ -1,0 +1,11 @@
+<odoo>
+    <record id="group_radiologist" model="res.groups">
+        <field name="name">Radiologist</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+
+    <record id="group_hospital_manager" model="res.groups">
+        <field name="name">Hospital Manager</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</odoo>

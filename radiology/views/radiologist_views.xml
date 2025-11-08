@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_radiologist_tree" model="ir.ui.view">
+            <field name="name">radiology.radiologist.tree</field>
+            <field name="model">radiology.radiologist</field>
+            <field name="arch" type="xml">
+                <tree string="Radiologists">
+                    <field name="image_1920" widget="image"/>
+                    <field name="display_name"/>
+                    <field name="specialties"/>
+                    <field name="experience_years"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_radiologist_form" model="ir.ui.view">
+            <field name="name">radiology.radiologist.form</field>
+            <field name="model">radiology.radiologist</field>
+            <field name="arch" type="xml">
+                <form string="Radiologist">
+                    <sheet>
+                        <group>
+                            <field name="image_1920"  widget="image" class="oe_avatar"/>
+                            <field name="display_name" string="Name"/>
+                            <field name="specialties" string="Specialties"/>
+                            <field name="experience_years" string="Years of Experience"/>
+                            <field name="email"/>
+                            <field name="phone"/>
+                            <field name="bio"/>
+                            <field name="cv_attachment_ids" widget="many2many_binary"/>
+                            <field name="user_id"/>
+                            <field name="api_token" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_radiologist" model="ir.actions.act_window">
+            <field name="name">Radiologues</field>
+            <field name="res_model">radiology.radiologist</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

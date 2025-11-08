@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_radiology_root" name="Radiology Management"/>
+        <menuitem id="menu_hospital" name="Hôpitaux" parent="menu_radiology_root" action="action_hospital"/>
+        <menuitem id="menu_radiologist" name="Radiologues" parent="menu_radiology_root" action="action_radiologist"/>
+        <menuitem id="menu_mission" name="Missions" parent="menu_radiology_root" action="action_mission"/>
+        <menuitem id="menu_application" name="Candidatures" parent="menu_radiology_root" action="action_application"/>
+    </data>
+</odoo>
