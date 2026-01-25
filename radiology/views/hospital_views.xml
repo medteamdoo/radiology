@@ -13,7 +13,6 @@
         </field>
     </record>
 
-    <!-- Vue formulaire -->
     <record id="view_hospital_form" model="ir.ui.view">
         <field name="name">hospital.form</field>
         <field name="model">radiology.hospital</field>
@@ -25,6 +24,8 @@
                         <field name="email"/>
                         <field name="phone"/>
                         <field name="city"/>
+                        <field name="longitude"/>
+                        <field name="latitude"/>
                         <field name="image_1920" widget="image" class="oe_avatar"/>
                     </group>
                 </sheet>

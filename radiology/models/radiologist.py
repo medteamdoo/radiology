@@ -13,10 +13,41 @@ class Radiologist(models.Model):
     email = fields.Char()
     phone = fields.Char()
     image_1920 = fields.Image("Photo", max_width=1920, max_height=1920)
-    specialties = fields.Char()
+    birthday_date = fields.Date(string="Birthday")
+    specialty_ids = fields.Many2many(
+        'radiology.specialty',
+        'radiologist_specialty_rel',  # Nom table relation
+        'radiologist_id',  # Colonne radiologist
+        'specialty_id',  # Colonne specialty
+        string="Spécialités"
+    )
+
+    brand_ids = fields.Many2many(
+        'radiology.brand',
+        'radiologist_brand_rel',  # Nom table relation
+        'radiologist_id',  # Colonne radiologist
+        'brand_id',  # Colonne brand
+        string="Marques"
+    )
+
     bio = fields.Text()
     experience_years = fields.Integer()
-    cv_attachment_ids = fields.Many2many('ir.attachment')
+    diplome_ids = fields.Many2many(
+        'ir.attachment',
+        'radiologist_diplome_rel',  # table pivot
+        'radiologist_id',  # colonne qui pointe vers radiologist
+        'attachment_id',  # colonne qui pointe vers attachment
+        string="Diplômes"
+    )
+
+    cv_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'radiologist_cv_rel',  # table pivot différente
+        'radiologist_id',
+        'attachment_id',
+        string="CV Attachments"
+    )
+
 
     rating_avg = fields.Float(
         string="Note moyenne",
@@ -29,6 +60,12 @@ class Radiologist(models.Model):
         compute="_compute_rating_avg",
         store=True,
         readonly=True
+    )
+
+    availability_ids = fields.One2many(
+        "radiology.radiologist.availability",
+        "radiologist_id",
+        string="Disponibilités"
     )
 
     rating_ids = fields.One2many(
@@ -50,5 +87,6 @@ class Radiologist(models.Model):
 
     @api.model
     def generate_api_token(self):
-        self.api_token = secrets.token_urlsafe(32)
-        return self.api_token
+        token = secrets.token_urlsafe(32)
+        self.api_token = token
+        return token

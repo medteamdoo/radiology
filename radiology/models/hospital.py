@@ -14,6 +14,8 @@ class Hospital(models.Model):
     city = fields.Char()
     email = fields.Char()
     phone = fields.Char()
+    longitude = fields.Float()
+    latitude = fields.Float()
     image_1920 = fields.Image("Photo", max_width=1920, max_height=1920)
     missions_count = fields.Integer(compute="_compute_missions_count")
 
@@ -26,3 +28,5 @@ class Hospital(models.Model):
         Mission = self.env['radiology.mission']
         for h in self:
             h.missions_count = Mission.search_count([('hospital_id','=',h.id)])
+
+

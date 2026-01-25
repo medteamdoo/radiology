@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portal_all_radiologists" name="Portal - Radiologists">
+    <t t-set="rl_fullwidth" t-value="True"/>
+    <t t-set="breadcrumbs" t-value="False"/>
+    <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+      <div class="rl-portal-fullwidth">
+
+        <style>
+          /* =========================
+             LAYOUT FULL WIDTH (déjà ok)
+          ========================= */
+          .rl-portal-fullwidth .o_portal_wrap > .container{
+            max-width: 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+
+          /* =========================
+             THEME MODERNE
+          ========================= */
+          :root{
+            --rl-bg1:#EEF6FF;
+            --rl-bg2:#FFFFFF;
+            --rl-card:#FFFFFF;
+            --rl-text:#0F172A;
+            --rl-muted:#64748B;
+            --rl-border: rgba(15,23,42,.10);
+            --rl-shadow: 0 14px 40px rgba(2,6,23,.10);
+            --rl-shadow2: 0 20px 60px rgba(2,6,23,.14);
+            --rl-brand:#6D28D9; /* violet moderne */
+            --rl-brand2:#2563EB; /* bleu */
+            --rl-radius: 22px;
+          }
+
+          .radiolink-radiologists-page{
+            min-height: 100vh;
+            background:
+              radial-gradient(1200px 500px at 10% 0%, rgba(109,40,217,.12), transparent 55%),
+              radial-gradient(900px 450px at 90% 10%, rgba(37,99,235,.12), transparent 55%),
+              linear-gradient(180deg, var(--rl-bg1) 0%, #F8FAFC 45%, var(--rl-bg2) 100%);
+          }
+
+          /* container spacing */
+          .rl-shell{
+            padding: 26px 22px 32px;
+          }
+          @media (min-width: 992px){
+            .rl-shell{ padding: 34px 34px 40px; }
+          }
+
+          /* HERO */
+          .rl-hero{
+            border-radius: var(--rl-radius);
+            padding: 26px 22px;
+            background: rgba(255,255,255,.72);
+            border: 1px solid var(--rl-border);
+            box-shadow: var(--rl-shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            position: relative;
+          }
+          .rl-hero:before{
+            content:"";
+            position:absolute; inset:-2px;
+            background: radial-gradient(600px 220px at 20% 0%, rgba(109,40,217,.18), transparent 60%),
+                        radial-gradient(600px 220px at 85% 0%, rgba(37,99,235,.18), transparent 60%);
+            pointer-events:none;
+          }
+          .rl-hero > *{ position: relative; }
+
+          .rl-title{
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--rl-text);
+            font-size: 44px;
+            line-height: 1.05;
+            margin: 0;
+          }
+          @media (max-width: 576px){
+            .rl-title{ font-size: 34px; }
+          }
+
+          .rl-subtitle{
+            margin-top: 8px;
+            color: var(--rl-muted);
+            font-size: 15.5px;
+          }
+
+          .rl-stats{
+            display:flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+          }
+          .rl-chip{
+            display:inline-flex;
+            align-items:center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 8px 12px;
+            background: rgba(2,6,23,.04);
+            border: 1px solid rgba(2,6,23,.06);
+            color: var(--rl-text);
+            font-weight: 700;
+            font-size: 13px;
+          }
+          .rl-dot{
+            width: 8px; height: 8px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--rl-brand), var(--rl-brand2));
+          }
+
+          /* FILTER BAR (glass) */
+          .rl-filters{
+            margin-top: 16px;
+            border-radius: var(--rl-radius);
+            background: rgba(255,255,255,.75);
+            border: 1px solid var(--rl-border);
+            box-shadow: var(--rl-shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+          }
+
+          .rl-filters .form-label{
+            color: var(--rl-muted);
+            font-weight: 800;
+            font-size: 12.5px;
+            letter-spacing: .02em;
+            text-transform: uppercase;
+          }
+
+          .rl-input, .rl-select{
+            border-radius: 14px !important;
+            border: 1px solid rgba(2,6,23,.10) !important;
+            background: rgba(255,255,255,.92) !important;
+            padding: 12px 14px !important;
+            box-shadow: none !important;
+          }
+          .rl-select:focus, .rl-input:focus{
+            border-color: rgba(109,40,217,.45) !important;
+            box-shadow: 0 0 0 4px rgba(109,40,217,.12) !important;
+          }
+
+          .rl-btn{
+            border-radius: 14px !important;
+            padding: 12px 14px !important;
+            font-weight: 800 !important;
+            border: 1px solid rgba(109,40,217,.25) !important;
+          }
+          .rl-btn-primary{
+            background: linear-gradient(135deg, var(--rl-brand), var(--rl-brand2)) !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: 0 14px 28px rgba(109,40,217,.20);
+          }
+          .rl-btn-primary:hover{
+            transform: translateY(-1px);
+            box-shadow: 0 18px 40px rgba(109,40,217,.26);
+          }
+
+          /* GRID */
+          .rl-grid{
+            margin-top: 18px;
+          }
+
+          /* CARD modern */
+          .rl-card{
+            border: 1px solid var(--rl-border) !important;
+            border-radius: var(--rl-radius) !important;
+            background: rgba(255,255,255,.88);
+            box-shadow: 0 10px 30px rgba(2,6,23,.08);
+            overflow: hidden;
+            transition: transform .18s ease, box-shadow .18s ease;
+            will-change: transform;
+          }
+          .rl-card:hover{
+            transform: translateY(-4px);
+            box-shadow: var(--rl-shadow2);
+          }
+
+          .rl-photo-wrap{
+            position: relative;
+            min-height: 250px;
+            background: linear-gradient(180deg,#EAF2FB 0%,#DDEBFA 100%);
+          }
+          .rl-photo{
+            width:100%;
+            height:100%;
+            min-height:250px;
+            object-fit: cover;
+            transition: transform .35s ease;
+          }
+          .rl-card:hover .rl-photo{ transform: scale(1.06); }
+
+          /* modern rating badge */
+          .rl-rating{
+            position:absolute;
+            left: 14px;
+            bottom: 14px;
+            display:inline-flex;
+            align-items:center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.88);
+            border: 1px solid rgba(2,6,23,.08);
+            box-shadow: 0 10px 18px rgba(2,6,23,.12);
+            font-weight: 900;
+            color: var(--rl-text);
+            font-size: 13px;
+          }
+          .rl-star{
+            width: 18px; height: 18px;
+            display:inline-grid;
+            place-items:center;
+            border-radius: 6px;
+            background: rgba(245,158,11,.14);
+            color: #B45309;
+            font-size: 12px;
+          }
+
+          .rl-name{
+            font-weight: 950;
+            color: var(--rl-text);
+            letter-spacing: -0.01em;
+            margin: 0;
+            font-size: 22px;
+          }
+
+          .rl-meta{
+            color: var(--rl-muted);
+            font-weight: 600;
+            font-size: 13.5px;
+          }
+
+          .rl-badges .badge{
+            border-radius: 999px !important;
+            padding: 8px 10px !important;
+            font-weight: 800;
+            font-size: 12px;
+            border: 1px solid rgba(2,6,23,.08) !important;
+          }
+          .rl-badge-sp{
+            background: rgba(34,211,238,.14) !important;
+            color: #155E75 !important;
+          }
+          .rl-badge-br{
+            background: rgba(148,163,184,.18) !important;
+            color: #334155 !important;
+          }
+
+          .rl-bio{
+            color: var(--rl-muted);
+            font-size: 13.5px;
+            line-height: 1.45;
+          }
+
+          .rl-footer{
+            border-top: 1px solid rgba(2,6,23,.06);
+            padding-top: 12px;
+            margin-top: 10px;
+          }
+
+          .rl-email{
+            color: var(--rl-muted);
+            font-size: 13px;
+            display:flex;
+            align-items:center;
+            gap: 8px;
+            min-width: 0;
+          }
+          .rl-email span{
+            overflow:hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 220px;
+          }
+
+          .rl-cta{
+            border-radius: 14px !important;
+            padding: 10px 14px !important;
+            font-weight: 900 !important;
+            border: 1px solid rgba(109,40,217,.22) !important;
+            color: #4C1D95 !important;
+            background: rgba(109,40,217,.06) !important;
+          }
+          .rl-cta:hover{
+            background: rgba(109,40,217,.10) !important;
+          }
+        </style>
+
+        <section class="radiolink-radiologists-page">
+          <div class="container-fluid rl-shell">
+
+            <!-- HERO -->
+            <div class="rl-hero">
+              <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                <div>
+                  <h2 class="rl-title">Radiologues</h2>
+                  <div class="rl-subtitle">Consultez les profils des professionnels disponibles et trouvez rapidement le bon spécialiste.</div>
+
+                  <div class="rl-stats">
+                    <span class="rl-chip"><span class="rl-dot"></span> <t t-esc="len(radiologists) if radiologists else 0"/> disponibles</span>
+                    <span class="rl-chip"><span class="rl-dot"></span> Filtres par spécialité &amp; marque</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FILTERS -->
+            <form class="rl-filters p-3 p-md-4 mt-3" method="get" action="/my/radiologists">
+              <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                  <label class="form-label">Spécialité</label>
+                  <t t-set="selected_specialty" t-value="request.params.get('specialty_id') or ''"/>
+                  <select class="form-select rl-select" name="specialty_id">
+                    <option value="">Toutes</option>
+                    <t t-foreach="specialties" t-as="s">
+                      <option t-att-value="s.id"
+                              t-att-selected="1 if str(s.id) == str(selected_specialty) else None">
+                        <t t-esc="s.name"/>
+                      </option>
+                    </t>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">Marque</label>
+                  <t t-set="selected_brand" t-value="request.params.get('brand_id') or ''"/>
+                  <select class="form-select rl-select" name="brand_id">
+                    <option value="">Toutes</option>
+                    <t t-foreach="brands" t-as="b">
+                      <option t-att-value="b.id"
+                              t-att-selected="1 if str(b.id) == str(selected_brand) else None">
+                        <t t-esc="b.name"/>
+                      </option>
+                    </t>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <button class="btn rl-btn rl-btn-primary w-100" type="submit">
+                    Filtrer
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- GRID -->
+            <t t-if="radiologists">
+              <div class="row g-4 rl-grid">
+                <t t-foreach="radiologists" t-as="r">
+                  <div class="col-md-6 col-xl-4">
+
+                    <div class="card rl-card">
+                      <div class="row g-0">
+
+                        <!-- PHOTO -->
+                        <div class="col-md-5 rl-photo-wrap">
+                          <t t-if="r.image_1920">
+                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id"
+                                 alt="Photo radiologue"
+                                 class="rl-photo"/>
+                          </t>
+                          <t t-else="">
+                            <div class="rl-photo-wrap d-flex align-items-center justify-content-center"
+                                 style="font-weight:950;color:#2F80ED;font-size:34px;">
+                              RL
+                            </div>
+                          </t>
+
+                          <div class="rl-rating">
+                            <span class="rl-star">★</span>
+                            <span><t t-esc="('%.1f' % r.rating_avg)"/> / 5</span>
+                            <span class="text-muted" style="font-weight:800;">(<t t-esc="r.rating_count"/>)</span>
+                          </div>
+                        </div>
+
+                        <!-- CONTENT -->
+                        <div class="col-md-7">
+                          <div class="p-3 p-md-4 d-flex flex-column h-100">
+                            <h5 class="rl-name">
+                              <t t-esc="r.display_name or 'Radiologue'"/>
+                            </h5>
+
+                            <div class="rl-meta mt-1">
+                              <t t-if="r.experience_years">
+                                <t t-esc="r.experience_years"/> ans d’expérience
+                              </t>
+                              <t t-else="">Expérience non renseignée</t>
+                            </div>
+
+                            <!-- Specialties -->
+                            <div class="d-flex flex-wrap gap-2 mt-3 rl-badges">
+                              <t t-foreach="r.specialty_ids[:3]" t-as="sp">
+                                <span class="badge rl-badge-sp">
+                                  <t t-esc="sp.name"/>
+                                </span>
+                              </t>
+                              <t t-if="len(r.specialty_ids) &gt; 3">
+                                <span class="badge text-bg-light">
+                                  +<t t-esc="len(r.specialty_ids) - 3"/>
+                                </span>
+                              </t>
+                            </div>
+
+                            <!-- Brands -->
+                            <div class="d-flex flex-wrap gap-2 mt-2 rl-badges">
+                              <t t-foreach="r.brand_ids[:2]" t-as="br">
+                                <span class="badge rl-badge-br">
+                                  <t t-esc="br.name"/>
+                                </span>
+                              </t>
+                            </div>
+
+                            <!-- Bio -->
+                            <t t-if="r.bio">
+                              <p class="rl-bio mt-3 mb-0"
+                                 style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                                <t t-esc="r.bio"/>
+                              </p>
+                            </t>
+
+                            <div class="rl-footer mt-auto d-flex justify-content-between align-items-center gap-2">
+                              <div class="rl-email">
+                                <span>✉</span>
+                                <span><t t-esc="r.email"/></span>
+                              </div>
+
+                              <a t-att-href="'/my/radiologists/%s' % r.id"
+                                 class="btn rl-cta btn-sm">
+                                Voir profil
+                              </a>
+                            </div>
+
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                  </div>
+                </t>
+              </div>
+            </t>
+
+            <t t-else="">
+              <div class="alert alert-info border-0 shadow-sm mt-4" style="border-radius:16px;">
+                Aucun radiologue ne correspond à vos critères.
+              </div>
+            </t>
+
+          </div>
+        </section>
+
+      </div>
+    </t>
+  </template>
+</odoo>

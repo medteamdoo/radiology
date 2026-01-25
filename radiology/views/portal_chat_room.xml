@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portal_chat_room" name="Portal - Chat Room (RLX Clean)">
+    <t t-set="rl_fullwidth" t-value="True"/>
+    <t t-set="breadcrumbs" t-value="False"/>
+
+    <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+      <style>
+        :root{
+          --rlx-text:#0B1220;
+          --rlx-muted:#667085;
+          --rlx-border: rgba(15,23,42,.10);
+          --rlx-card: rgba(255,255,255,.82);
+          --rlx-shadow: 0 18px 60px rgba(2,6,23,.10);
+          --rlx-shadow2: 0 10px 26px rgba(2,6,23,.08);
+          --rlx-primary:#2563EB;
+          --rlx-primary-dark:#1D4ED8;
+          --rlx-radius: 22px;
+        }
+
+        .o_portal_wrap > .container{
+          max-width:100% !important;
+          padding-left:0 !important;
+          padding-right:0 !important;
+        }
+        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+
+        .rlx-page{
+          min-height:100vh;
+          background:
+            radial-gradient(1200px 520px at 10% 0%, rgba(37,99,235,.10), transparent 55%),
+            linear-gradient(180deg, #EEF5FF 0%, #F8FAFC 42%, #FFFFFF 100%);
+        }
+        .rlx-shell{ padding: 22px 18px 46px; }
+        @media(min-width:992px){ .rlx-shell{ padding: 34px 34px 64px; } }
+
+        .rlx-hero{
+          border-radius: var(--rlx-radius);
+          border: 1px solid var(--rlx-border);
+          background: var(--rlx-card);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: var(--rlx-shadow);
+          overflow:hidden;
+          position:relative;
+        }
+        .rlx-hero:before{
+          content:"";
+          position:absolute; inset:-2px;
+          background:
+            radial-gradient(700px 260px at 18% 0%, rgba(37,99,235,.16), transparent 60%),
+            radial-gradient(700px 260px at 85% 0%, rgba(99,102,241,.12), transparent 60%);
+          pointer-events:none;
+        }
+        .rlx-hero > *{ position:relative; }
+        .rlx-hero-in{ padding: 18px; }
+        @media(min-width:992px){ .rlx-hero-in{ padding: 22px; } }
+
+        /* Top profile header */
+        .rlx-top{
+          display:flex;
+          gap: 16px;
+          align-items:center;
+          flex-wrap:wrap;
+        }
+        .rlx-top-img{
+          width: 72px; height: 72px;
+          border-radius: 22px;
+          overflow:hidden;
+          background: linear-gradient(180deg,#EAF2FB 0%,#DDEBFA 100%);
+          border: 1px solid rgba(2,6,23,.10);
+          box-shadow: 0 12px 22px rgba(2,6,23,.10);
+          flex: 0 0 auto;
+        }
+        .rlx-top-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+        .rlx-title{
+          margin:0;
+          font-weight: 900;
+          letter-spacing:-.02em;
+          color: var(--rlx-text);
+          font-size: 26px;
+          line-height: 1.12;
+        }
+        .rlx-sub{
+          margin-top: 6px;
+          color: var(--rlx-muted);
+          font-weight: 650;
+          font-size: 13.5px;
+          line-height: 1.55;
+        }
+
+        .rlx-btn{
+          border-radius: 14px !important;
+          padding: 10px 14px !important;
+          font-weight: 800 !important;
+        }
+        .rlx-primary{
+          background: var(--rlx-primary) !important;
+          border: none !important;
+          color:#fff !important;
+          box-shadow: 0 14px 30px rgba(37,99,235,.22);
+        }
+        .rlx-primary:hover{ background: var(--rlx-primary-dark) !important; }
+        .rlx-ghost{
+          background: rgba(37,99,235,.06) !important;
+          border: 1px solid rgba(37,99,235,.20) !important;
+          color: var(--rlx-primary-dark) !important;
+        }
+
+        .rlx-card{
+          border-radius: var(--rlx-radius);
+          border: 1px solid rgba(2,6,23,.10);
+          background: rgba(255,255,255,.82);
+          box-shadow: var(--rlx-shadow2);
+          overflow:hidden;
+        }
+        .rlx-card-h{
+          padding: 14px 16px;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap: 10px;
+          border-bottom: 1px solid rgba(2,6,23,.08);
+          background: rgba(255,255,255,.70);
+        }
+        .rlx-h3{
+          margin:0;
+          font-weight: 900;
+          color: var(--rlx-text);
+          letter-spacing:-.01em;
+          font-size: 15.5px;
+        }
+
+        /* Chat */
+        .rlx-chat{
+          height: 520px;
+          overflow-y: auto;
+          padding: 14px 12px;
+          background:
+            radial-gradient(900px 240px at 20% 0%, rgba(37,99,235,.08), transparent 62%),
+            linear-gradient(180deg, rgba(248,250,252,.92) 0%, rgba(255,255,255,.86) 100%);
+        }
+        .rlx-row{ display:flex; margin-bottom: 10px; }
+        .rlx-row.me{ justify-content:flex-end; }
+        .rlx-row.other{ justify-content:flex-start; }
+
+        .rlx-bubble{
+          max-width: 78%;
+          border-radius: 18px;
+          padding: 10px 12px;
+          border: 1px solid rgba(2,6,23,.08);
+          background: rgba(255,255,255,.88);
+          box-shadow: 0 10px 18px rgba(2,6,23,.06);
+        }
+        .rlx-bubble.me{
+          background: rgba(2,6,23,.045);
+          border-color: rgba(2,6,23,.10);
+          border-bottom-right-radius: 10px;
+        }
+        .rlx-bubble.other{
+          background: rgba(37,99,235,.06);
+          border-color: rgba(37,99,235,.14);
+          border-bottom-left-radius: 10px;
+        }
+        .rlx-meta{
+          display:flex;
+          gap:8px;
+          align-items:baseline;
+          font-weight: 900;
+          font-size: 12px;
+          color: #0F172A;
+          margin-bottom: 4px;
+        }
+        .rlx-date{
+          font-weight: 650;
+          color: var(--rlx-muted);
+          font-size: 12px;
+          white-space: nowrap;
+        }
+        .rlx-text{
+          font-weight: 650;
+          color: #0B1220;
+          font-size: 13.5px;
+          line-height: 1.6;
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+
+        .rlx-composer{
+          padding: 12px;
+          background: rgba(255,255,255,.78);
+          border-top: 1px solid rgba(2,6,23,.08);
+        }
+        .rlx-input{
+          border-radius: 16px !important;
+          border: 1px solid rgba(2,6,23,.10) !important;
+          background: rgba(255,255,255,.92) !important;
+          font-weight: 650;
+          min-height: 48px;
+          resize: none;
+        }
+
+        /* Availability list */
+        .rlx-avail{
+          padding: 14px 16px;
+        }
+        .rlx-av-row{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap:10px;
+          padding: 10px 12px;
+          border-radius: 16px;
+          border: 1px solid rgba(2,6,23,.08);
+          background: rgba(255,255,255,.78);
+          margin-bottom: 10px;
+        }
+        .rlx-av-day{
+          font-weight: 900;
+          color:#0F172A;
+          font-size: 13px;
+        }
+        .rlx-av-time{
+          font-weight: 900;
+          color:#0F172A;
+          font-size: 13px;
+          text-align:right;
+          white-space:nowrap;
+        }
+        .rlx-av-tags{ display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
+        .rlx-tag{
+          padding: 6px 10px;
+          border-radius: 999px;
+          font-weight: 900;
+          font-size: 11.5px;
+          border: 1px solid;
+          background: rgba(255,255,255,.78);
+          white-space:nowrap;
+        }
+        .rlx-tag-night{ border-color:#E9D5FF; color:#6D28D9; background: rgba(233,213,255,.35); }
+        .rlx-tag-weekend{ border-color:#A7F3D0; color:#065F46; background: rgba(167,243,208,.35); }
+      </style>
+
+      <section class="rlx-page o_portal_chat_room">
+        <div class="container-fluid rlx-shell">
+
+          <!-- TOP (image in header) -->
+          <div class="rlx-hero">
+            <div class="rlx-hero-in">
+              <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                <div class="rlx-top min-w-0">
+                  <div class="rlx-top-img">
+                    <t t-if="conversation.radiologist_id and conversation.radiologist_id.image_1920">
+                      <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % conversation.radiologist_id.id"
+                           alt="Radiologue"/>
+                    </t>
+                    <t t-else="">
+                      <div class="w-100 h-100 d-flex align-items-center justify-content-center"
+                           style="font-weight:900;color:#2563EB;">
+                        RL
+                      </div>
+                    </t>
+                  </div>
+
+                  <div class="min-w-0">
+                    <h2 class="rlx-title">
+                      <t t-esc="conversation.radiologist_id.display_name"/>
+                    </h2>
+                    <div class="rlx-sub">
+                      <t t-if="conversation.radiologist_id.specialty_ids">
+                        <t t-foreach="conversation.radiologist_id.specialty_ids[:3]" t-as="sp">
+                          <span class="me-1"><t t-esc="sp.name"/></span>
+                        </t>
+                        <t t-if="len(conversation.radiologist_id.specialty_ids) &gt; 3">…</t>
+                      </t>
+                      <t t-else="">
+                        <span>—</span>
+                      </t>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+                  <a href="/my/chat" class="btn rlx-btn rlx-ghost">Retour</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENT -->
+          <div class="row g-3 mt-3">
+
+            <!-- Chat -->
+            <div class="col-lg-8">
+              <div class="rlx-card">
+                <div class="rlx-card-h">
+                  <h3 class="rlx-h3">Conversation</h3>
+                </div>
+
+                <div class="rlx-chat" id="chat_box">
+  <t t-if="messages">
+    <t t-foreach="messages" t-as="m">
+      <t t-set="is_hospital" t-value="m['sender_type'] == 'hospital'"/>
+
+      <!-- ✅ EXACTEMENT comme JS : rlx-row + rlx-bubble + meta + text -->
+      <div t-attf-class="rlx-row #{'me' if is_hospital else 'other'}">
+        <div t-attf-class="rlx-bubble #{'me' if is_hospital else 'other'}"
+             t-att-data-id="m['id']">
+
+          <div class="rlx-meta">
+            <span>
+              <t t-if="is_hospital">Vous</t>
+              <t t-else="">Radiologue</t>
+            </span>
+            <span class="rlx-date">
+              <t t-esc="m['date']"/>
+            </span>
+          </div>
+
+          <div class="rlx-text">
+            <t t-esc="m['message']"/>
+          </div>
+
+        </div>
+      </div>
+
+    </t>
+  </t>
+
+  <t t-else="">
+    <div class="p-4 text-center" style="color:var(--rlx-muted);font-weight:650;">
+      Aucun message pour le moment.
+    </div>
+  </t>
+</div>
+
+
+                <div class="rlx-composer">
+                  <form id="chat_form">
+                    <input type="hidden" id="conv_id" t-att-value="conversation.id"/>
+                    <div class="input-group">
+                      <textarea id="chat_input" class="form-control rlx-input"
+                                rows="1" required="required"
+                                placeholder="Écrire un message..."></textarea>
+                      <button class="btn rlx-btn rlx-primary px-4" type="submit">Envoyer</button>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Availability (right) -->
+            <div class="col-lg-4">
+              <div class="rlx-card">
+                <div class="rlx-card-h">
+                  <h3 class="rlx-h3">Disponibilités</h3>
+                </div>
+
+                <div class="rlx-avail">
+                  <t t-if="availabilities">
+                    <t t-foreach="availabilities" t-as="a">
+                      <div class="rlx-av-row">
+                        <div class="min-w-0">
+                          <div class="rlx-av-day"><t t-esc="a['day']"/></div>
+                          <div class="text-muted" style="font-weight:650;font-size:12px;">
+                            <t t-esc="a['time']"/>
+                          </div>
+                        </div>
+
+                        <div class="rlx-av-tags">
+                          <t t-if="a.get('is_night')">
+                            <span class="rlx-tag rlx-tag-night">Nuit</span>
+                          </t>
+                          <t t-if="a.get('is_weekend')">
+                            <span class="rlx-tag rlx-tag-weekend">Weekend</span>
+                          </t>
+                        </div>
+                      </div>
+                    </t>
+                  </t>
+
+                  <t t-else="">
+                    <div class="text-muted" style="font-weight:650;">
+                      Aucune disponibilité renseignée.
+                    </div>
+                  </t>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </t>
+  </template>
+</odoo>

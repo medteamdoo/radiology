@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="hospital_signup_form" name="Hospital Signup">
+    <t t-call="website.layout">
+
+      <!-- Background global -->
+      <section class="py-5"
+               style="background: linear-gradient(180deg, #EAF2FB 0%, #F8FAFC 55%, #FFFFFF 100%);">
+        <div class="container" style="max-width: 900px;">
+
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+
+              <!-- Card principale -->
+              <div class="card border-0 shadow-sm"
+                   style="border-radius: 18px; overflow: hidden; background: #FFFFFF;">
+
+                <!-- Header clair -->
+                <div class="p-4"
+                     style="background: linear-gradient(90deg, #EAF2FB 0%, #DDEBFA 60%, #EAF2FB 100%);
+                            border-bottom: 1px solid #E3EDF9;">
+                  <h1 class="h3 mb-1" style="color:#1F2937;">
+                    Inscription établissement de santé
+                  </h1>
+                  <p class="mb-0" style="color:#4B5563;">
+                    Créez votre compte pour publier et gérer vos missions de radiologie.
+                  </p>
+                </div>
+
+                <!-- Corps -->
+                <div class="p-4 p-md-5">
+
+                  <t t-if="error">
+                    <div class="alert alert-danger" style="border-radius: 12px;">
+                      <t t-esc="error"/>
+                    </div>
+                  </t>
+
+                  <form action="/hospital/signup" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <!-- Nom -->
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Nom de l’établissement</label>
+                      <input class="form-control form-control-lg"
+                             style="border-radius: 14px;"
+                             type="text" name="name" required="required"
+                             placeholder="Ex : Centre hospitalier universitaire"
+                             t-att-value="values.get('name') or ''"/>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email professionnel</label>
+                        <input class="form-control form-control-lg"
+                               style="border-radius: 14px;"
+                               type="email" name="email" required="required"
+                               placeholder="contact@hopital.fr"
+                               t-att-value="values.get('email') or ''"/>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold">Téléphone</label>
+                        <input class="form-control form-control-lg"
+                               style="border-radius: 14px;"
+                               type="text" name="phone"
+                               placeholder="+33 …"
+                               t-att-value="values.get('phone') or ''"/>
+                      </div>
+                    </div>
+
+                    <div class="mt-3">
+                      <label class="form-label fw-semibold">Ville</label>
+                      <input class="form-control form-control-lg"
+                             style="border-radius: 14px;"
+                             type="text" name="city"
+                             placeholder="Paris, Lyon, Lille…"
+                             t-att-value="values.get('city') or ''"/>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold">Mot de passe</label>
+                        <input class="form-control form-control-lg"
+                               style="border-radius: 14px;"
+                               type="password" name="password" minlength="8" required="required"
+                               placeholder="Minimum 8 caractères"/>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label fw-semibold">Confirmation</label>
+                        <input class="form-control form-control-lg"
+                               style="border-radius: 14px;"
+                               type="password" name="password2" minlength="8" required="required"
+                               placeholder="Confirmez le mot de passe"/>
+                      </div>
+                    </div>
+
+                    <!-- Bouton -->
+                    <button class="btn btn-lg w-100 mt-4"
+                            style="
+                              background: linear-gradient(90deg, #2F80ED 0%, #5FA8FF 100%);
+                              color: #FFFFFF;
+                              border-radius: 14px;
+                              padding: 12px 16px;
+                              border: none;
+                            ">
+                      Créer mon compte
+                    </button>
+
+                    <!-- Liens -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                      <a href="/web/login" class="text-decoration-none" style="color:#2F80ED;">
+                        J’ai déjà un compte
+                      </a>
+                      <a href="/" class="text-decoration-none text-muted">
+                        Retour à l’accueil
+                      </a>
+                    </div>
+
+                  </form>
+
+                </div>
+              </div>
+
+              <p class="text-center text-muted mt-4 mb-0" style="font-size: 13px;">
+                Plateforme dédiée aux établissements de santé et aux professionnels de la radiologie.
+              </p>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </t>
+  </template>
+</odoo>

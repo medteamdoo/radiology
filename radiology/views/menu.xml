@@ -6,5 +6,20 @@
         <menuitem id="menu_radiologist" name="Radiologues" parent="menu_radiology_root" action="action_radiologist"/>
         <menuitem id="menu_mission" name="Missions" parent="menu_radiology_root" action="action_mission"/>
         <menuitem id="menu_application" name="Candidatures" parent="menu_radiology_root" action="action_application"/>
+        <menuitem id="menu_radiology_config"
+              name="Configuration"
+              parent="menu_radiology_root"
+              sequence="20"/>
+        <record id="menu_radiology_brand" model="ir.ui.menu">
+    <field name="name">Brands</field>
+    <field name="parent_id" ref="menu_radiology_config"/>
+    <field name="action" ref="action_radiology_brand"/>
+</record>
+<record id="menu_radiology_specialty" model="ir.ui.menu">
+    <field name="name">Specialties</field>
+    <field name="parent_id" ref="menu_radiology_config"/>
+    <field name="action" ref="action_radiology_specialty"/>
+</record>
+
     </data>
 </odoo>

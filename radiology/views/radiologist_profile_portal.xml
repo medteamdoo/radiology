@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_radiologist_profile_modern" name="Portal - Radiologist Profile (Modern)">
+
+        <t t-set="rl_fullwidth" t-value="True"/>
+        <t t-set="breadcrumbs" t-value="False"/>
+
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-set="weekday_map"
+   t-value="{'0':'Lundi','1':'Mardi','2':'Mercredi','3':'Jeudi','4':'Vendredi','5':'Samedi','6':'Dimanche'}"/>
+
+
+            <style>
+                :root{
+                --rl-text:#0B1220;
+                --rl-muted:#6B7280;
+                --rl-border: rgba(15,23,42,.10);
+                --rl-card: rgba(255,255,255,.75);
+                --rl-shadow: 0 18px 70px rgba(2,6,23,.12);
+                --rl-shadow2: 0 12px 30px rgba(2,6,23,.10);
+                --rl-brand:#7C3AED;
+                --rl-brand2:#2563EB;
+                --rl-ok:#16A34A;
+                --rl-warn:#F59E0B;
+                --rl-radius: 24px;
+                }
+
+                /* Fullwidth wrapper */
+                .o_portal_wrap > .container{ max-width: 100% !important; padding-left:0 !important; padding-right:0
+                !important; }
+                .o_portal_wrap > .container.pt-3{ padding-top: 0 !important; }
+
+                .rl-prof{
+                min-height: 100vh;
+                background:
+                radial-gradient(1200px 520px at 10% 0%, rgba(124,58,237,.16), transparent 55%),
+                radial-gradient(900px 450px at 90% 10%, rgba(37,99,235,.16), transparent 55%),
+                linear-gradient(180deg, #ECF4FF 0%, #F8FAFC 42%, #FFFFFF 100%);
+                }
+                .rl-shell{ padding: 28px 22px 46px; }
+                @media (min-width: 992px){ .rl-shell{ padding: 34px 34px 56px; } }
+
+                /* Hero */
+                .rl-hero{
+                border-radius: var(--rl-radius);
+                overflow: hidden;
+                box-shadow: var(--rl-shadow);
+                border: 1px solid var(--rl-border);
+                background: var(--rl-card);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                position: relative;
+                }
+                .rl-hero:before{
+                content:"";
+                position:absolute; inset:-2px;
+                background:
+                radial-gradient(650px 260px at 20% 0%, rgba(124,58,237,.22), transparent 60%),
+                radial-gradient(650px 260px at 85% 0%, rgba(37,99,235,.20), transparent 60%);
+                pointer-events:none;
+                }
+                .rl-hero > *{ position: relative; }
+
+                .rl-hero-grid{
+                display:grid;
+                grid-template-columns: 420px 1fr;
+                }
+                @media (max-width: 991px){
+                .rl-hero-grid{ grid-template-columns: 1fr; }
+                }
+
+                .rl-photoWrap{
+                min-height: 340px;
+                background: linear-gradient(180deg,#EAF2FB 0%,#DDEBFA 100%);
+                position: relative;
+                }
+                .rl-photo{
+                width:100%; height:100%;
+                min-height: 340px;
+                object-fit: cover;
+                transform: scale(1.02);
+                transition: transform .35s ease;
+                }
+                .rl-hero:hover .rl-photo{ transform: scale(1.06); }
+
+                .rl-rating{
+                position:absolute; left: 16px; bottom: 16px;
+                display:inline-flex; align-items:center; gap: 10px;
+                padding: 10px 12px;
+                border-radius: 999px;
+                background: rgba(255,255,255,.86);
+                border: 1px solid rgba(2,6,23,.08);
+                box-shadow: 0 10px 18px rgba(2,6,23,.14);
+                font-weight: 950;
+                color: var(--rl-text);
+                font-size: 13px;
+                }
+                .rl-star{
+                width: 22px; height: 22px;
+                display:grid; place-items:center;
+                border-radius: 7px;
+                background: rgba(245,158,11,.16);
+                color:#92400E;
+                font-size: 12px;
+                }
+
+                .rl-title{
+                margin:0;
+                font-weight: 1000;
+                letter-spacing: -0.03em;
+                color: var(--rl-text);
+                font-size: 40px;
+                line-height: 1.08;
+                }
+                @media (max-width: 576px){ .rl-title{ font-size: 32px; } }
+                .rl-sub{
+                color: var(--rl-muted);
+                margin-top: 10px;
+                font-weight: 650;
+                font-size: 14.5px;
+                line-height: 1.5;
+                }
+
+                /* Chips */
+                .rl-chip{
+                display:inline-flex;
+                align-items:center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 999px;
+                background: rgba(255,255,255,.65);
+                border: 1px solid rgba(2,6,23,.08);
+                box-shadow: 0 8px 18px rgba(2,6,23,.06);
+                font-weight: 900;
+                color: var(--rl-text);
+                font-size: 13px;
+                }
+                .rl-dot{
+                width: 9px; height: 9px; border-radius: 50%;
+                background: linear-gradient(135deg, var(--rl-brand), var(--rl-brand2));
+                }
+
+                /* Buttons */
+                .rl-btn{
+                border-radius: 14px !important;
+                padding: 10px 14px !important;
+                font-weight: 950 !important;
+                }
+                .rl-primary{
+                background: linear-gradient(135deg, var(--rl-brand), var(--rl-brand2)) !important;
+                border:none !important;
+                color:#fff !important;
+                box-shadow: 0 16px 34px rgba(124,58,237,.22);
+                }
+                .rl-ghost{
+                background: rgba(124,58,237,.06) !important;
+                border: 1px solid rgba(124,58,237,.20) !important;
+                color:#4C1D95 !important;
+                }
+
+                /* Sections */
+                .rl-card{
+                border-radius: var(--rl-radius);
+                border: 1px solid var(--rl-border);
+                background: var(--rl-card);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: var(--rl-shadow2);
+                }
+                .rl-h3{
+                font-weight: 1000;
+                letter-spacing: -0.01em;
+                color: var(--rl-text);
+                margin: 0 0 12px 0;
+                font-size: 18px;
+                }
+
+                /* Tabs */
+                .rl-tabs .nav-link{
+                border-radius: 14px !important;
+                font-weight: 950 !important;
+                color: var(--rl-text) !important;
+                border: 1px solid rgba(2,6,23,.08) !important;
+                background: rgba(255,255,255,.60) !important;
+                padding: 10px 14px !important;
+                }
+                .rl-tabs .nav-link.active{
+                background: linear-gradient(135deg, rgba(124,58,237,.16), rgba(37,99,235,.14)) !important;
+                border-color: rgba(124,58,237,.28) !important;
+                }
+
+                /* File rows */
+                .rl-file{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap: 12px;
+                padding: 12px 12px;
+                border-radius: 16px;
+                border: 1px solid rgba(2,6,23,.08);
+                background: rgba(255,255,255,.70);
+                }
+                .rl-fileL{
+                display:flex; align-items:center; gap: 12px; min-width:0;
+                }
+                .rl-ico{
+                width: 36px; height: 36px; border-radius: 12px;
+                display:grid; place-items:center;
+                background: rgba(37,99,235,.10);
+                color:#1D4ED8;
+                font-weight: 1000;
+                }
+                .rl-fname{
+                font-weight: 950; color: var(--rl-text);
+                white-space: nowrap; overflow:hidden; text-overflow: ellipsis;
+                max-width: 520px;
+                }
+                .rl-fmeta{ color: var(--rl-muted); font-size: 12.5px; font-weight: 650; }
+
+                /* Ratings list */
+                .rl-review{
+                padding: 14px;
+                border-radius: 18px;
+                border: 1px solid rgba(2,6,23,.08);
+                background: rgba(255,255,255,.70);
+                }
+                .rl-score{
+                display:inline-flex; align-items:center; gap: 8px;
+                font-weight: 1000; color: var(--rl-text);
+                }
+                .rl-score b{
+                width: 26px; height: 26px; border-radius: 10px;
+                display:grid; place-items:center;
+                background: rgba(245,158,11,.16);
+                color:#92400E;
+                font-size: 12px;
+                }
+                /* Availability widget */
+.rl-ava{
+  margin-top: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(2,6,23,.08);
+  background: rgba(255,255,255,.70);
+  box-shadow: 0 10px 22px rgba(2,6,23,.06);
+  padding: 14px;
+}
+.rl-avaTop{
+  display:flex; align-items:center; justify-content:space-between; gap: 10px;
+}
+.rl-avaTitle{
+  font-weight: 1000;
+  color: var(--rl-text);
+  letter-spacing: -0.01em;
+}
+.rl-avaHint{
+  color: var(--rl-muted);
+  font-weight: 650;
+  font-size: 12.5px;
+}
+.rl-avaGrid{
+  margin-top: 10px;
+  display:flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.rl-avaPill{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(2,6,23,.08);
+  background: rgba(124,58,237,.06);
+  color:#4C1D95;
+  font-weight: 950;
+  font-size: 12.5px;
+}
+.rl-avaPill b{
+  width: 26px; height: 26px;
+  border-radius: 10px;
+  display:grid; place-items:center;
+  background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(37,99,235,.16));
+  color: var(--rl-text);
+  font-size: 12px;
+}
+.rl-avaTag{
+  display:inline-flex; align-items:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 950;
+  font-size: 12px;
+  border: 1px solid rgba(2,6,23,.08);
+  background: rgba(255,255,255,.65);
+  color: var(--rl-text);
+}
+.rl-avaTagNight{
+  background: rgba(245,158,11,.14);
+  color:#92400E;
+}
+.rl-avaTagWeekend{
+  background: rgba(22,163,74,.14);
+  color:#166534;
+}
+            </style>
+
+            <section class="rl-prof">
+                <div class="container-fluid rl-shell">
+
+                    <!-- HERO -->
+                    <div class="rl-hero">
+                        <div class="rl-hero-grid">
+
+                            <!-- photo -->
+                            <div class="rl-photoWrap">
+                                <t t-if="radiologist.image_1920">
+                                    <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % radiologist.id"
+                                         class="rl-photo" alt="Photo"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="d-flex align-items-center justify-content-center h-100"
+                                         style="min-height:340px;font-weight:1000;font-size:44px;color:#2563EB;">
+                                        RL
+                                    </div>
+                                </t>
+
+                                <div class="rl-rating">
+                                    <span class="rl-star">★</span>
+                                    <span>
+                                        <t t-esc="('%.1f' % radiologist.rating_avg)"/>
+                                        / 5
+                                    </span>
+                                    <span class="text-muted" style="font-weight:900;">(<t
+                                            t-esc="radiologist.rating_count"/>)
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- info -->
+                            <div class="p-3 p-md-4 p-lg-5">
+                                <h1 class="rl-title">
+                                    <t t-esc="radiologist.display_name or 'Radiologue'"/>
+                                </h1>
+
+                                <div class="rl-sub">
+                                    <t t-if="radiologist.experience_years">
+                                        <span class="rl-chip">
+                                            <span class="rl-dot"></span>
+                                            <t t-esc="radiologist.experience_years"/>
+                                            ans d’expérience
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="rl-chip"><span class="rl-dot"></span>Expérience non renseignée
+                                        </span>
+                                    </t>
+                                    <span class="ms-2 rl-chip"><span class="rl-dot"></span>Spécialités &amp; marques
+                                        certifiées
+                                    </span>
+                                </div>
+
+                                <!-- specialties -->
+                                <div class="d-flex flex-wrap gap-2 mt-3">
+                                    <t t-foreach="radiologist.specialty_ids" t-as="sp">
+                                        <span class="badge rounded-pill"
+                                              style="padding:10px 12px;font-weight:950;border:1px solid rgba(2,6,23,.08);background:rgba(34,211,238,.14);color:#155E75;">
+                                            <t t-esc="sp.name"/>
+                                        </span>
+                                    </t>
+                                </div>
+
+                                <!-- brands -->
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    <t t-foreach="radiologist.brand_ids" t-as="br">
+                                        <span class="badge rounded-pill"
+                                              style="padding:10px 12px;font-weight:950;border:1px solid rgba(2,6,23,.08);background:rgba(148,163,184,.18);color:#334155;">
+                                            <t t-esc="br.name"/>
+                                        </span>
+                                    </t>
+                                </div>
+
+                                <!-- actions -->
+                                <div class="d-flex flex-wrap gap-2 mt-4">
+                                    <t t-if="radiologist.email">
+                                        <a t-att-href="'mailto:%s' % radiologist.email" class="btn rl-btn rl-primary">
+                                            Contacter
+                                        </a>
+                                    </t>
+                                    <t t-if="radiologist.phone">
+                                        <a t-att-href="'tel:%s' % radiologist.phone" class="btn rl-btn rl-ghost">
+                                            Appeler
+                                        </a>
+                                    </t>
+                                    <a t-att-href="'/my/chat/start/%s' % radiologist.id"
+   class="btn rl-btn rl-primary">
+  Envoyer un message
+</a>
+                                    <a href="/my/radiologists" class="btn rl-btn rl-ghost">
+                                        ← Retour
+                                    </a>
+                                </div>
+
+                                <t t-if="radiologist.bio">
+                                    <div class="mt-4" style="color:var(--rl-muted);font-weight:650;line-height:1.6;">
+                                        <t t-esc="radiologist.bio"/>
+                                    </div>
+                                </t>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- CONTENT -->
+                    <div class="row g-4 mt-3">
+
+                        <!-- Left column -->
+                        <div class="col-lg-4">
+                            <div class="rl-card p-3 p-md-4">
+                                <h3 class="rl-h3">Informations</h3>
+
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="rl-file">
+                                        <div class="rl-fileL">
+                                            <div class="rl-ico">✉</div>
+                                            <div class="min-w-0">
+                                                <div class="rl-fmeta">Email</div>
+                                                <div class="rl-fname">
+                                                    <t t-esc="radiologist.email or '—'"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="rl-file">
+                                        <div class="rl-fileL">
+                                            <div class="rl-ico">☎</div>
+                                            <div class="min-w-0">
+                                                <div class="rl-fmeta">Téléphone</div>
+                                                <div class="rl-fname">
+                                                    <t t-esc="radiologist.phone or '—'"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="rl-file">
+                                        <div class="rl-fileL">
+                                            <div class="rl-ico">🎓</div>
+                                            <div class="min-w-0">
+                                                <div class="rl-fmeta">Expérience</div>
+                                                <div class="rl-fname">
+                                                    <t t-if="radiologist.experience_years">
+                                                        <t t-esc="radiologist.experience_years"/>
+                                                        ans
+                                                    </t>
+                                                    <t t-else="">—</t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="rl-file">
+                                        <div class="rl-fileL">
+                                            <div class="rl-ico">🎂</div>
+                                            <div class="min-w-0">
+                                                <div class="rl-fmeta">Date de naissance</div>
+                                                <div class="rl-fname">
+                                                    <t t-esc="radiologist.birthday_date or '—'"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right column -->
+                        <div class="col-lg-8">
+
+                            <!-- Tabs -->
+                            <ul class="nav rl-tabs gap-2" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab_docs"
+                                            type="button" role="tab">
+                                        Diplômes
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab_cv" type="button"
+                                            role="tab">
+                                        CV
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab_reviews"
+                                            type="button" role="tab">
+                                        Avis
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content mt-3">
+
+                                <!-- Diplomas -->
+                                <div class="tab-pane fade show active" id="tab_docs" role="tabpanel">
+                                    <div class="rl-card p-3 p-md-4">
+                                        <h3 class="rl-h3">Diplômes</h3>
+
+                                        <t t-if="diplomes">
+                                            <div class="d-flex flex-column gap-2">
+                                                <t t-foreach="diplomes" t-as="att">
+                                                    <div class="rl-file">
+                                                        <div class="rl-fileL">
+                                                            <div class="rl-ico">PDF</div>
+                                                            <div class="min-w-0">
+                                                                <div class="rl-fname">
+                                                                    <t t-esc="att.name"/>
+                                                                </div>
+                                                                <div class="rl-fmeta">Document</div>
+                                                            </div>
+                                                        </div>
+                                                        <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-outline-primary">
+                                                            Voir
+                                                        </a>
+
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="text-muted" style="font-weight:650;">Aucun diplôme ajouté.</div>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <!-- CV -->
+                                <div class="tab-pane fade" id="tab_cv" role="tabpanel">
+                                    <div class="rl-card p-3 p-md-4">
+                                        <h3 class="rl-h3">CV</h3>
+
+                                        <t t-if="cvs">
+                                            <div class="d-flex flex-column gap-2">
+                                                <t t-foreach="cvs" t-as="att">
+                                                    <div class="rl-file">
+                                                        <div class="rl-fileL">
+                                                            <div class="rl-ico">CV</div>
+                                                            <div class="min-w-0">
+                                                                <div class="rl-fname">
+                                                                    <t t-esc="att.name"/>
+                                                                </div>
+                                                                <div class="rl-fmeta">Pièce jointe</div>
+                                                            </div>
+                                                        </div>
+                                                        <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-outline-primary">
+                                                            Voir
+                                                        </a>
+
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="text-muted" style="font-weight:650;">Aucun CV ajouté.</div>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <!-- Reviews -->
+                                <div class="tab-pane fade" id="tab_reviews" role="tabpanel">
+                                    <div class="rl-card p-3 p-md-4">
+                                        <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                                            <h3 class="rl-h3 mb-0">Avis</h3>
+                                            <div class="rl-score">
+                                                <b>★</b>
+                                                <span>
+                                                    <t t-esc="('%.1f' % radiologist.rating_avg)"/>
+                                                    / 5
+                                                </span>
+                                                <span class="text-muted" style="font-weight:900;">(<t
+                                                        t-esc="radiologist.rating_count"/>)
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 d-flex flex-column gap-2">
+                                            <t t-if="ratings">
+                                                <t t-foreach="ratings[:10]" t-as="rev">
+                                                    <div class="rl-review">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div class="rl-score">
+                                                                <b>★</b>
+                                                                <span>
+                                                                    <t t-esc="rev.score"/>
+                                                                    / 5
+                                                                </span>
+                                                            </div>
+                                                            <div class="text-muted"
+                                                                 style="font-weight:700;font-size:12.5px;">
+                                                                <t t-esc="rev.create_date"/>
+                                                            </div>
+                                                        </div>
+                                                        <t t-if="getattr(rev,'comment', False)">
+                                                            <div class="mt-2"
+                                                                 style="color:var(--rl-muted);font-weight:650;line-height:1.55;">
+                                                                <t t-esc="rev.comment"/>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="text-muted" style="font-weight:650;">Aucun avis pour le
+                                                    moment.
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- ===================== -->
+<!-- DISPONIBILITÉS (SOUS DIPLOMES / CV / AVIS) -->
+<!-- ===================== -->
+<div class="rl-card p-3 p-md-4 mt-4">
+
+  <h3 class="rl-h3">Disponibilités</h3>
+
+  <t t-if="availabilities">
+
+    <div class="row g-3">
+
+      <t t-foreach="availabilities" t-as="a">
+        <div class="col-md-6">
+
+          <div class="rl-file">
+
+            <div class="rl-fileL">
+              <div class="rl-ico">🗓️</div>
+
+              <div class="min-w-0">
+                <div class="rl-fname">
+                  <t t-esc="weekday_map.get(a.weekday)"/>
+                  :
+                  <t t-esc="a.start_time"/>h – <t t-esc="a.end_time"/>h
+                </div>
+
+                <div class="rl-fmeta">
+                  <t t-if="a.is_weekend">🏖️ Weekend</t>
+                  <t t-if="a.is_night">
+                    <t t-if="a.is_weekend"> • </t>🌙 Nuit
+                  </t>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </t>
+
+    </div>
+
+  </t>
+
+  <t t-else="">
+    <div class="text-muted" style="font-weight:650;">
+      Aucune disponibilité renseignée.
+    </div>
+  </t>
+
+</div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </t>
+    </template>
+</odoo>

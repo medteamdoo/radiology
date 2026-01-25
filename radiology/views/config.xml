@@ -1,0 +1,13 @@
+<odoo>
+    <record id="action_radiology_brand" model="ir.actions.act_window">
+    <field name="name">Brands</field>
+    <field name="res_model">radiology.brand</field>
+    <field name="view_mode">tree,form</field>
+</record>
+<record id="action_radiology_specialty" model="ir.actions.act_window">
+    <field name="name">Specialties</field>
+    <field name="res_model">radiology.specialty</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+</odoo>

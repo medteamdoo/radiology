@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portal_chat" name="Portal - Chat List (RLX)">
+    <t t-set="rl_fullwidth" t-value="True"/>
+    <t t-set="breadcrumbs" t-value="False"/>
+
+    <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+      <style>
+        :root{
+          --rlx-text:#0B1220;
+          --rlx-muted:#667085;
+          --rlx-border: rgba(15,23,42,.10);
+          --rlx-card: rgba(255,255,255,.82);
+          --rlx-shadow: 0 18px 60px rgba(2,6,23,.10);
+          --rlx-shadow2: 0 10px 26px rgba(2,6,23,.08);
+          --rlx-primary:#2563EB;
+          --rlx-primary-dark:#1D4ED8;
+          --rlx-radius: 22px;
+        }
+
+        .o_portal_wrap > .container{
+          max-width:100% !important;
+          padding-left:0 !important;
+          padding-right:0 !important;
+        }
+        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+
+        .rlx-page{
+          min-height:100vh;
+          background:
+            radial-gradient(1200px 520px at 10% 0%, rgba(37,99,235,.10), transparent 55%),
+            linear-gradient(180deg, #EEF5FF 0%, #F8FAFC 42%, #FFFFFF 100%);
+        }
+        .rlx-shell{ padding: 22px 18px 46px; }
+        @media(min-width:992px){ .rlx-shell{ padding: 34px 34px 64px; } }
+
+        .rlx-hero{
+          border-radius: var(--rlx-radius);
+          border: 1px solid var(--rlx-border);
+          background: var(--rlx-card);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: var(--rlx-shadow);
+          overflow:hidden;
+          position:relative;
+        }
+        .rlx-hero:before{
+          content:"";
+          position:absolute; inset:-2px;
+          background:
+            radial-gradient(700px 260px at 18% 0%, rgba(37,99,235,.16), transparent 60%),
+            radial-gradient(700px 260px at 85% 0%, rgba(99,102,241,.12), transparent 60%);
+          pointer-events:none;
+        }
+        .rlx-hero > *{ position:relative; }
+        .rlx-hero-in{ padding: 18px; }
+        @media(min-width:992px){ .rlx-hero-in{ padding: 22px; } }
+
+        .rlx-title{
+          margin:0;
+          font-weight: 900;
+          letter-spacing:-.02em;
+          color: var(--rlx-text);
+          font-size: 28px;
+          line-height: 1.12;
+        }
+        @media(max-width:576px){ .rlx-title{ font-size: 24px; } }
+
+        .rlx-sub{
+          margin-top: 8px;
+          color: var(--rlx-muted);
+          font-weight: 650;
+          font-size: 13.5px;
+          line-height: 1.55;
+        }
+
+        .rlx-btn{
+          border-radius: 14px !important;
+          padding: 10px 14px !important;
+          font-weight: 800 !important;
+        }
+        .rlx-primary{
+          background: var(--rlx-primary) !important;
+          border: none !important;
+          color:#fff !important;
+          box-shadow: 0 14px 30px rgba(37,99,235,.22);
+        }
+        .rlx-primary:hover{ background: var(--rlx-primary-dark) !important; }
+
+        .rlx-card{
+          border-radius: var(--rlx-radius);
+          border: 1px solid rgba(2,6,23,.10);
+          background: rgba(255,255,255,.82);
+          box-shadow: var(--rlx-shadow2);
+          overflow:hidden;
+        }
+        .rlx-card-b{ padding: 14px 16px; }
+
+        .rlx-grid{
+          display:grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        @media(min-width:992px){
+          .rlx-grid{ grid-template-columns: 1fr 1fr; }
+        }
+
+        .rlx-item{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap: 14px;
+          padding: 14px;
+          border-radius: 20px;
+          border: 1px solid rgba(2,6,23,.08);
+          background: rgba(255,255,255,.78);
+        }
+
+        .rlx-left{
+          display:flex;
+          align-items:center;
+          gap: 12px;
+          min-width: 0;
+        }
+        .rlx-img{
+          width: 54px; height: 54px;
+          border-radius: 18px;
+          overflow:hidden;
+          background: linear-gradient(180deg,#EAF2FB 0%,#DDEBFA 100%);
+          border: 1px solid rgba(2,6,23,.10);
+          box-shadow: 0 12px 22px rgba(2,6,23,.10);
+          flex: 0 0 auto;
+        }
+        .rlx-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+        .rlx-name{
+          margin:0;
+          font-weight: 900;
+          color:#0F172A;
+          line-height: 1.2;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow:hidden;
+          text-overflow: ellipsis;
+        }
+        .rlx-meta{
+          margin-top: 4px;
+          color: var(--rlx-muted);
+          font-weight: 650;
+          font-size: 12.5px;
+          white-space: nowrap;
+          overflow:hidden;
+          text-overflow: ellipsis;
+        }
+
+        .rlx-pill{
+          display:inline-flex; align-items:center;
+          padding: 7px 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(2,6,23,.08);
+          background: rgba(255,255,255,.78);
+          font-weight: 900;
+          font-size: 12px;
+          color:#0F172A;
+          white-space: nowrap;
+        }
+      </style>
+
+      <section class="rlx-page">
+        <div class="container-fluid rlx-shell">
+
+          <!-- HERO -->
+          <div class="rlx-hero">
+            <div class="rlx-hero-in">
+              <h2 class="rlx-title">Mes conversations</h2>
+              <div class="rlx-sub">Retrouvez vos discussions avec les radiologues.</div>
+            </div>
+          </div>
+
+          <!-- LIST -->
+          <div class="rlx-card mt-3">
+            <div class="rlx-card-b">
+
+              <t t-if="conversations">
+                <div class="rlx-grid">
+                  <t t-foreach="conversations" t-as="c">
+                    <div class="rlx-item">
+
+                      <div class="rlx-left">
+                        <div class="rlx-img">
+                          <t t-if="c.radiologist_id and c.radiologist_id.image_1920">
+                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % c.radiologist_id.id"
+                                 alt="Radiologue"/>
+                          </t>
+                          <t t-else="">
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center"
+                                 style="font-weight:900;color:#2563EB;">
+                              RL
+                            </div>
+                          </t>
+                        </div>
+
+                        <div class="min-w-0">
+                          <p class="rlx-name">
+                            <t t-esc="c.radiologist_id.display_name"/>
+                          </p>
+
+                          <t t-if="c.radiologist_id.specialty_ids">
+                            <div class="rlx-meta">
+                              <t t-foreach="c.radiologist_id.specialty_ids[:2]" t-as="sp">
+                                <span class="me-1"><t t-esc="sp.name"/></span>
+                              </t>
+                              <t t-if="len(c.radiologist_id.specialty_ids) &gt; 2">…</t>
+                            </div>
+                          </t>
+                          <t t-else="">
+                            <div class="rlx-meta">—</div>
+                          </t>
+                        </div>
+                      </div>
+
+                      <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="rlx-pill">Conversation</span>
+                        <a class="btn rlx-btn rlx-primary"
+                           t-att-href="'/my/chat/%s' % c.id">
+                          Ouvrir
+                        </a>
+                      </div>
+
+                    </div>
+                  </t>
+                </div>
+              </t>
+
+              <t t-else="">
+                <div class="text-center p-4" style="color:var(--rlx-muted);font-weight:650;">
+                  Aucune conversation.
+                </div>
+              </t>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </t>
+  </template>
+</odoo>

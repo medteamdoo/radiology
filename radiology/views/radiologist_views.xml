@@ -8,7 +8,8 @@
                 <tree string="Radiologists">
                     <field name="image_1920" widget="image"/>
                     <field name="display_name"/>
-                    <field name="specialties"/>
+                    <field name="specialty_ids"/>
+                    <field name="brand_ids"/>
                     <field name="experience_years"/>
                     <field name="email"/>
                     <field name="phone"/>
@@ -25,15 +26,29 @@
                         <group>
                             <field name="image_1920"  widget="image" class="oe_avatar"/>
                             <field name="display_name" string="Name"/>
-                            <field name="specialties" string="Specialties"/>
+                            <field name="specialty_ids" widget="many2many_tags" string="Specialties"/>
+                            <field name="brand_ids" widget="many2many_tags" string="Brands"/>
                             <field name="experience_years" string="Years of Experience"/>
                             <field name="email"/>
                             <field name="phone"/>
                             <field name="bio"/>
                             <field name="cv_attachment_ids" widget="many2many_binary"/>
+                            <field name="diplome_ids" widget="many2many_binary"/>
                             <field name="user_id"/>
                             <field name="api_token" readonly="1"/>
                         </group>
+                        <group string="Disponibilités">
+                    <field name="availability_ids">
+                        <tree editable="bottom">
+                            <field name="weekday"/>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                            <field name="is_night"/>
+                            <field name="is_weekend" readonly="1"/>
+                            <field name="active"/>
+                        </tree>
+                    </field>
+                </group>
                     </sheet>
                 </form>
             </field>

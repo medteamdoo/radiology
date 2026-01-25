@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <template id="radiolink_portal_layout_inherit" inherit_id="portal.portal_layout" name="RadioLink Portal Layout Inherit">
+
+    <!-- Injecter du CSS conditionnel dans le layout portail -->
+    <xpath expr="//t[@t-call='portal.frontend_layout']" position="inside">
+
+      <!-- ✅ Appliquer full width seulement si une variable est activée dans la page -->
+      <t t-if="rl_fullwidth">
+        <style>
+          .o_portal_wrap > .container.pt-3{
+  padding-top: 0 !important;
+}
+
+/* sécurité : si le thème applique aussi un padding au wrap */
+.o_portal_wrap{
+  padding-top: 0 !important;
+}
+          .o_portal_wrap{
+  padding-top: 0 !important;
+}
+
+/* selon le thème, parfois c’est le main */
+.o_portal_wrap main{
+  padding-top: 0 !important;
+}
+
+/* sécurité : enlever margin-top éventuel */
+.radiolink-radiologists-page{
+  margin-top: 0 !important;
+}
+          /* Full width du container portail */
+          .o_portal_wrap > .container,
+          .o_portal_wrap .o_portal_container,
+          .o_portal_wrap .container.o_portal_container{
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+
+          /* optionnel: enlever padding du container parent */
+          .o_portal_wrap > .container{
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+
+          /* full height sur la zone main */
+          .o_portal_wrap{
+            min-height: 100vh;
+          }
+
+          /* éviter scroll horizontal */
+          html, body { overflow-x: hidden; }
+        </style>
+      </t>
+
+    </xpath>
+  </template>
+</odoo>
