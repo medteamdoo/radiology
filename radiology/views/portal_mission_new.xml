@@ -1,143 +1,310 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <template id="portal_mission_new" name="Portal - New Mission">
+  <template id="portal_mission_new" name="Portal - New Mission (Airbnb Pro)">
+
+    <t t-set="rl_fullwidth" t-value="True"/>
+    <t t-set="breadcrumbs" t-value="False"/>
+
     <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs_searchbar" t-value="True"/>
 
-      <section class="py-4"
-        style="background: linear-gradient(180deg, #EAF2FB 0%, #F8FAFC 50%, #FFFFFF 100%);">
-        <div class="container" style="max-width: 980px;">
+      <style>
+        :root{
+          --ab-text:#0f172a;
+          --ab-muted:#64748b;
+          --ab-border: rgba(15,23,42,.10);
+          --ab-chip:#f8fafc;
+          --ab-chip-border: rgba(15,23,42,.12);
+          --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
+          --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
+          --ab-radius2: 22px;
+          --ab-primary:#2563eb;
+        }
 
-          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <div>
-              <h2 class="mb-1" style="color:#1F2937;">Publier une mission</h2>
-              <div class="text-muted">Renseignez les détails pour la rendre visible sur RadioLink.</div>
+        /* Full width portal container but keep inner max-width */
+        .o_portal_wrap > .container{ max-width:100% !important; padding-left:0 !important; padding-right:0 !important; }
+        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+
+        .ab-page{ min-height:100vh; background:#fff; }
+        .ab-shell{ padding: 18px 0 56px; }
+        @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
+        @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
+
+        .ab-inner{
+          max-width: 980px;          /* comme ton original, mais propre */
+          margin: 0 auto;
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+        @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
+
+        /* Hero card */
+        .ab-hero{
+          border-radius: var(--ab-radius2);
+          border: 1px solid var(--ab-border);
+          background: rgba(255,255,255,.92);
+          box-shadow: var(--ab-shadow);
+          padding: 14px 14px;
+        }
+        @media(min-width:768px){ .ab-hero{ padding: 16px 16px; } }
+
+        .ab-top{
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          gap: 14px;
+          flex-wrap:wrap;
+        }
+        .ab-title{
+          margin:0;
+          color: var(--ab-text);
+          font-weight: 950;
+          letter-spacing: -.02em;
+          font-size: 26px;
+          line-height: 1.1;
+        }
+        .ab-sub{
+          margin-top: 6px;
+          color: var(--ab-muted);
+          font-weight: 650;
+          font-size: 13px;
+          line-height: 1.5;
+        }
+
+        /* Buttons (same as Missions) */
+        .ab-cta-btn{
+          border-radius: 12px !important;
+          padding: 10px 12px !important;
+          font-weight: 950 !important;
+          font-size: 13px !important;
+          text-decoration:none !important;
+          border: 1px solid rgba(37,99,235,.22) !important;
+          background: rgba(239,246,255,.95) !important;
+          color: #1d4ed8 !important;
+          display:inline-flex !important;
+          align-items:center !important;
+          justify-content:center !important;
+          gap: 8px !important;
+          cursor:pointer;
+          white-space: nowrap;
+        }
+        .ab-cta-btn:hover{
+          background: rgba(219,234,254,.95) !important;
+          color:#1d4ed8 !important;
+          text-decoration:none !important;
+        }
+        .ab-cta-btn-primary{
+          background: var(--ab-primary) !important;
+          border-color: var(--ab-primary) !important;
+          color: #fff !important;
+          box-shadow: 0 12px 26px rgba(37,99,235,.18);
+        }
+        .ab-cta-btn-primary:hover{
+          background: #1d4ed8 !important;
+          border-color:#1d4ed8 !important;
+          color:#fff !important;
+        }
+
+        /* Main form card */
+        .ab-card{
+          margin-top: 14px;
+          border-radius: var(--ab-radius2);
+          border: 1px solid var(--ab-border);
+          background: rgba(255,255,255,.92);
+          box-shadow: var(--ab-shadow);
+          overflow:hidden;
+        }
+        .ab-card-top{
+          height: 4px;
+          background: linear-gradient(90deg, rgba(79,70,229,.95), rgba(37,99,235,.95));
+        }
+        .ab-card-bd{ padding: 14px; }
+        @media(min-width:768px){ .ab-card-bd{ padding: 18px; } }
+
+        .ab-label{
+          color: var(--ab-text);
+          font-weight: 900;
+          font-size: 13px;
+          margin-bottom: 6px;
+        }
+        .ab-help{
+          margin-top: 6px;
+          color: var(--ab-muted);
+          font-weight: 650;
+          font-size: 12px;
+        }
+
+        .ab-input, .ab-select, .ab-textarea{
+          border-radius: 14px !important;
+          border: 1px solid rgba(15,23,42,.12) !important;
+          background: rgba(255,255,255,.92) !important;
+          box-shadow: none !important;
+          padding: 12px 14px !important;
+          font-weight: 700;
+          color: var(--ab-text);
+        }
+        .ab-textarea{ min-height: 140px; }
+
+        .ab-input:focus, .ab-select:focus, .ab-textarea:focus{
+          border-color: rgba(37,99,235,.45) !important;
+          box-shadow: 0 0 0 4px rgba(37,99,235,.12) !important;
+        }
+
+        /* Publish card */
+        .ab-note{
+          border-radius: 16px;
+          border: 1px solid rgba(37,99,235,.18);
+          background: rgba(239,246,255,.75);
+          padding: 12px 12px;
+        }
+        .ab-note .form-check-label{
+          font-weight: 900;
+          color: var(--ab-text);
+        }
+
+        /* Alerts */
+        .ab-alert{
+          border: 0;
+          border-radius: 16px;
+          box-shadow: var(--ab-shadow);
+        }
+      </style>
+
+      <section class="ab-page">
+        <div class="container-fluid ab-shell">
+          <div class="ab-inner">
+
+            <!-- HEADER CARD -->
+            <div class="ab-hero">
+              <div class="ab-top">
+                <div>
+                  <h2 class="ab-title">Publier une mission</h2>
+                  <div class="ab-sub">Renseignez les détails pour la rendre visible sur RadioLink.</div>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+                  <a href="/my/missions" class="ab-cta-btn">← Retour</a>
+                </div>
+              </div>
             </div>
-            <a href="/my/missions" class="btn btn-light" style="border-radius:12px;">
-              ← Retour
-            </a>
-          </div>
 
-          <div class="card border-0 shadow-sm" style="border-radius: 18px; overflow:hidden;">
-            <div style="height:5px; background: linear-gradient(90deg,#2F80ED 0%,#6EC6FF 50%,#2F80ED 100%);"></div>
+            <!-- FORM CARD -->
+            <div class="ab-card">
+              <div class="ab-card-top"></div>
+              <div class="ab-card-bd">
 
-            <div class="card-body p-3 p-md-4">
+                <t t-if="error">
+                  <div class="alert alert-danger ab-alert mb-3">
+                    <t t-esc="error"/>
+                  </div>
+                </t>
 
-              <t t-if="error">
-                <div class="alert alert-danger border-0" style="border-radius: 14px;">
-                  <t t-esc="error"/>
-                </div>
-              </t>
+                <form method="post" action="/my/missions/new">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
-              <form method="post" action="/my/missions/new">
-                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-
-                <!-- Nom -->
-                <div class="mb-3">
-                  <label class="form-label fw-semibold" style="color:#374151;">Nom de la mission</label>
-                  <input class="form-control form-control-lg"
-                         style="border-radius: 14px;"
-                         type="text" name="name" required="required"
-                         placeholder="Ex : Mission mammographie - 3 jours"
-                         t-att-value="values.get('name') or ''"/>
-                </div>
-
-                <div class="row g-3">
-                  <!-- Tarif -->
-                  <div class="col-md-4">
-                    <label class="form-label fw-semibold" style="color:#374151;">Tarif (€)</label>
-                    <input class="form-control"
-                           style="border-radius: 14px;"
-                           type="text" name="tarif"
-                           placeholder="Ex : 35"
-                           t-att-value="values.get('tarif') or ''"/>
-                    <div class="text-muted mt-1" style="font-size:12px;">Exemple : 35 ou 35.5</div>
+                  <!-- Nom -->
+                  <div class="mb-3">
+                    <label class="ab-label">Nom de la mission</label>
+                    <input class="form-control ab-input"
+                           type="text" name="name" required="required"
+                           placeholder="Ex : Mission mammographie - 3 jours"
+                           t-att-value="values.get('name') or ''"/>
                   </div>
 
-                  <!-- Dates -->
-                  <div class="col-md-4">
-                    <label class="form-label fw-semibold" style="color:#374151;">Date début</label>
-                    <input class="form-control"
-                           style="border-radius: 14px;"
-                           type="date" name="start_date"
-                           t-att-value="values.get('start_date') or ''"/>
+                  <div class="row g-3">
+                    <!-- Tarif -->
+                    <div class="col-md-4">
+                      <label class="ab-label">Tarif (€)</label>
+                      <input class="form-control ab-input"
+                             type="text" name="tarif"
+                             placeholder="Ex : 35"
+                             t-att-value="values.get('tarif') or ''"/>
+                      <div class="ab-help">Exemple : 35 ou 35.5</div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="col-md-4">
+                      <label class="ab-label">Date début</label>
+                      <input class="form-control ab-input"
+                             type="date" name="start_date"
+                             t-att-value="values.get('start_date') or ''"/>
+                    </div>
+
+                    <div class="col-md-4">
+                      <label class="ab-label">Date fin</label>
+                      <input class="form-control ab-input"
+                             type="date" name="end_date"
+                             t-att-value="values.get('end_date') or ''"/>
+                    </div>
                   </div>
 
-                  <div class="col-md-4">
-                    <label class="form-label fw-semibold" style="color:#374151;">Date fin</label>
-                    <input class="form-control"
-                           style="border-radius: 14px;"
-                           type="date" name="end_date"
-                           t-att-value="values.get('end_date') or ''"/>
+                  <div class="row g-3 mt-1">
+                    <!-- Spécialités -->
+                    <div class="col-md-6">
+                      <label class="ab-label">Spécialités</label>
+                      <select class="form-select ab-select"
+                              name="specialty_ids"
+                              multiple="multiple"
+                              style="min-height: 120px;">
+                        <t t-foreach="specialties" t-as="s">
+                          <option t-att-value="s.id"><t t-esc="s.name"/></option>
+                        </t>
+                      </select>
+                      <div class="ab-help">Ctrl/Command pour sélectionner plusieurs.</div>
+                    </div>
+
+                    <!-- Marques -->
+                    <div class="col-md-6">
+                      <label class="ab-label">Marques</label>
+                      <select class="form-select ab-select"
+                              name="brand_ids"
+                              multiple="multiple"
+                              style="min-height: 120px;">
+                        <t t-foreach="brands" t-as="b">
+                          <option t-att-value="b.id"><t t-esc="b.name"/></option>
+                        </t>
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div class="row g-3 mt-1">
-                  <!-- Spécialités -->
-                  <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="color:#374151;">Spécialités</label>
-                    <select class="form-select" name="specialty_ids" multiple="multiple"
-                            style="border-radius: 14px; min-height: 120px;">
-                      <t t-foreach="specialties" t-as="s">
-                        <option t-att-value="s.id"><t t-esc="s.name"/></option>
-                      </t>
-                    </select>
-                    <div class="text-muted mt-1" style="font-size:12px;">Ctrl/Command pour sélectionner plusieurs.</div>
+                  <!-- Description -->
+                  <div class="mt-3">
+                    <label class="ab-label">Description</label>
+                    <textarea class="form-control ab-textarea"
+                              name="description"
+                              placeholder="Décrivez le contexte, les horaires, le matériel, les prérequis…"><t t-esc="values.get('description') or ''"/></textarea>
                   </div>
 
-                  <!-- Marques -->
-                  <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="color:#374151;">Marques</label>
-                    <select class="form-select" name="brand_ids" multiple="multiple"
-                            style="border-radius: 14px; min-height: 120px;">
-                      <t t-foreach="brands" t-as="b">
-                        <option t-att-value="b.id"><t t-esc="b.name"/></option>
-                      </t>
-                    </select>
-                  </div>
-                </div>
-
-                <!-- Description -->
-                <div class="mt-3">
-                  <label class="form-label fw-semibold" style="color:#374151;">Description</label>
-                  <textarea class="form-control"
-                            style="border-radius: 14px; min-height: 140px;"
-                            name="description"
-                            placeholder="Décrivez le contexte, les horaires, le matériel, les prérequis…"><t t-esc="values.get('description') or ''"/></textarea>
-                </div>
-
-                <!-- Publier maintenant -->
-                <div class="card border-0 mt-3"
-                     style="border-radius: 14px; background:#F0F7FF; border: 1px solid #CFE3FF;">
-                  <div class="card-body py-3">
-                    <div class="form-check">
+                  <!-- Publier maintenant -->
+                  <div class="ab-note mt-3">
+                    <div class="form-check m-0">
                       <input class="form-check-input" type="checkbox" name="publish_now" id="publish_now"
                              t-att-checked="1 if values.get('publish_now') else None"/>
-                      <label class="form-check-label fw-semibold" for="publish_now" style="color:#0B2A55;">
+                      <label class="form-check-label" for="publish_now">
                         Publier maintenant (visible par tous les établissements)
                       </label>
-                      <div class="text-muted" style="font-size:12px;">
+                      <div class="ab-help">
                         Si non coché, la mission sera enregistrée en brouillon (Draft).
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Actions -->
-                <div class="d-flex flex-wrap gap-2 mt-4">
-                  <button class="btn btn-primary"
-                          style="border-radius: 14px; background: linear-gradient(90deg,#2F80ED 0%,#5FA8FF 100%); border:0; padding: 10px 16px;">
-                    Enregistrer
-                  </button>
-                  <a href="/my/missions" class="btn btn-light" style="border-radius: 14px; padding: 10px 16px;">
-                    Annuler
-                  </a>
-                </div>
+                  <!-- Actions -->
+                  <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button type="submit" class="ab-cta-btn ab-cta-btn-primary">
+                      Enregistrer
+                    </button>
+                    <a href="/my/missions" class="ab-cta-btn">
+                      Annuler
+                    </a>
+                  </div>
 
-              </form>
+                </form>
 
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
       </section>
 
