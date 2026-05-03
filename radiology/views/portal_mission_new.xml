@@ -222,6 +222,16 @@
                       <div class="ab-help">Exemple : 35 ou 35.5</div>
                     </div>
 
+                    <!-- ✅ Type de tarif -->
+                    <div class="col-md-4">
+                      <label class="ab-label">Type de tarif</label>
+                      <select class="form-select ab-select" name="tarif_type">
+                        <option value="day" t-att-selected="1 if (values.get('tarif_type') or 'day') == 'day' else None">Par jour</option>
+                        <option value="hour" t-att-selected="1 if (values.get('tarif_type') or '') == 'hour' else None">Par heure</option>
+                      </select>
+                      <div class="ab-help">Choisissez l’unité de facturation.</div>
+                    </div>
+
                     <!-- Dates -->
                     <div class="col-md-4">
                       <label class="ab-label">Date début</label>
@@ -244,13 +254,13 @@
                       <label class="ab-label">Spécialités</label>
                       <select class="form-select ab-select"
                               name="specialty_ids"
-                              multiple="multiple"
-                              style="min-height: 120px;">
+                              style="min-height: 54px;">
+                        <option value="">Choisir une spécialité</option>
                         <t t-foreach="specialties" t-as="s">
                           <option t-att-value="s.id"><t t-esc="s.name"/></option>
                         </t>
                       </select>
-                      <div class="ab-help">Ctrl/Command pour sélectionner plusieurs.</div>
+                      <div class="ab-help">Sélectionnez une seule spécialité.</div>
                     </div>
 
                     <!-- Marques -->
@@ -258,12 +268,13 @@
                       <label class="ab-label">Marques</label>
                       <select class="form-select ab-select"
                               name="brand_ids"
-                              multiple="multiple"
-                              style="min-height: 120px;">
+                              style="min-height: 54px;">
+                        <option value="">Choisir une marque</option>
                         <t t-foreach="brands" t-as="b">
                           <option t-att-value="b.id"><t t-esc="b.name"/></option>
                         </t>
                       </select>
+                      <div class="ab-help">Sélectionnez une seule marque.</div>
                     </div>
                   </div>
 
@@ -273,6 +284,16 @@
                     <textarea class="form-control ab-textarea"
                               name="description"
                               placeholder="Décrivez le contexte, les horaires, le matériel, les prérequis…"><t t-esc="values.get('description') or ''"/></textarea>
+                  </div>
+
+                  <!-- ✅ Avantage -->
+                  <div class="mt-3">
+                    <label class="ab-label">Avantage</label>
+                    <textarea class="form-control ab-textarea"
+                              name="avantage"
+                              placeholder="Ex : Hébergement pris en charge, primes, horaires flexibles…"
+                              style="min-height: 110px;"><t t-esc="values.get('avantage') or ''"/></textarea>
+                    <div class="ab-help">Mettez en avant ce qui rend la mission attractive.</div>
                   </div>
 
                   <!-- Publier maintenant -->

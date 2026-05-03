@@ -2,9 +2,12 @@ from . import radiologist
 from . import hospital
 from . import mission
 from . import application
-from . import rating
+from . import review
 from . import brand
 from . import speciality
 from . import radiologist_availability
 from . import radiology_chat_conversation
 from . import radiology_chat_message
+from . import notification
+from . import mobile_device
+from . import res_config_settings

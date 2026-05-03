@@ -40,15 +40,10 @@ class PortalMissionCreateController(http.Controller):
         start_date = post.get("start_date") or False
         end_date = post.get("end_date") or False
         publish_now = (post.get("publish_now") == "on")
-
-        specialty_ids = post.get("specialty_ids") or []
-        brand_ids = post.get("brand_ids") or []
-
-        # multi-select: parfois string si un seul, liste si plusieurs
-        if isinstance(specialty_ids, str):
-            specialty_ids = [specialty_ids]
-        if isinstance(brand_ids, str):
-            brand_ids = [brand_ids]
+        tarif_type = (post.get("tarif_type") or "day").strip()  # "day" ou "hour"
+        avantage = (post.get("avantage") or "").strip()
+        specialty_id = post.get("specialty_ids") or ""  # single select
+        brand_id = post.get("brand_ids") or ""  # single select
 
         # Validations
         if not name:
@@ -65,10 +60,12 @@ class PortalMissionCreateController(http.Controller):
         if start_date and end_date and start_date > end_date:
             return self._error_new("La date de début doit être avant la date de fin.", post)
 
-        # Convert ids
+        if tarif_type not in ("day", "hour"):
+            tarif_type = "day"
+
         try:
-            specialty_ids_int = [int(x) for x in specialty_ids if x]
-            brand_ids_int = [int(x) for x in brand_ids if x]
+            specialty_ids_int = [int(specialty_id)] if specialty_id else []
+            brand_ids_int = [int(brand_id)] if brand_id else []
         except Exception:
             return self._error_new("Sélection invalide (spécialité / marque).", post)
 
@@ -83,6 +80,8 @@ class PortalMissionCreateController(http.Controller):
             "end_date": end_date or False,
             "speciality_ids": [(6, 0, specialty_ids_int)],
             "brand_ids": [(6, 0, brand_ids_int)],
+            "tarif_type": tarif_type,
+            "avantage": avantage,
             "status": "published" if publish_now else "draft",
         })
 

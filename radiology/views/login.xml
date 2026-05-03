@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <!-- 1) Large layout: remplace le container entier du login_layout -->
+  <template id="portal_login_layout_wide" inherit_id="web.login_layout" name="Login Layout - Wide (RadioLink)">
+
+    <!-- ✅ container py-5 existe dans ton code standard -->
+    <xpath expr="//div[contains(@class,'container') and contains(@class,'py-5')]" position="replace">
+
+      <style>
+        :root{
+          --rlx-text:#0B1220;
+          --rlx-muted:#667085;
+          --rlx-border: rgba(15,23,42,.10);
+          --rlx-card: rgba(255,255,255,.92);
+          --rlx-shadow: 0 18px 60px rgba(2,6,23,.10);
+          --rlx-radius: 22px;
+          --rlx-primary:#2563EB;
+          --rlx-primary-dark:#1D4ED8;
+        }
+
+        body.o_web_client, body{
+          height: 100% !important;
+          background:
+            radial-gradient(1200px 520px at 12% 0%, rgba(37,99,235,.10), transparent 55%),
+            linear-gradient(180deg, #EEF5FF 0%, #F8FAFC 42%, #FFFFFF 100%) !important;
+        }
+
+        .rlx-login-wrap{
+          width: min(1200px, 92vw);
+          margin: 0 auto;
+          padding: 28px 0 40px;
+        }
+
+        .rlx-login-card{
+          width: 80vw;               /* ✅ 80% width */
+          max-width: 1200px;
+          margin: 0 auto;
+          border-radius: var(--rlx-radius);
+          border: 1px solid var(--rlx-border);
+          background: var(--rlx-card);
+          box-shadow: var(--rlx-shadow);
+          overflow: hidden;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .rlx-login-grid{
+          display:grid;
+          grid-template-columns: 1.05fr .95fr;
+        }
+
+        @media (max-width: 991px){
+          .rlx-login-card{ width: min(720px, 92vw); }
+          .rlx-login-grid{ grid-template-columns: 1fr; }
+          .rlx-login-side{ display:none; }
+        }
+
+        .rlx-login-main{
+          padding: 26px 26px 24px;
+          background: rgba(255,255,255,.70);
+        }
+
+        .rlx-login-side{
+          padding: 26px 26px 24px;
+          background:
+            radial-gradient(700px 260px at 30% 0%, rgba(37,99,235,.14), transparent 60%),
+            linear-gradient(180deg, rgba(239,246,255,.75) 0%, rgba(255,255,255,.55) 100%);
+          border-left: 1px solid rgba(2,6,23,.08);
+        }
+
+        .rlx-logo{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap: 16px;
+          padding-bottom: 14px;
+          margin-bottom: 18px;
+          border-bottom: 1px solid rgba(2,6,23,.08);
+        }
+
+        .rlx-title{
+          margin:0;
+          font-weight: 950;
+          letter-spacing: -.02em;
+          font-size: 26px;
+          color: var(--rlx-text);
+          line-height: 1.1;
+        }
+        .rlx-sub{
+          margin-top: 6px;
+          color: var(--rlx-muted);
+          font-weight: 650;
+          font-size: 13px;
+          line-height: 1.55;
+        }
+
+        .rlx-input{
+          border-radius: 14px !important;
+          border: 1px solid rgba(2,6,23,.12) !important;
+          background: rgba(255,255,255,.95) !important;
+          font-weight: 650 !important;
+          padding: 12px 14px !important;
+        }
+        .rlx-input:focus{
+          border-color: rgba(37,99,235,.45) !important;
+          box-shadow: 0 0 0 4px rgba(37,99,235,.12) !important;
+        }
+
+        .rlx-btn-primary{
+          border-radius: 14px !important;
+          padding: 12px 14px !important;
+          font-weight: 950 !important;
+          background: var(--rlx-primary) !important;
+          border: none !important;
+          box-shadow: 0 14px 30px rgba(37,99,235,.18);
+        }
+        .rlx-btn-primary:hover{ background: var(--rlx-primary-dark) !important; }
+      </style>
+
+      <div class="rlx-login-wrap">
+        <div class="rlx-login-card">
+
+          <div class="rlx-login-grid">
+
+            <!-- LEFT -->
+            <div class="rlx-login-main">
+              <div class="rlx-logo">
+                <div>
+                  <h2 class="rlx-title">Connexion</h2>
+                  <div class="rlx-sub">Accédez à votre espace RadioLink.</div>
+                </div>
+
+                <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}"
+                     alt="Logo"
+                     style="max-height:64px; max-width:180px; width:auto"/>
+              </div>
+
+              <!-- ✅ le form standard du login vient ici -->
+              <t t-out="0"/>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="rlx-login-side">
+              <h3 style="margin:0;font-weight:950;color:var(--rlx-text);font-size:16px;">RadioLink</h3>
+              <p style="margin-top:10px;color:var(--rlx-muted);font-weight:650;line-height:1.7;">
+                Retrouvez vos missions, vos radiologues favoris et vos conversations dans une interface premium
+                cohérente avec le design du site.
+              </p>
+
+              <div style="margin-top:16px;border:1px solid rgba(2,6,23,.08);border-radius:16px;padding:12px;background:rgba(255,255,255,.70);">
+                <div style="font-weight:900;color:var(--rlx-text);font-size:13px;margin-bottom:6px;">Liens utiles</div>
+
+                <t t-if="not disable_database_manager">
+                  <a href="/web/database/manager"
+                     style="display:block;font-weight:850;color:#1d4ed8;text-decoration:none;margin:6px 0;">
+                    Manage Databases
+                  </a>
+                </t>
+
+                <a href="https://www.odoo.com?utm_source=db&amp;utm_medium=auth" target="_blank"
+                   style="display:block;font-weight:850;color:#1d4ed8;text-decoration:none;margin:6px 0;">
+                  Powered by Odoo
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </xpath>
+
+  </template>
+
+  <!-- 2) Styliser les inputs + bouton dans web.login (pas obligatoire mais joli) -->
+  <template id="portal_login_form_style" inherit_id="web.login" name="Login Form - Style (RadioLink)">
+    <xpath expr="//input[@id='login']" position="attributes">
+      <attribute name="class">form-control rlx-input</attribute>
+    </xpath>
+
+    <xpath expr="//input[@id='password']" position="attributes">
+      <attribute name="class">form-control rlx-input</attribute>
+    </xpath>
+
+    <xpath expr="//input[@id='db']" position="attributes">
+      <attribute name="class">form-control rlx-input</attribute>
+    </xpath>
+
+    <xpath expr="//button[@type='submit' and contains(@class,'btn')]" position="attributes">
+      <attribute name="class">btn rlx-btn-primary</attribute>
+    </xpath>
+  </template>
+
+</odoo>

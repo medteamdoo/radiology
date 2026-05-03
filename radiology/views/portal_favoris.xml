@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portal_favorite_radiologists" name="Portal - Favorite Radiologists (Airbnb Theme)">
+
+    <t t-set="rl_fullwidth" t-value="True"/>
+    <t t-set="breadcrumbs" t-value="False"/>
+
+    <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+      <style>
+        :root{
+          --ab-text:#0f172a;
+          --ab-muted:#64748b;
+          --ab-border: rgba(15,23,42,.10);
+          --ab-chip:#f8fafc;
+          --ab-chip-border: rgba(15,23,42,.12);
+          --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
+          --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
+          --ab-radius2: 22px;
+          --ab-primary:#2563eb;
+        }
+
+        .o_portal_wrap > .container{
+          max-width:100% !important;
+          padding-left:0 !important;
+          padding-right:0 !important;
+        }
+        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+
+        .ab-page{ min-height:100vh; background:#fff; }
+        .ab-shell{ padding: 18px 0 56px; }
+        @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
+        @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
+
+        .ab-inner{
+          max-width: 1320px;
+          margin: 0 auto;
+          padding-left: 18px;
+          padding-right: 18px;
+        }
+        @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
+        @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
+
+        .ab-hero{
+          border-radius: var(--ab-radius2);
+          border: 1px solid var(--ab-border);
+          background: rgba(255,255,255,.92);
+          box-shadow: var(--ab-shadow);
+          padding: 14px;
+        }
+        @media(min-width:768px){ .ab-hero{ padding: 16px; } }
+
+        .ab-top{
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          gap: 14px;
+          margin:0;
+        }
+        .ab-title{
+          margin:0;
+          color: var(--ab-text);
+          font-weight: 950;
+          letter-spacing: -.02em;
+          font-size: 26px;
+          line-height: 1.1;
+        }
+        .ab-sub{
+          margin-top: 6px;
+          color: var(--ab-muted);
+          font-weight: 650;
+          font-size: 13px;
+        }
+        .ab-actions{
+          display:flex;
+          flex-wrap:wrap;
+          gap:10px;
+          align-items:center;
+          justify-content:flex-end;
+        }
+
+        .ab-cta-btn{
+          border-radius: 12px !important;
+          padding: 10px 12px !important;
+          font-weight: 950 !important;
+          font-size: 13px !important;
+          text-decoration:none !important;
+          border: 1px solid rgba(37,99,235,.22) !important;
+          background: rgba(239,246,255,.95) !important;
+          color: #1d4ed8 !important;
+          display:inline-flex !important;
+          align-items:center !important;
+          justify-content:center !important;
+          gap: 8px !important;
+          cursor:pointer;
+        }
+        .ab-cta-btn:hover{
+          background: rgba(219,234,254,.95) !important;
+          color:#1d4ed8 !important;
+          text-decoration:none !important;
+        }
+        .ab-cta-btn-primary{
+          background: var(--ab-primary) !important;
+          border-color: var(--ab-primary) !important;
+          color:#fff !important;
+          box-shadow: 0 12px 26px rgba(37,99,235,.18);
+        }
+        .ab-cta-btn-primary:hover{
+          background:#1d4ed8 !important;
+          border-color:#1d4ed8 !important;
+          color:#fff !important;
+        }
+
+        .ab-filters{
+          margin-top: 14px;
+          position: sticky;
+          top: 10px;
+          z-index: 10;
+          background: rgba(255,255,255,.85);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border: 1px solid var(--ab-border);
+          border-radius: var(--ab-radius2);
+          box-shadow: var(--ab-shadow);
+          padding: 10px;
+        }
+        .ab-filters-row{
+          display:flex;
+          align-items:center;
+          gap: 10px;
+          flex-wrap:wrap;
+        }
+        .ab-chip{
+          display:inline-flex;
+          align-items:center;
+          gap:8px;
+          padding: 10px 12px;
+          border-radius: 999px;
+          border: 1px solid var(--ab-chip-border);
+          background: var(--ab-chip);
+          color: var(--ab-text);
+          font-weight: 850;
+          font-size: 13px;
+          white-space: nowrap;
+        }
+        .ab-chip select{
+          border:none !important;
+          background: transparent !important;
+          outline:none !important;
+          padding:0 !important;
+          height:auto !important;
+          font-weight: 850;
+          font-size: 13px;
+          color: var(--ab-text);
+          min-width: 160px;
+        }
+        .ab-chip select:focus{ box-shadow:none !important; }
+        .ab-chip-actions{
+          margin-left:auto;
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+        }
+
+        .ab-grid{
+          margin-top: 16px;
+          display:grid;
+          grid-template-columns: repeat(4, minmax(0,1fr));
+          gap: 16px;
+        }
+        @media(max-width: 1250px){ .ab-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+        @media(max-width: 980px){ .ab-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+        @media(max-width: 640px){ .ab-grid{ grid-template-columns: 1fr; } }
+
+        .ab-card{
+          border-radius: var(--ab-radius2);
+          overflow:hidden;
+          border: 1px solid var(--ab-border);
+          background: #fff;
+          box-shadow: var(--ab-shadow);
+          transition: transform .16s ease, box-shadow .16s ease;
+        }
+        .ab-card:hover{
+          transform: translateY(-2px);
+          box-shadow: var(--ab-shadow2);
+        }
+
+        .ab-media{
+          position:relative;
+          width:100%;
+          aspect-ratio: 4/3;
+          background: #e5e7eb;
+          overflow:hidden;
+        }
+        .ab-media img{
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          display:block;
+        }
+
+        .ab-badge{
+          position:absolute;
+          left: 10px;
+          bottom: 10px;
+          padding: 6px 10px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.92);
+          border: 1px solid rgba(15,23,42,.10);
+          font-weight: 950;
+          font-size: 12px;
+          color: var(--ab-text);
+          box-shadow: 0 10px 22px rgba(2,6,23,.10);
+          display:inline-flex;
+          align-items:center;
+          gap:8px;
+        }
+
+        .ab-body{ padding: 12px 12px 14px; }
+        .ab-name{
+          margin:0;
+          font-weight: 950;
+          color: var(--ab-text);
+          font-size: 15px;
+          line-height: 1.25;
+        }
+        .ab-meta{
+          margin-top: 4px;
+          color: var(--ab-muted);
+          font-weight: 750;
+          font-size: 12.5px;
+        }
+
+        .ab-tags{
+          margin-top: 8px;
+          display:flex;
+          flex-wrap:wrap;
+          gap: 6px;
+        }
+        .ab-tag{
+          display:inline-flex;
+          align-items:center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(15,23,42,.10);
+          background: rgba(248,250,252,.90);
+          color: var(--ab-text);
+          font-weight: 850;
+          font-size: 12px;
+          white-space:nowrap;
+        }
+
+        .ab-bottom{
+          margin-top: 10px;
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap: 10px;
+        }
+        .ab-left{
+          min-width:0;
+          display:flex;
+          flex-direction:column;
+          gap: 2px;
+        }
+        .ab-small{
+          color: var(--ab-muted);
+          font-weight: 750;
+          font-size: 12px;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          max-width: 220px;
+        }
+
+        .ab-stars{
+          display:inline-flex;
+          gap:2px;
+          line-height:1;
+        }
+        .ab-star{
+          font-size: 13px;
+          color: rgba(15,23,42,.25);
+        }
+        .ab-star.on{
+          color: #fbbf24;
+          text-shadow: 0 1px 0 rgba(0,0,0,.08);
+        }
+        .ab-star-num{
+          margin-left: 6px;
+          font-weight: 950;
+          font-size: 12px;
+          color: var(--ab-text);
+        }
+
+        .ab-fav{
+          position:absolute;
+          top: 10px;
+          right: 10px;
+          width: 38px;
+          height: 38px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.92);
+          border: 1px solid rgba(15,23,42,.10);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          box-shadow: 0 10px 22px rgba(2,6,23,.10);
+          cursor:pointer;
+          user-select:none;
+          transition: transform .15s ease, background .15s ease, border-color .15s ease;
+          z-index: 5;
+        }
+        .ab-fav:hover{ transform: scale(1.04); }
+        .ab-fav .ab-fav-icon{
+          font-size: 16px;
+          line-height: 1;
+          color: rgba(15,23,42,.45);
+          transition: color .15s ease, transform .15s ease;
+        }
+        .ab-fav.is-fav{
+          background: rgba(254,242,242,.95);
+          border-color: rgba(239,68,68,.25);
+        }
+        .ab-fav.is-fav .ab-fav-icon{
+          color: #ef4444;
+          transform: scale(1.05);
+        }
+      </style>
+
+      <section class="ab-page">
+        <div class="container-fluid ab-shell">
+          <div class="ab-inner">
+
+            <!-- CSRF token -->
+            <input type="hidden" id="csrf_token" t-att-value="request.csrf_token()"/>
+
+            <!-- HEADER -->
+            <div class="ab-hero">
+              <div class="ab-top">
+                <div>
+                  <h2 class="ab-title">Mes radiologues favoris</h2>
+                  <div class="ab-sub">
+                    Retrouvez vos radiologues enregistrés et filtrez par spécialité et marque.
+                  </div>
+                </div>
+
+                <div class="ab-actions">
+                  <a href="/my/radiologists" class="ab-cta-btn">Tous les radiologues</a>
+                  <a href="/my" class="ab-cta-btn">Mon portail</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- FILTERS -->
+            <form class="ab-filters" method="get" action="/my/favorites">
+              <t t-set="selected_specialty" t-value="request.params.get('specialty_id') or ''"/>
+              <t t-set="selected_brand" t-value="request.params.get('brand_id') or ''"/>
+
+              <div class="ab-filters-row">
+
+                <div class="ab-chip">
+                  <span>Spécialité</span>
+                  <select name="specialty_id">
+                    <option value="">Toutes</option>
+                    <t t-foreach="specialties" t-as="s">
+                      <option t-att-value="s.id"
+                              t-att-selected="1 if str(s.id) == str(selected_specialty) else None">
+                        <t t-esc="s.name"/>
+                      </option>
+                    </t>
+                  </select>
+                </div>
+
+                <div class="ab-chip">
+                  <span>Marque</span>
+                  <select name="brand_id">
+                    <option value="">Toutes</option>
+                    <t t-foreach="brands" t-as="b">
+                      <option t-att-value="b.id"
+                              t-att-selected="1 if str(b.id) == str(selected_brand) else None">
+                        <t t-esc="b.name"/>
+                      </option>
+                    </t>
+                  </select>
+                </div>
+
+                <div class="ab-chip-actions">
+                  <button class="ab-cta-btn" type="submit">Filtrer</button>
+                  <a class="ab-cta-btn" href="/my/favorites">Réinitialiser</a>
+                </div>
+
+              </div>
+            </form>
+
+            <!-- GRID -->
+            <t t-if="radiologists">
+              <div class="ab-grid">
+                <t t-foreach="radiologists" t-as="r">
+                  <div class="ab-card">
+
+                    <!-- IMAGE -->
+                    <div class="ab-media">
+                      <t t-if="r.image_1920">
+                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id"
+                             alt="Photo radiologue"/>
+                      </t>
+                      <t t-else="">
+                        <img t-att-src="'/web/static/img/user_menu_avatar.png'" alt="Avatar"/>
+                      </t>
+
+                      <!-- Sur favoris page, par défaut c'est favori, mais on garde le check -->
+                      <t t-set="is_fav"
+                         t-value="True if (fav_ids and (r.id in fav_ids)) else True"/>
+
+                      <div t-attf-class="ab-fav #{'is-fav' if is_fav else ''}"
+                           t-att-data-rid="r.id"
+                           title="Ajouter / retirer des favoris">
+                        <span class="ab-fav-icon">♥</span>
+                      </div>
+
+                      <!-- Rating -->
+                      <t t-if="r.rating_count and r.rating_count &gt; 0">
+                        <t t-set="avg" t-value="float(r.rating_avg or 0.0)"/>
+                        <t t-set="filled" t-value="int(round(avg))"/>
+
+                        <div class="ab-badge">
+                          <span class="ab-stars" aria-label="rating">
+                            <span t-attf-class="ab-star #{'on' if filled &gt;= 1 else ''}">★</span>
+                            <span t-attf-class="ab-star #{'on' if filled &gt;= 2 else ''}">★</span>
+                            <span t-attf-class="ab-star #{'on' if filled &gt;= 3 else ''}">★</span>
+                            <span t-attf-class="ab-star #{'on' if filled &gt;= 4 else ''}">★</span>
+                            <span t-attf-class="ab-star #{'on' if filled &gt;= 5 else ''}">★</span>
+                          </span>
+
+                          <span class="ab-star-num">
+                            <t t-esc="round(avg, 1)"/>
+                          </span>
+                        </div>
+                      </t>
+
+                    </div>
+
+                    <!-- CONTENT -->
+                    <div class="ab-body">
+                      <h5 class="ab-name">
+                        <t t-esc="r.display_name or 'Radiologue'"/>
+                      </h5>
+
+                      <div class="ab-meta">
+                        <t t-if="r.experience_years">
+                          <t t-esc="r.experience_years"/> ans d’expérience
+                        </t>
+                        <t t-else="">Expérience non renseignée</t>
+                      </div>
+
+                      <div class="ab-tags">
+                        <t t-foreach="r.specialty_ids[:3]" t-as="sp">
+                          <span class="ab-tag"><t t-esc="sp.name"/></span>
+                        </t>
+                        <t t-if="len(r.specialty_ids) &gt; 3">
+                          <span class="ab-tag">+ <t t-esc="len(r.specialty_ids)-3"/></span>
+                        </t>
+
+                        <t t-foreach="r.brand_ids[:2]" t-as="br">
+                          <span class="ab-tag"><t t-esc="br.name"/></span>
+                        </t>
+                        <t t-if="len(r.brand_ids) &gt; 2">
+                          <span class="ab-tag">+ <t t-esc="len(r.brand_ids)-2"/></span>
+                        </t>
+                      </div>
+
+                      <div class="ab-bottom">
+                        <div class="ab-left">
+                          <div class="ab-small">
+                            <t t-if="r.email"><t t-esc="r.email"/></t>
+                            <t t-else="">Email non renseigné</t>
+                          </div>
+                        </div>
+
+                        <a t-att-href="'/my/radiologists/%s' % r.id"
+                           class="ab-cta-btn">
+                          Voir profil ↗
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </t>
+
+            <t t-else="">
+              <div class="mt-4 alert alert-info border-0 shadow-sm"
+                   style="border-radius:18px; background: rgba(255,255,255,.80);">
+                Aucun radiologue n’est encore ajouté à vos favoris.
+                <div class="mt-2">
+                  <a href="/my/radiologists" class="ab-cta-btn ab-cta-btn-primary">Découvrir les radiologues</a>
+                </div>
+              </div>
+            </t>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- JS toggle -->
+      <script type="text/javascript">
+        (function(){
+          function getCsrf(){
+            var el = document.getElementById('csrf_token');
+            return el ? el.value : null;
+          }
+
+          document.addEventListener('click', async function(e){
+            var btn = e.target.closest('.ab-fav');
+            if (!btn) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            var rid = btn.getAttribute('data-rid');
+            if (!rid) return;
+
+            var csrf = getCsrf();
+
+            try{
+              var payload = {
+                jsonrpc: "2.0",
+                method: "call",
+                params: { radiologist_id: parseInt(rid) },
+                id: Date.now()
+              };
+
+              var res = await fetch('/my/radiologists/favorite/toggle', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-Requested-With': 'XMLHttpRequest',
+                  ...(csrf ? {'X-CSRFToken': csrf} : {})
+                },
+                body: JSON.stringify(payload)
+              });
+
+              var data = await res.json();
+              var result = data &amp;&amp; data.result ? data.result : null;
+
+              if (result &amp;&amp; result.ok){
+                if (result.is_favorite){
+                  btn.classList.add('is-fav');
+                } else {
+                  // sur la page favoris : si on retire un favori, on enlève la carte (UX pro)
+                  var card = btn.closest('.ab-card');
+                  if (card) card.remove();
+                }
+              }
+            }catch(err){
+              // console.log(err);
+            }
+          }, true);
+        })();
+      </script>
+
+    </t>
+  </template>
+</odoo>

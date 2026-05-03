@@ -26,6 +26,7 @@
                         <field name="city"/>
                         <field name="longitude"/>
                         <field name="latitude"/>
+                        <field name="subscription_plan"/>
                         <field name="image_1920" widget="image" class="oe_avatar"/>
                     </group>
                 </sheet>

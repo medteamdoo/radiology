@@ -1,601 +1,703 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <template id="portal_radiologist_profile_modern" name="Portal - Radiologist Profile (Airbnb Pro)">
+    <template id="portal_radiologist_profile_modern" name="Portal - Radiologist Profile (Airbnb Pro)">
 
-    <t t-set="rl_fullwidth" t-value="True"/>
-    <t t-set="breadcrumbs" t-value="False"/>
+        <t t-set="rl_fullwidth" t-value="True"/>
+        <t t-set="breadcrumbs" t-value="False"/>
 
-    <t t-call="portal.portal_layout">
-      <t t-set="breadcrumbs_searchbar" t-value="True"/>
-      <t t-set="weekday_map"
-         t-value="{'0':'Lundi','1':'Mardi','2':'Mercredi','3':'Jeudi','4':'Vendredi','5':'Samedi','6':'Dimanche'}"/>
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-set="weekday_map"
+               t-value="{'0':'Lundi','1':'Mardi','2':'Mercredi','3':'Jeudi','4':'Vendredi','5':'Samedi','6':'Dimanche'}"/>
 
-      <style>
-        :root{
-          --ab-text:#0f172a;
-          --ab-muted:#64748b;
-          --ab-border: rgba(15,23,42,.10);
-          --ab-chip:#f8fafc;
-          --ab-chip-border: rgba(15,23,42,.12);
-          --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
-          --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
-          --ab-radius2: 22px;
-          --ab-primary:#2563eb;
-        }
+            <style>
+                :root{
+                --ab-text:#0f172a;
+                --ab-muted:#64748b;
+                --ab-border: rgba(15,23,42,.10);
+                --ab-chip:#f8fafc;
+                --ab-chip-border: rgba(15,23,42,.12);
+                --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
+                --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
+                --ab-radius2: 22px;
+                --ab-primary:#2563eb;
+                }
 
-        /* Full width portal container but keep inner max-width */
-        .o_portal_wrap > .container{ max-width:100% !important; padding-left:0 !important; padding-right:0 !important; }
-        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+                .o_portal_wrap > .container{ max-width:100% !important; padding-left:0 !important; padding-right:0
+                !important; }
+                .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
 
-        .ab-page{ min-height:100vh; background:#fff; }
-        .ab-shell{ padding: 18px 0 56px; }
-        @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
-        @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
+                .ab-page{ min-height:100vh; background:#fff; }
+                .ab-shell{ padding: 18px 0 56px; }
+                @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
+                @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
 
-        .ab-inner{
-          max-width: 1320px;
-          margin: 0 auto;
-          padding-left: 18px;
-          padding-right: 18px;
-        }
-        @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
-        @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
+                .ab-inner{
+                max-width: 1320px;
+                margin: 0 auto;
+                padding-left: 18px;
+                padding-right: 18px;
+                }
+                @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
+                @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
 
-        /* Hero card like Missions */
-        .ab-hero{
-          border-radius: var(--ab-radius2);
-          border: 1px solid var(--ab-border);
-          background: rgba(255,255,255,.92);
-          box-shadow: var(--ab-shadow);
-          overflow:hidden;
-        }
-        .ab-hero-in{
-          display:grid;
-          grid-template-columns: 420px 1fr;
-        }
-        @media(max-width: 991px){
-          .ab-hero-in{ grid-template-columns: 1fr; }
-        }
+                .ab-hero{
+                border-radius: var(--ab-radius2);
+                border: 1px solid var(--ab-border);
+                background: rgba(255,255,255,.92);
+                box-shadow: var(--ab-shadow);
+                overflow:hidden;
+                }
+                .ab-hero-in{
+                display:grid;
+                grid-template-columns: 420px 1fr;
+                }
+                @media(max-width: 991px){
+                .ab-hero-in{ grid-template-columns: 1fr; }
+                }
 
-        .ab-media{
-          position:relative;
-          width:100%;
-          min-height: 340px;
-          background: #e5e7eb;
-          overflow:hidden;
-        }
-        .ab-media img{
-          width:100%;
-          height:100%;
-          min-height:340px;
-          object-fit:cover;
-          display:block;
-          transform: scale(1.02);
-          transition: transform .35s ease;
-        }
-        .ab-hero:hover .ab-media img{ transform: scale(1.06); }
+                .ab-media{
+                position:relative;
+                width:100%;
+                min-height: 340px;
+                background: #e5e7eb;
+                overflow:hidden;
+                }
+                .ab-media img{
+                width:100%;
+                height:100%;
+                min-height:340px;
+                object-fit:cover;
+                display:block;
+                transform: scale(1.02);
+                transition: transform .35s ease;
+                }
+                .ab-hero:hover .ab-media img{ transform: scale(1.06); }
 
-        .ab-badge{
-          position:absolute;
-          left: 14px;
-          bottom: 14px;
-          padding: 8px 12px;
-          border-radius: 999px;
-          background: rgba(255,255,255,.92);
-          border: 1px solid rgba(15,23,42,.10);
-          font-weight: 950;
-          font-size: 12.5px;
-          color: var(--ab-text);
-          box-shadow: 0 10px 22px rgba(2,6,23,.10);
-          display:inline-flex;
-          align-items:center;
-          gap:8px;
-          line-height:1;
-        }
+                .ab-badge{
+                position:absolute;
+                left: 14px;
+                bottom: 14px;
+                padding: 8px 12px;
+                border-radius: 999px;
+                background: rgba(255,255,255,.92);
+                border: 1px solid rgba(15,23,42,.10);
+                font-weight: 950;
+                font-size: 12.5px;
+                color: var(--ab-text);
+                box-shadow: 0 10px 22px rgba(2,6,23,.10);
+                display:inline-flex;
+                align-items:center;
+                gap:8px;
+                line-height:1;
+                }
 
-        .ab-body{ padding: 14px 14px 16px; }
-        @media(min-width:992px){ .ab-body{ padding: 18px 18px 20px; } }
+                .ab-body{ padding: 14px 14px 16px; }
+                @media(min-width:992px){ .ab-body{ padding: 18px 18px 20px; } }
 
-        .ab-title{
-          margin:0;
-          color: var(--ab-text);
-          font-weight: 950;
-          letter-spacing: -.02em;
-          font-size: 28px;
-          line-height: 1.1;
-        }
-        .ab-sub{
-          margin-top: 8px;
-          color: var(--ab-muted);
-          font-weight: 650;
-          font-size: 13.5px;
-          line-height: 1.55;
-        }
+                .ab-title{
+                margin:0;
+                color: var(--ab-text);
+                font-weight: 950;
+                letter-spacing: -.02em;
+                font-size: 28px;
+                line-height: 1.1;
+                }
+                .ab-sub{
+                margin-top: 8px;
+                color: var(--ab-muted);
+                font-weight: 650;
+                font-size: 13.5px;
+                line-height: 1.55;
+                }
 
-        .ab-tags{
-          margin-top: 10px;
-          display:flex;
-          flex-wrap:wrap;
-          gap: 8px;
-        }
-        .ab-tag{
-          display:inline-flex;
-          align-items:center;
-          padding: 7px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(248,250,252,.90);
-          color: var(--ab-text);
-          font-weight: 850;
-          font-size: 12px;
-          white-space:nowrap;
-        }
+                .ab-tags{
+                margin-top: 10px;
+                display:flex;
+                flex-wrap:wrap;
+                gap: 8px;
+                }
+                .ab-tag{
+                display:inline-flex;
+                align-items:center;
+                padding: 7px 10px;
+                border-radius: 999px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.90);
+                color: var(--ab-text);
+                font-weight: 850;
+                font-size: 12px;
+                white-space:nowrap;
+                }
 
-        /* Buttons same as Missions */
-        .ab-cta-btn{
-          border-radius: 12px !important;
-          padding: 10px 12px !important;
-          font-weight: 950 !important;
-          font-size: 13px !important;
-          text-decoration:none !important;
-          border: 1px solid rgba(37,99,235,.22) !important;
-          background: rgba(239,246,255,.95) !important;
-          color: #1d4ed8 !important;
-          display:inline-flex !important;
-          align-items:center !important;
-          justify-content:center !important;
-          gap: 8px !important;
-          cursor:pointer;
-          white-space: nowrap;
-        }
-        .ab-cta-btn:hover{
-          background: rgba(219,234,254,.95) !important;
-          color:#1d4ed8 !important;
-          text-decoration:none !important;
-        }
-        .ab-cta-btn-primary{
-          background: var(--ab-primary) !important;
-          border-color: var(--ab-primary) !important;
-          color: #fff !important;
-          box-shadow: 0 12px 26px rgba(37,99,235,.18);
-        }
-        .ab-cta-btn-primary:hover{
-          background: #1d4ed8 !important;
-          border-color:#1d4ed8 !important;
-          color:#fff !important;
-        }
+                .ab-cta-btn{
+                border-radius: 12px !important;
+                padding: 10px 12px !important;
+                font-weight: 950 !important;
+                font-size: 13px !important;
+                text-decoration:none !important;
+                border: 1px solid rgba(37,99,235,.22) !important;
+                background: rgba(239,246,255,.95) !important;
+                color: #1d4ed8 !important;
+                display:inline-flex !important;
+                align-items:center !important;
+                justify-content:center !important;
+                gap: 8px !important;
+                cursor:pointer;
+                white-space: nowrap;
+                }
+                .ab-cta-btn:hover{
+                background: rgba(219,234,254,.95) !important;
+                color:#1d4ed8 !important;
+                text-decoration:none !important;
+                }
+                .ab-cta-btn-primary{
+                background: var(--ab-primary) !important;
+                border-color: var(--ab-primary) !important;
+                color: #fff !important;
+                box-shadow: 0 12px 26px rgba(37,99,235,.18);
+                }
+                .ab-cta-btn-primary:hover{
+                background: #1d4ed8 !important;
+                border-color:#1d4ed8 !important;
+                color:#fff !important;
+                }
 
-        .ab-actions{
-          margin-top: 14px;
-          display:flex;
-          flex-wrap:wrap;
-          gap: 10px;
-        }
+                .ab-actions{
+                margin-top: 14px;
+                display:flex;
+                flex-wrap:wrap;
+                gap: 10px;
+                }
 
-        /* Content cards */
-        .ab-card{
-          border-radius: var(--ab-radius2);
-          border: 1px solid var(--ab-border);
-          background: rgba(255,255,255,.92);
-          box-shadow: var(--ab-shadow);
-          overflow:hidden;
-        }
-        .ab-card-hd{
-          padding: 12px 14px;
-          border-bottom: 1px solid rgba(15,23,42,.08);
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap:12px;
-        }
-        .ab-card-title{
-          margin:0;
-          font-weight: 950;
-          color: var(--ab-text);
-          font-size: 15px;
-          letter-spacing: -.01em;
-        }
-        .ab-card-bd{ padding: 14px; }
+                .ab-card{
+                border-radius: var(--ab-radius2);
+                border: 1px solid var(--ab-border);
+                background: rgba(255,255,255,.92);
+                box-shadow: var(--ab-shadow);
+                overflow:hidden;
+                }
+                .ab-card-hd{
+                padding: 12px 14px;
+                border-bottom: 1px solid rgba(15,23,42,.08);
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:12px;
+                }
+                .ab-card-title{
+                margin:0;
+                font-weight: 950;
+                color: var(--ab-text);
+                font-size: 15px;
+                letter-spacing: -.01em;
+                }
+                .ab-card-bd{ padding: 14px; }
 
-        /* Info rows */
-        .ab-row{
-          display:flex;
-          align-items:flex-start;
-          justify-content:space-between;
-          gap: 12px;
-          padding: 12px;
-          border-radius: 16px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(248,250,252,.75);
-        }
-        .ab-rowL{ display:flex; gap: 12px; min-width:0; }
-        .ab-ico{
-          width: 36px; height: 36px;
-          border-radius: 12px;
-          display:grid;
-          place-items:center;
-          background: rgba(37,99,235,.10);
-          color:#1d4ed8;
-          font-weight: 950;
-          flex:0 0 auto;
-        }
-        .ab-k{ color: var(--ab-muted); font-weight: 750; font-size: 12px; }
-        .ab-v{
-          color: var(--ab-text);
-          font-weight: 900;
-          white-space: nowrap;
-          overflow:hidden;
-          text-overflow: ellipsis;
-          max-width: 520px;
-        }
+                .ab-row{
+                display:flex;
+                align-items:flex-start;
+                justify-content:space-between;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 16px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.75);
+                }
+                .ab-rowL{ display:flex; gap: 12px; min-width:0; }
+                .ab-ico{
+                width: 36px; height: 36px;
+                border-radius: 12px;
+                display:grid;
+                place-items:center;
+                background: rgba(37,99,235,.10);
+                color:#1d4ed8;
+                font-weight: 950;
+                flex:0 0 auto;
+                }
+                .ab-k{ color: var(--ab-muted); font-weight: 750; font-size: 12px; }
+                .ab-v{
+                color: var(--ab-text);
+                font-weight: 900;
+                white-space: nowrap;
+                overflow:hidden;
+                text-overflow: ellipsis;
+                max-width: 520px;
+                }
 
-        /* Tabs */
-        .ab-tabs{ display:flex; gap: 10px; flex-wrap:wrap; }
-        .ab-tab-btn{
-          border-radius: 12px !important;
-          padding: 10px 12px !important;
-          font-weight: 950 !important;
-          font-size: 13px !important;
-          border: 1px solid rgba(15,23,42,.10) !important;
-          background: rgba(248,250,252,.85) !important;
-          color: var(--ab-text) !important;
-        }
-        .ab-tab-btn.active{
-          background: rgba(239,246,255,.95) !important;
-          border-color: rgba(37,99,235,.22) !important;
-          color: #1d4ed8 !important;
-        }
+                .ab-tabs{ display:flex; gap: 10px; flex-wrap:wrap; }
+                .ab-tab-btn{
+                border-radius: 12px !important;
+                padding: 10px 12px !important;
+                font-weight: 950 !important;
+                font-size: 13px !important;
+                border: 1px solid rgba(15,23,42,.10) !important;
+                background: rgba(248,250,252,.85) !important;
+                color: var(--ab-text) !important;
+                }
+                .ab-tab-btn.active{
+                background: rgba(239,246,255,.95) !important;
+                border-color: rgba(37,99,235,.22) !important;
+                color: #1d4ed8 !important;
+                }
 
-        /* Reviews */
-        .ab-review{
-          padding: 12px;
-          border-radius: 16px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(248,250,252,.75);
-        }
-        .ab-reviewTop{
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap: 10px;
-        }
-        .ab-reviewScore{
-          display:inline-flex;
-          align-items:center;
-          gap: 8px;
-          font-weight: 950;
-          color: var(--ab-text);
-          font-size: 13px;
-        }
-        .ab-reviewScore b{
-          width: 26px; height: 26px;
-          border-radius: 10px;
-          display:grid;
-          place-items:center;
-          background: rgba(245,158,11,.16);
-          color:#92400E;
-          font-size: 12px;
-        }
-        .ab-reviewText{
-          margin-top: 10px;
-          color: var(--ab-muted);
-          font-weight: 650;
-          line-height: 1.55;
-          font-size: 13px;
-        }
+                .ab-review{
+                padding: 12px;
+                border-radius: 16px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.75);
+                }
+                .ab-reviewTop{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap: 10px;
+                }
+                .ab-reviewScore{
+                display:inline-flex;
+                align-items:center;
+                gap: 8px;
+                font-weight: 950;
+                color: var(--ab-text);
+                font-size: 13px;
+                }
+                .ab-reviewScore b{
+                width: 26px; height: 26px;
+                border-radius: 10px;
+                display:grid;
+                place-items:center;
+                background: rgba(245,158,11,.16);
+                color:#92400E;
+                font-size: 12px;
+                }
+                .ab-reviewText{
+                margin-top: 10px;
+                color: var(--ab-muted);
+                font-weight: 650;
+                line-height: 1.55;
+                font-size: 13px;
+                }
 
-        /* Availability pills */
-        .ab-avaGrid{ display:flex; flex-wrap:wrap; gap:10px; }
-        .ab-avaPill{
-          display:inline-flex;
-          align-items:center;
-          gap: 8px;
-          padding: 9px 12px;
-          border-radius: 999px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(239,246,255,.95);
-          color:#1d4ed8;
-          font-weight: 950;
-          font-size: 12.5px;
-        }
-        .ab-avaPill em{
-          font-style: normal;
-          color: var(--ab-muted);
-          font-weight: 800;
-        }
-      </style>
+                .ab-avaGrid{ display:flex; flex-wrap:wrap; gap:10px; }
+                .ab-avaPill{
+                display:inline-flex;
+                align-items:center;
+                gap: 8px;
+                padding: 9px 12px;
+                border-radius: 999px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(239,246,255,.95);
+                color:#1d4ed8;
+                font-weight: 950;
+                font-size: 12.5px;
+                }
+                .ab-avaPill em{
+                font-style: normal;
+                color: var(--ab-muted);
+                font-weight: 800;
+                }
 
-      <section class="ab-page">
-        <div class="container-fluid ab-shell">
-          <div class="ab-inner">
+                /* Rating bars */
+                .ab-bars{
+                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                }
+                .ab-bar-row{
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                }
+                .ab-bar-label{
+                min-width: 140px;
+                font-size: 12.5px;
+                font-weight: 800;
+                color: var(--ab-muted);
+                }
+                .ab-bar-track{
+                flex: 1;
+                height: 8px;
+                background: rgba(15,23,42,.10);
+                border-radius: 999px;
+                overflow: hidden;
+                }
+                .ab-bar-fill{
+                height: 100%;
+                background: linear-gradient(90deg,#f59e0b,#fbbf24);
+                border-radius: 999px;
+                }
+                /* Stars rating */
+                .ab-stars {
+                position: relative;
+                display: inline-block;
+                font-size: 16px;
+                line-height: 1;
+                }
 
-            <!-- HERO -->
-            <div class="ab-hero">
-              <div class="ab-hero-in">
+                .ab-stars::before {
+                content: "★★★★★";
+                letter-spacing: 2px;
+                color: #e5e7eb; /* gris */
+                }
 
-                <!-- PHOTO -->
-                <div class="ab-media">
-                  <t t-if="radiologist.image_1920">
-                    <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % radiologist.id" alt="Photo"/>
-                  </t>
-                  <t t-else="">
-                    <img t-att-src="'/web/static/img/user_menu_avatar.png'" alt="Avatar"/>
-                  </t>
+                .ab-stars-fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                }
 
-                  <!-- ✅ SAFE rating -->
-                  <t t-if="radiologist.rating_count and radiologist.rating_count &gt; 0">
-                    <div class="ab-badge">
-                      ★ <t t-esc="round(radiologist.rating_avg or 0.0, 1)"/> / 5
-                      <span style="color:var(--ab-muted);font-weight:900;">
-                        (<t t-esc="radiologist.rating_count"/>)
-                      </span>
-                    </div>
-                  </t>
-                </div>
+                .ab-stars-fill::before {
+                content: "★★★★★";
+                letter-spacing: 2px;
+                color: #fbbf24; /* jaune */
+                }
 
-                <!-- INFO -->
-                <div class="ab-body">
-                  <h1 class="ab-title">
-                    <t t-esc="radiologist.display_name or 'Radiologue'"/>
-                  </h1>
+            </style>
 
-                  <div class="ab-sub">
-                    <t t-if="radiologist.experience_years">
-                      <b><t t-esc="radiologist.experience_years"/></b> ans d’expérience • Spécialités &amp; marques
-                    </t>
-                    <t t-else="">
-                      Expérience non renseignée • Spécialités &amp; marques
-                    </t>
-                  </div>
+            <section class="ab-page">
+                <div class="container-fluid ab-shell">
+                    <div class="ab-inner">
 
-                  <div class="ab-tags">
-                    <t t-foreach="radiologist.specialty_ids[:6]" t-as="sp">
-                      <span class="ab-tag"><t t-esc="sp.name"/></span>
-                    </t>
-                    <t t-foreach="radiologist.brand_ids[:6]" t-as="br">
-                      <span class="ab-tag"><t t-esc="br.name"/></span>
-                    </t>
-                  </div>
+                        <!-- HERO -->
+                        <div class="ab-hero">
+                            <div class="ab-hero-in">
 
-                  <div class="ab-actions">
-                    <t t-if="radiologist.email">
-                      <a t-att-href="'mailto:%s' % radiologist.email" class="ab-cta-btn ab-cta-btn-primary">Contacter</a>
-                    </t>
-                    <t t-if="radiologist.phone">
-                      <a t-att-href="'tel:%s' % radiologist.phone" class="ab-cta-btn">Appeler</a>
-                    </t>
+                                <!-- PHOTO -->
+                                <div class="ab-media">
+                                    <t t-if="radiologist.image_1920">
+                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % radiologist.id"
+                                             alt="Photo"/>
+                                    </t>
+                                    <t t-else="">
+                                        <img t-att-src="'/web/static/img/user_menu_avatar.png'" alt="Avatar"/>
+                                    </t>
 
-                    <!-- ✅ attention: tu utilises ailleurs /my/chat/start?radiologist_id= -->
-                    <a t-att-href="'/my/chat/start/%s' % radiologist.id"
-                       class="ab-cta-btn ">Envoyer un message</a>
-
-                    <a href="/my/radiologists" class="ab-cta-btn">← Retour</a>
-                  </div>
-
-                  <t t-if="radiologist.bio">
-                    <div class="ab-sub" style="margin-top:12px;">
-                      <t t-esc="radiologist.bio"/>
-                    </div>
-                  </t>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- CONTENT -->
-            <div class="row g-4 mt-3">
-
-              <!-- LEFT -->
-              <div class="col-lg-4">
-                <div class="ab-card">
-                  <div class="ab-card-hd">
-                    <h3 class="ab-card-title">Informations</h3>
-                  </div>
-                  <div class="ab-card-bd d-flex flex-column gap-2">
-
-                    <div class="ab-row">
-                      <div class="ab-rowL">
-                        <div class="ab-ico">✉</div>
-                        <div class="min-w-0">
-                          <div class="ab-k">Email</div>
-                          <div class="ab-v"><t t-esc="radiologist.email or '—'"/></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="ab-row">
-                      <div class="ab-rowL">
-                        <div class="ab-ico">☎</div>
-                        <div class="min-w-0">
-                          <div class="ab-k">Téléphone</div>
-                          <div class="ab-v"><t t-esc="radiologist.phone or '—'"/></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="ab-row">
-                      <div class="ab-rowL">
-                        <div class="ab-ico">🎓</div>
-                        <div class="min-w-0">
-                          <div class="ab-k">Expérience</div>
-                          <div class="ab-v">
-                            <t t-if="radiologist.experience_years">
-                              <t t-esc="radiologist.experience_years"/> ans
-                            </t>
-                            <t t-else="">—</t>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="ab-row">
-                      <div class="ab-rowL">
-                        <div class="ab-ico">🎂</div>
-                        <div class="min-w-0">
-                          <div class="ab-k">Date de naissance</div>
-                          <div class="ab-v"><t t-esc="radiologist.birthday_date or '—'"/></div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-              <!-- RIGHT -->
-              <div class="col-lg-8">
-
-                <!-- Tabs header -->
-                <div class="ab-card">
-                  <div class="ab-card-hd">
-                    <div class="ab-tabs nav" role="tablist">
-                      <button class="ab-tab-btn active" data-bs-toggle="tab" data-bs-target="#tab_docs"
-                              type="button" role="tab">Diplômes</button>
-                      <button class="ab-tab-btn" data-bs-toggle="tab" data-bs-target="#tab_cv"
-                              type="button" role="tab">CV</button>
-                      <button class="ab-tab-btn" data-bs-toggle="tab" data-bs-target="#tab_reviews"
-                              type="button" role="tab">Avis</button>
-                    </div>
-                  </div>
-
-                  <div class="ab-card-bd tab-content">
-
-                    <!-- Diplômes -->
-                    <div class="tab-pane fade show active" id="tab_docs" role="tabpanel">
-                      <t t-if="diplomes">
-                        <div class="d-flex flex-column gap-2">
-                          <t t-foreach="diplomes" t-as="att">
-                            <div class="ab-row">
-                              <div class="ab-rowL">
-                                <div class="ab-ico">PDF</div>
-                                <div class="min-w-0">
-                                  <div class="ab-v"><t t-esc="att.name"/></div>
-                                  <div class="ab-k">Document</div>
+                                    <!-- ✅ RATING visible seulement Premium/Pro -->
+                                    <t t-if="can_see">
+                                        <t t-if="radiologist.rating_count and radiologist.rating_count &gt; 0">
+                                            <div class="ab-stars" style="font-size:18px;">
+                                                <div class="ab-stars-fill"
+                                                     t-att-style="'width:' + str((radiologist.rating_avg or 0) * 20) + '%;'">
+                                                </div>
+                                            </div>
+                                            <span style="font-weight:900;">
+                                                <t t-esc="round(radiologist.rating_avg or 0.0, 1)"/>
+                                                / 5
+                                            </span>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="ab-badge">
+                                            🔒 Notes Premium
+                                            <a href="/my/subscription"
+                                               style="color:#2563eb; font-weight:950; text-decoration:none;">
+                                                Passer Premium
+                                            </a>
+                                        </div>
+                                    </t>
                                 </div>
-                              </div>
 
-                              <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
-                                 target="_blank"
-                                 class="ab-cta-btn">Voir</a>
+                                <!-- INFO -->
+                                <div class="ab-body">
+                                    <h1 class="ab-title">
+                                        <t t-esc="radiologist.display_name or 'Radiologue'"/>
+                                    </h1>
+
+                                    <div class="ab-sub">
+                                        <t t-if="radiologist.experience_years">
+                                            <b>
+                                                <t t-esc="radiologist.experience_years"/>
+                                            </b>
+                                            ans d’expérience • Spécialités &amp; marques
+                                        </t>
+                                        <t t-else="">Expérience non renseignée • Spécialités &amp; marques</t>
+                                    </div>
+
+                                    <div class="ab-tags">
+                                        <t t-foreach="radiologist.specialty_ids[:6]" t-as="sp">
+                                            <span class="ab-tag">
+                                                <t t-esc="sp.name"/>
+                                            </span>
+                                        </t>
+                                        <t t-foreach="radiologist.brand_ids[:6]" t-as="br">
+                                            <span class="ab-tag">
+                                                <t t-esc="br.name"/>
+                                            </span>
+                                        </t>
+                                    </div>
+
+                                    <div class="ab-actions">
+
+                                        <a t-att-href="'/my/chat/start/%s' % radiologist.id" class="ab-cta-btn">Lancer
+                                            une conversation
+                                        </a>
+                                        <a href="/my/radiologists" class="ab-cta-btn">← Retour</a>
+                                    </div>
+
+                                    <t t-if="radiologist.bio">
+                                        <div class="ab-sub" style="margin-top:12px;">
+                                            <t t-esc="radiologist.bio"/>
+                                        </div>
+                                    </t>
+                                </div>
+
                             </div>
-                          </t>
                         </div>
-                      </t>
-                      <t t-else="">
-                        <div class="ab-sub" style="margin:0;">Aucun diplôme ajouté.</div>
-                      </t>
-                    </div>
 
-                    <!-- CV -->
-                    <div class="tab-pane fade" id="tab_cv" role="tabpanel">
-                      <t t-if="cvs">
-                        <div class="d-flex flex-column gap-2">
-                          <t t-foreach="cvs" t-as="att">
-                            <div class="ab-row">
-                              <div class="ab-rowL">
-                                <div class="ab-ico">CV</div>
-                                <div class="min-w-0">
-                                  <div class="ab-v"><t t-esc="att.name"/></div>
-                                  <div class="ab-k">Pièce jointe</div>
+                        <!-- CONTENT -->
+                        <div class="row g-4 mt-3">
+
+                            <!-- LEFT -->
+                            <div class="col-lg-4">
+                                <div class="ab-card">
+                                    <div class="ab-card-hd">
+                                        <h3 class="ab-card-title">Informations</h3>
+                                    </div>
+                                    <div class="ab-card-bd d-flex flex-column gap-2">
+                                        <div class="ab-row">
+                                            <div class="ab-rowL">
+                                                <div class="ab-ico">🎓</div>
+                                                <div class="min-w-0">
+                                                    <div class="ab-k">Expérience</div>
+                                                    <div class="ab-v">
+                                                        <t t-if="radiologist.experience_years">
+                                                            <t t-esc="radiologist.experience_years"/>
+                                                            ans
+                                                        </t>
+                                                        <t t-else="">—</t>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </div>
-                              </div>
-
-                              <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
-                                 target="_blank"
-                                 class="ab-cta-btn">Voir</a>
                             </div>
-                          </t>
-                        </div>
-                      </t>
-                      <t t-else="">
-                        <div class="ab-sub" style="margin:0;">Aucun CV ajouté.</div>
-                      </t>
-                    </div>
 
-                    <!-- Avis -->
-                    <div class="tab-pane fade" id="tab_reviews" role="tabpanel">
+                            <!-- RIGHT -->
+                            <div class="col-lg-8">
 
-                      <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap" style="margin-bottom:10px;">
-                        <h3 class="ab-card-title" style="margin:0;">Avis</h3>
+                                <!-- ✅ Diplômes / CV / Avis = Premium/Pro seulement -->
+                                <div class="ab-card">
+                                    <t t-if="can_see">
 
-                        <t t-if="radiologist.rating_count and radiologist.rating_count &gt; 0">
-                          <div class="ab-reviewScore">
-                            <b>★</b>
-                            <span><t t-esc="round(radiologist.rating_avg or 0.0, 1)"/> / 5</span>
-                            <span style="color:var(--ab-muted);font-weight:900;">
-                              (<t t-esc="radiologist.rating_count"/>)
-                            </span>
-                          </div>
-                        </t>
-                      </div>
+                                        <div class="ab-card-hd">
+                                            <div class="ab-tabs nav" role="tablist">
+                                                <button class="ab-tab-btn active" data-bs-toggle="tab"
+                                                        data-bs-target="#tab_docs" type="button" role="tab">Diplômes
+                                                </button>
+                                                <button class="ab-tab-btn" data-bs-toggle="tab" data-bs-target="#tab_cv"
+                                                        type="button" role="tab">CV
+                                                </button>
+                                                <button class="ab-tab-btn" data-bs-toggle="tab"
+                                                        data-bs-target="#tab_reviews" type="button" role="tab">Avis
+                                                </button>
+                                            </div>
+                                        </div>
 
-                      <t t-if="ratings">
-                        <div class="d-flex flex-column gap-2">
-                          <t t-foreach="ratings[:10]" t-as="rev">
-                            <div class="ab-review">
-                              <div class="ab-reviewTop">
-                                <div class="ab-reviewScore">
-                                  <b>★</b>
-                                  <span><t t-esc="rev.score or 0"/> / 5</span>
+                                        <div class="ab-card-bd tab-content">
+
+                                            <!-- Diplômes -->
+                                            <div class="tab-pane fade show active" id="tab_docs" role="tabpanel">
+                                                <t t-if="diplomes">
+                                                    <div class="d-flex flex-column gap-2">
+                                                        <t t-foreach="diplomes" t-as="att">
+                                                            <div class="ab-row">
+                                                                <div class="ab-rowL">
+                                                                    <div class="ab-ico">PDF</div>
+                                                                    <div class="min-w-0">
+                                                                        <div class="ab-v">
+                                                                            <t t-esc="att.name"/>
+                                                                        </div>
+                                                                        <div class="ab-k">Document</div>
+                                                                    </div>
+                                                                </div>
+                                                                <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
+                                                                   target="_blank" class="ab-cta-btn">Voir
+                                                                </a>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="ab-sub" style="margin:0;">Aucun diplôme ajouté.</div>
+                                                </t>
+                                            </div>
+
+                                            <!-- CV -->
+                                            <div class="tab-pane fade" id="tab_cv" role="tabpanel">
+                                                <t t-if="cvs">
+                                                    <div class="d-flex flex-column gap-2">
+                                                        <t t-foreach="cvs" t-as="att">
+                                                            <div class="ab-row">
+                                                                <div class="ab-rowL">
+                                                                    <div class="ab-ico">CV</div>
+                                                                    <div class="min-w-0">
+                                                                        <div class="ab-v">
+                                                                            <t t-esc="att.name"/>
+                                                                        </div>
+                                                                        <div class="ab-k">Pièce jointe</div>
+                                                                    </div>
+                                                                </div>
+                                                                <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
+                                                                   target="_blank" class="ab-cta-btn">Voir
+                                                                </a>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="ab-sub" style="margin:0;">Aucun CV ajouté.</div>
+                                                </t>
+                                            </div>
+
+                                            <!-- Avis -->
+                                            <div class="tab-pane fade" id="tab_reviews" role="tabpanel">
+
+                                                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
+                                                     style="margin-bottom:10px;">
+                                                    <h3 class="ab-card-title" style="margin:0;">Avis</h3>
+
+                                                    <t t-if="radiologist.rating_count and radiologist.rating_count &gt; 0">
+                                                        <div class="ab-reviewScore">
+                                                            <b>★</b>
+                                                            <span>
+                                                                <t t-esc="round(radiologist.rating_avg or 0.0, 1)"/>
+                                                                / 5
+                                                            </span>
+                                                            <span style="color:var(--ab-muted);font-weight:900;">(<t
+                                                                    t-esc="radiologist.rating_count"/>)
+                                                            </span>
+                                                        </div>
+                                                    </t>
+                                                </div>
+
+                                                <t t-if="ratings">
+                                                    <div class="d-flex flex-column gap-2">
+                                                        <t t-foreach="ratings[:10]" t-as="rev">
+                                                            <div class="ab-review">
+
+                                                                <div class="ab-reviewTop">
+                                                                    <div class="ab-reviewScore">
+
+                                                                        <div class="ab-stars">
+                                                                            <div class="ab-stars-fill"
+                                                                                 t-att-style="'width:' + str((rev.score_avg or 0) * 20) + '%;'">
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <span style="font-weight:900;">
+                                                                            <t t-esc="round(rev.score_avg or 0.0, 1)"/>
+                                                                            / 5
+                                                                        </span>
+
+                                                                    </div>
+
+                                                                    <div class="ab-k">
+                                                                        <t t-esc="rev.create_date"/>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="ab-bars">
+
+                                                                    <div class="ab-bar-row">
+                                                                        <div class="ab-bar-label">Ponctualité</div>
+                                                                        <div class="ab-bar-track">
+                                                                            <div class="ab-bar-fill"
+                                                                                 t-att-style="'width:' + str(float(rev.punctuality or 0) * 20) + '%;'"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="ab-bar-row">
+                                                                        <div class="ab-bar-label">Relation humaine</div>
+                                                                        <div class="ab-bar-track">
+                                                                            <div class="ab-bar-fill"
+                                                                                 t-att-style="'width:' + str(float(rev.human_relation or 0) * 20) + '%;'"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="ab-bar-row">
+                                                                        <div class="ab-bar-label">Compétence</div>
+                                                                        <div class="ab-bar-track">
+                                                                            <div class="ab-bar-fill"
+                                                                                 t-att-style="'width:' + str(float(rev.competence or 0) * 20) + '%;'"/>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <t t-if="rev.comment">
+                                                                    <div class="ab-reviewText" style="margin-top:10px;">
+                                                                        <t t-esc="rev.comment"/>
+                                                                    </div>
+                                                                </t>
+
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </t>
+                                                <t t-else="">
+                                                    <div class="ab-sub" style="margin:0;">Aucun avis pour le moment.</div>
+                                                </t>
+
+                                            </div>
+
+                                        </div>
+                                    </t>
+
+                                    <t t-else="">
+                                        <div class="ab-card-hd">
+                                            <h3 class="ab-card-title">Contenu Premium</h3>
+                                        </div>
+                                        <div class="ab-card-bd">
+                                            <div class="ab-sub" style="margin:0;">
+                                                🔒 Les <b>diplômes</b>, le <b>CV</b> et les <b>avis</b> sont visibles uniquement avec un abonnement
+                                                <b>Premium</b> ou <b>Pro</b>.
+                                            </div>
+                                            <div class="ab-actions" style="margin-top:12px;">
+                                                <a href="/my/subscription" class="ab-cta-btn ab-cta-btn-primary">Passer Premium</a>
+                                            </div>
+                                        </div>
+                                    </t>
                                 </div>
-                                <div class="ab-k">
-                                  <t t-esc="rev.create_date"/>
-                                </div>
-                              </div>
 
-                              <!-- ✅ sans getattr: si ton champ comment s'appelle comment => remplace rev.comment -->
-                              <t t-if="rev.comment">
-                                <div class="ab-reviewText">
-                                  <t t-esc="rev.comment"/>
+                                <!-- Disponibilités (visible pour tous) -->
+                                <div class="ab-card mt-4">
+                                    <div class="ab-card-hd">
+                                        <h3 class="ab-card-title">Disponibilités</h3>
+                                    </div>
+                                    <div class="ab-card-bd">
+                                        <t t-if="availabilities">
+                                            <div class="ab-avaGrid">
+                                                <t t-foreach="availabilities" t-as="a">
+                                                    <span class="ab-avaPill">
+                                                        <b>
+                                                            <t t-esc="weekday_map.get(str(a.weekday))"/>
+                                                        </b>
+                                                        <em><t t-esc="a.start_time"/>h –<t t-esc="a.end_time"/>h
+                                                        </em>
+                                                        <t t-if="a.is_weekend">🏖️</t>
+                                                        <t t-if="a.is_night">🌙</t>
+                                                    </span>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="ab-sub" style="margin:0;">Aucune disponibilité renseignée.</div>
+                                        </t>
+                                    </div>
                                 </div>
-                              </t>
+
                             </div>
-                          </t>
                         </div>
-                      </t>
-                      <t t-else="">
-                        <div class="ab-sub" style="margin:0;">Aucun avis pour le moment.</div>
-                      </t>
 
                     </div>
-
-                  </div>
                 </div>
+            </section>
 
-                <!-- Disponibilités -->
-                <div class="ab-card mt-4">
-                  <div class="ab-card-hd">
-                    <h3 class="ab-card-title">Disponibilités</h3>
-                  </div>
-                  <div class="ab-card-bd">
-
-                    <t t-if="availabilities">
-                      <div class="ab-avaGrid">
-                        <t t-foreach="availabilities" t-as="a">
-                          <span class="ab-avaPill">
-                            <b><t t-esc="weekday_map.get(str(a.weekday))"/></b>
-                            <em><t t-esc="a.start_time"/>h – <t t-esc="a.end_time"/>h</em>
-                            <t t-if="a.is_weekend">🏖️</t>
-                            <t t-if="a.is_night">🌙</t>
-                          </span>
-                        </t>
-                      </div>
-                    </t>
-
-                    <t t-else="">
-                      <div class="ab-sub" style="margin:0;">Aucune disponibilité renseignée.</div>
-                    </t>
-
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-    </t>
-  </template>
+        </t>
+    </template>
 </odoo>

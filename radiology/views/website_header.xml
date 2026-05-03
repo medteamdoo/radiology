@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="radiology_hide_signup_header_for_logged_users"
+              inherit_id="website.layout"
+              name="Hide Signup Header Links For Logged Users">
+        <xpath expr="//header" position="inside">
+            <t t-if="not request.env.user._is_public()">
+                <style>
+                    header a[href='/web/signup'],
+                    header a[href^='/web/signup?'],
+                    header a[href='/hospital/signup'],
+                    header a[href^='/hospital/signup?'] {
+                        display: none !important;
+                    }
+                </style>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="radiology_remove_header_search"
+              inherit_id="website.header_search_box"
+              name="Remove Header Search Box">
+        <xpath expr="//li" position="replace"/>
+    </template>
+
+    <template id="radiology_remove_header_phone_links"
+              inherit_id="website.header_text_element"
+              name="Remove Header Phone Links">
+        <xpath expr="//a[starts-with(@href, 'tel:')]" position="replace"/>
+    </template>
+
+    <template id="radiology_hospital_notifications_header"
+              inherit_id="website.template_header_default"
+              name="Hospital Notifications In Header">
+        <xpath expr="//ul[contains(@class, 'navbar-nav')][contains(@class, 'justify-content-end')]" position="inside">
+            <t t-nocache="Hospital notifications depend on the connected user and unread count.">
+                <t t-if="not request.env.user._is_public()">
+                    <t t-set="hospital_header"
+                       t-value="request.env['radiology.hospital'].sudo().search([('user_id', '=', request.env.user.id)], limit=1)"/>
+                    <t t-if="hospital_header">
+                        <t t-set="conversation_model" t-value="request.env['radiology.chat.conversation'].sudo()"/>
+                        <t t-set="chat_message_model" t-value="request.env['radiology.chat.message'].sudo()"/>
+                        <t t-set="header_conversations"
+                           t-value="conversation_model.search([('hospital_id', '=', hospital_header.id)], limit=6, order='last_message_date desc, id desc')"/>
+                        <t t-set="unread_messages_count"
+                           t-value="chat_message_model.search_count([('conversation_id.hospital_id', '=', hospital_header.id), ('sender_type', '=', 'radiologist'), ('is_read_by_hospital', '=', False)])"/>
+                        <t t-set="notification_model" t-value="request.env['radiology.notification'].sudo()"/>
+                        <t t-set="header_notifications"
+                           t-value="notification_model.search([('hospital_id', '=', hospital_header.id)], limit=6, order='is_read asc, create_date desc, id desc')"/>
+                        <t t-set="unread_notifications_count"
+                           t-value="notification_model.search_count([('hospital_id', '=', hospital_header.id), ('is_read', '=', False)])"/>
+
+                        <li class="nav-item rl-message-dropdown dropdown o_radiology_header_messages">
+                            <button class="btn rl-message-btn dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    aria-label="Messages">
+                                <span class="rl-message-icon">
+                                    <i class="fa fa-comments"/>
+                                </span>
+                                <t t-if="unread_messages_count">
+                                    <span class="rl-message-badge" data-role="message-badge" t-esc="unread_messages_count"/>
+                                </t>
+                                <t t-else="">
+                                    <span class="rl-message-badge d-none" data-role="message-badge">0</span>
+                                </t>
+                            </button>
+
+                            <div class="dropdown-menu dropdown-menu-end rl-message-menu">
+                                <div class="rl-message-menu-head">
+                                    <span>Messages</span>
+                                    <span class="rl-message-menu-count" data-role="message-count">
+                                        <t t-esc="unread_messages_count"/> non lus
+                                    </span>
+                                </div>
+
+                                <div data-role="message-list">
+                                    <t t-if="header_conversations">
+                                        <t t-foreach="header_conversations" t-as="conversation">
+                                            <a t-att-href="'/my/chat/%s' % conversation.id"
+                                               class="dropdown-item rl-message-item">
+                                                <span class="rl-message-avatar">
+                                                    <t t-if="conversation.radiologist_id and conversation.radiologist_id.image_1920">
+                                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % conversation.radiologist_id.id"
+                                                             t-att-alt="conversation.radiologist_id.display_name or 'Radiologue'"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
+                                                    </t>
+                                                </span>
+                                                <span class="rl-message-content">
+                                                    <strong class="rl-message-title"
+                                                            t-esc="conversation.radiologist_id.display_name or 'Radiologue'"/>
+                                                    <span class="rl-message-preview"
+                                                          t-esc="conversation.last_message or 'Aucun message'"/>
+                                                    <span class="rl-message-date"
+                                                          t-esc="conversation.last_message_date.strftime('%d/%m/%Y %H:%M') if conversation.last_message_date else ''"/>
+                                                </span>
+                                                <t t-set="conversation_unread_count"
+                                                   t-value="chat_message_model.search_count([('conversation_id', '=', conversation.id), ('sender_type', '=', 'radiologist'), ('is_read_by_hospital', '=', False)])"/>
+                                                <t t-if="conversation_unread_count">
+                                                    <span class="rl-message-item-badge" t-esc="conversation_unread_count"/>
+                                                </t>
+                                            </a>
+                                        </t>
+                                        <div class="rl-message-menu-footer">
+                                            <a href="/my/chat" class="btn btn-sm rl-message-link">Voir tous les messages</a>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="rl-message-empty">
+                                            Aucun message pour le moment.
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="nav-item rl-notification-dropdown dropdown">
+                            <button class="btn rl-notification-btn dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    aria-label="Notifications">
+                                <span class="rl-notification-icon">
+                                    <i class="fa fa-bell"/>
+                                </span>
+                                <t t-if="unread_notifications_count">
+                                    <span class="rl-notification-badge" t-esc="unread_notifications_count"/>
+                                </t>
+                            </button>
+
+                            <div class="dropdown-menu dropdown-menu-end rl-notification-menu">
+                                <div class="rl-notification-menu-head">
+                                    <span>Notifications</span>
+                                    <span class="rl-notification-menu-count">
+                                        <t t-esc="unread_notifications_count"/> non lues
+                                    </span>
+                                </div>
+
+                                <t t-if="header_notifications">
+                                    <t t-foreach="header_notifications" t-as="notif">
+                                        <a t-att-href="'/my/notifications/%s/read' % notif.id"
+                                           t-attf-class="dropdown-item rl-notification-item #{'is-unread' if not notif.is_read else 'is-read'}">
+                                            <span t-attf-class="rl-notification-dot rl-type-#{notif.type or 'info'}"/>
+                                            <span class="rl-notification-content">
+                                                <strong class="rl-notification-title" t-esc="notif.title"/>
+                                                <span class="rl-notification-message" t-esc="notif.message"/>
+                                                <span class="rl-notification-date" t-esc="notif.create_date.strftime('%d/%m/%Y %H:%M') if notif.create_date else ''"/>
+                                            </span>
+                                        </a>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <div class="rl-notification-empty">
+                                        Aucune notification pour le moment.
+                                    </div>
+                                </t>
+                            </div>
+                        </li>
+                    </t>
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>

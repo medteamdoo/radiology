@@ -13,3 +13,11 @@ class RadiologyChatConversation(models.Model):
     last_message_date = fields.Datetime()
 
     is_active = fields.Boolean(default=True)
+
+    _sql_constraints = [
+        (
+            "unique_hospital_radiologist_conversation",
+            "unique(hospital_id, radiologist_id)",
+            "A conversation already exists for this hospital and radiologist.",
+        ),
+    ]

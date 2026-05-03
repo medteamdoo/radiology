@@ -301,7 +301,7 @@
         .rlx-tag-weekend{ border-color:#A7F3D0; color:#065F46; background: rgba(167,243,208,.35); }
       </style>
 
-      <section class="rlx-page">
+      <section class="rlx-page o_portal_chat_room">
         <div class="container-fluid rlx-shell">
 
           <div class="rlx-card">
@@ -382,10 +382,11 @@
                 </div>
 
                 <div class="rlx-compose">
-                  <form id="chat_form">
-                    <input type="hidden" id="conv_id" t-att-value="conversation.id"/>
+                  <form id="chat_form" action="/my/chat/send" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" id="conv_id" name="conversation_id" t-att-value="conversation.id"/>
                     <div class="input-group">
-                      <textarea id="chat_input" class="form-control rlx-input"
+                      <textarea id="chat_input" name="message" class="form-control rlx-input"
                                 rows="1" required="required"
                                 placeholder="Écrire un message…"></textarea>
                       <button class="btn rlx-btn rlx-primary px-4" type="submit">Envoyer</button>

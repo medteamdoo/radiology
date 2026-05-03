@@ -24,13 +24,21 @@
                     <group>
                         <field name="name"/>
                         <field name="hospital_id"/>
-                         <field name="speciality_ids" widget="many2many_tags" string="Specialties"/>
+                        <field name="speciality_ids" widget="many2many_tags" string="Specialties"/>
                         <field name="brand_ids" widget="many2many_tags" string="brand"/>
                         <field name="description"/>
+                        <field name="avantage"/>
                         <field name="start_date"/>
                         <field name="end_date"/>
+                        <field name="tarif_type"/>
                         <field name="tarif"/>
                         <field name="status"/>
+                        <field name="application_ids">
+                            <tree>
+                                <field name="radiologist_id"/>
+                                <field name="status"/>
+                            </tree>
+                        </field>
                     </group>
                 </sheet>
             </form>

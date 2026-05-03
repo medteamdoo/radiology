@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="report_mission_pdf_document">
+    <t t-call="web.external_layout">
+      <t t-foreach="docs" t-as="m">
+
+        <!-- ✅ Odoo a besoin de <main> -->
+        <main class="o_report_layout">
+          <div class="page">
+
+            <h2 style="margin:0; font-size:22px;">
+              <t t-esc="m.name or 'Mission'"/>
+            </h2>
+
+            <p style="margin:6px 0 14px; color:#666;">
+              Statut : <strong><t t-esc="m.status"/></strong>
+              <t t-if="m.start_date or m.end_date">
+                — Période :
+                <t t-if="m.start_date"><t t-esc="m.start_date"/></t>
+                <t t-if="m.end_date"> → <t t-esc="m.end_date"/></t>
+              </t>
+            </p>
+
+            <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+              <tr>
+                <td style="width:35%; padding:8px; border:1px solid #ddd;"><strong>Hôpital</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">
+                  <t t-esc="m.hospital_id.name or ''"/>
+                  <t t-if="m.hospital_id.city"> — <t t-esc="m.hospital_id.city"/></t>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Tarif</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">
+                  <t t-esc="m.tarif or 0.0"/> €
+                  (<t t-esc="m.tarif_type"/>)
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Spécialités</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">
+                  <t t-if="m.speciality_ids">
+                    <t t-foreach="m.speciality_ids" t-as="sp">
+                      <span style="display:inline-block; padding:3px 8px; margin:2px; border:1px solid #ddd; border-radius:999px;">
+                        <t t-esc="sp.name"/>
+                      </span>
+                    </t>
+                  </t>
+                  <t t-else="">—</t>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:8px; border:1px solid #ddd;"><strong>Marques</strong></td>
+                <td style="padding:8px; border:1px solid #ddd;">
+                  <t t-if="m.brand_ids">
+                    <t t-foreach="m.brand_ids" t-as="br">
+                      <span style="display:inline-block; padding:3px 8px; margin:2px; border:1px solid #ddd; border-radius:999px;">
+                        <t t-esc="br.name"/>
+                      </span>
+                    </t>
+                  </t>
+                  <t t-else="">—</t>
+                </td>
+              </tr>
+            </table>
+
+            <div style="margin-top:14px;">
+              <h3 style="margin:0 0 6px;">Description</h3>
+              <div style="border:1px solid #ddd; border-radius:10px; padding:10px;">
+                <t t-esc="m.description or '—'"/>
+              </div>
+            </div>
+
+            <div style="margin-top:14px;">
+              <h3 style="margin:0 0 6px;">Avantages</h3>
+              <div style="border:1px solid #ddd; border-radius:10px; padding:10px;">
+                <t t-esc="m.avantage or '—'"/>
+              </div>
+            </div>
+
+            <div style="margin-top:16px; color:#777; font-size:12px;">
+              Généré le <t t-esc="request.env.context.get('date') or ''"/>
+            </div>
+
+          </div>
+        </main>
+
+      </t>
+    </t>
+  </template>
+
+</odoo>

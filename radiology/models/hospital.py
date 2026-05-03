@@ -18,6 +18,25 @@ class Hospital(models.Model):
     latitude = fields.Float()
     image_1920 = fields.Image("Photo", max_width=1920, max_height=1920)
     missions_count = fields.Integer(compute="_compute_missions_count")
+    subscription_plan = fields.Selection(
+        [
+            ('freemium', 'Freemium'),
+            ('premium', 'Premium'),
+            ('pro', 'Pro'),
+        ],
+        string="Abonnement",
+        default='freemium',
+        tracking=True,
+        required=True,
+    )
+
+    # ✅ Favoris radiologues
+    favorite_radiologist_ids = fields.Many2many(
+        'radiology.radiologist',
+        'radiology_hospital_radiologist_fav_rel',  # table relation
+        'hospital_id', 'radiologist_id',
+        string="Radiologues favoris"
+    )
 
     @api.model
     def generate_api_token(self):

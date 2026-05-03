@@ -1,13 +1,43 @@
 <odoo>
     <record id="action_radiology_brand" model="ir.actions.act_window">
-    <field name="name">Brands</field>
-    <field name="res_model">radiology.brand</field>
-    <field name="view_mode">tree,form</field>
-</record>
-<record id="action_radiology_specialty" model="ir.actions.act_window">
-    <field name="name">Specialties</field>
-    <field name="res_model">radiology.specialty</field>
-    <field name="view_mode">tree,form</field>
-</record>
+        <field name="name">Brands</field>
+        <field name="res_model">radiology.brand</field>
+        <field name="view_mode">tree,form</field>
+    </record>
 
+    <record id="action_radiology_specialty" model="ir.actions.act_window">
+        <field name="name">Specialties</field>
+        <field name="res_model">radiology.specialty</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_res_config_settings_radiology_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.radiology</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="Radiology" name="radiology_settings">
+                    <block title="Firebase Notifications">
+                        <setting string="Firebase Push URL"
+                                 help="HTTP Cloud Function URL used by Odoo to send push notifications.">
+                            <field name="radiology_firebase_push_url" placeholder="https://...cloudfunctions.net/sendPush"/>
+                        </setting>
+                        <setting string="Firebase Push Secret"
+                                 help="Shared secret sent by Odoo to secure Cloud Function calls.">
+                            <field name="radiology_firebase_push_secret" password="True" placeholder="shared-secret"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_radiology_settings" model="ir.actions.act_window">
+        <field name="name">Radiology Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'radiology'}</field>
+    </record>
 </odoo>

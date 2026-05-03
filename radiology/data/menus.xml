@@ -1,0 +1,22 @@
+<odoo>
+  <!-- Menu parent (ou tu peux utiliser un menu existant) -->
+  <record id="menu_radiology_root" model="website.menu">
+    <field name="name">Radiology</field>
+    <field name="url">/my</field>
+    <field name="sequence">50</field>
+  </record>
+
+  <record id="menu_my_missions" model="website.menu">
+    <field name="name">Mes missions</field>
+    <field name="url">/my/missions</field>
+    <field name="parent_id" ref="menu_radiology_root"/>
+    <field name="sequence">10</field>
+  </record>
+
+  <record id="menu_my_favorites" model="website.menu">
+    <field name="name">Mes favoris</field>
+    <field name="url">/my/favorites</field>
+    <field name="parent_id" ref="menu_radiology_root"/>
+    <field name="sequence">20</field>
+  </record>
+</odoo>

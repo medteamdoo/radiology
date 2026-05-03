@@ -5,8 +5,10 @@ access_mission,mission,radiology.model_radiology_mission,,1,1,1,1
 access_application,application,radiology.model_radiology_application,,1,1,1,1
 access_radiology_specialty,access.radiology.specialty,model_radiology_specialty,,1,1,1,1
 access_radiology_brand,access.radiology.brand,model_radiology_brand,,1,1,1,1
+access_radiology_radiologist_review,radiology.radiologist.review,model_radiology_radiologist_review,base.group_user,1,1,1,1
 access_radiologist_availability_user,availability user,model_radiology_radiologist_availability,base.group_user,1,1,1,1
-access_radiology_rating,radiologist rating,model_radiology_rating,base.group_user,1,1,1,1
 access_chat_conversation_user,chat.conversation user,model_radiology_chat_conversation,base.group_user,1,1,1,0
 access_chat_message_user,chat.message user,model_radiology_chat_message,base.group_user,1,1,1,0
+access_radiology_notification_user,radiology.notification user,model_radiology_notification,base.group_user,1,1,1,1
+access_radiology_mobile_device_user,radiology.mobile.device user,model_radiology_mobile_device,base.group_user,1,1,1,1
 

@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="portal_hospital_dashboard" name="Portal - Hospital Dashboard (Pro SaaS)">
+    <t t-set="rl_fullwidth" t-value="True"/>
+    <t t-set="breadcrumbs" t-value="False"/>
+
+    <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+      <style>
+        :root{
+          --ui-text:#0b1220;
+          --ui-muted:#6b7280;
+          --ui-border: rgba(15,23,42,.10);
+          --ui-card: rgba(255,255,255,.92);
+          --ui-shadow: 0 12px 34px rgba(2,6,23,.10);
+          --ui-shadow2: 0 18px 56px rgba(2,6,23,.14);
+          --ui-radius: 22px;
+
+          /* ✅ Pro palette (teal/gray) */
+          --ui-primary:#0f766e;                 /* teal */
+          --ui-primary-2: rgba(15,118,110,.12);
+
+          --ui-success:#16a34a;
+          --ui-success-2: rgba(22,163,74,.10);
+
+          --ui-warn:#f59e0b;
+          --ui-warn-2: rgba(245,158,11,.10);
+
+          --ui-neutral:#0f172a;
+          --ui-neutral-2: rgba(15,23,42,.08);
+        }
+
+        /* Full width portal (page only) */
+        .o_portal_wrap > .container{
+          max-width:100% !important;
+          padding-left:0 !important;
+          padding-right:0 !important;
+        }
+        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+
+        /* Page shell */
+        .ui-page{
+          min-height:100vh;
+          background: radial-gradient(1200px 600px at 12% -10%, rgba(15,118,110,.08), transparent 60%) , #fff;
+        }
+        .ui-shell{ padding: 22px 0 70px; }
+        .ui-inner{
+          max-width: 1320px;
+          margin: 0 auto;
+          padding: 0 18px;
+        }
+        @media(min-width:768px){ .ui-inner{ padding: 0 28px; } }
+        @media(min-width:1200px){ .ui-inner{ padding: 0 40px; } }
+
+        /* Header */
+        .ui-hero{
+          border-radius: var(--ui-radius);
+          border: 1px solid var(--ui-border);
+          background: var(--ui-card);
+          box-shadow: var(--ui-shadow);
+          padding: 16px;
+        }
+        @media(min-width:768px){ .ui-hero{ padding: 18px; } }
+
+        .ui-top{
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          gap: 16px;
+        }
+
+        .ui-title{
+          margin:0;
+          color: var(--ui-text);
+          font-weight: 950;
+          letter-spacing: -.03em;
+          font-size: 28px;
+          line-height: 1.08;
+        }
+        .ui-sub{
+          margin-top: 8px;
+          color: var(--ui-muted);
+          font-weight: 650;
+          font-size: 13.5px;
+          line-height: 1.35;
+        }
+
+        .ui-actions{
+          display:flex;
+          flex-wrap:wrap;
+          gap:10px;
+          align-items:center;
+          justify-content:flex-end;
+        }
+
+        /* Buttons */
+        .ui-btn{
+          border-radius: 14px !important;
+          padding: 10px 12px !important;
+          font-weight: 900 !important;
+          font-size: 13px !important;
+          text-decoration:none !important;
+          border: 1px solid rgba(15,23,42,.12) !important;
+          background: rgba(248,250,252,.92) !important;
+          color: var(--ui-text) !important;
+          display:inline-flex !important;
+          align-items:center !important;
+          justify-content:center !important;
+          gap: 8px !important;
+          cursor:pointer;
+          white-space:nowrap;
+          transition: transform .14s ease, box-shadow .14s ease, background .14s ease, border-color .14s ease;
+        }
+        .ui-btn:hover{
+          transform: translateY(-1px);
+          box-shadow: 0 14px 34px rgba(2,6,23,.10);
+          background: #fff !important;
+          border-color: rgba(15,118,110,.18) !important;
+          text-decoration:none !important;
+        }
+        .ui-btn-primary{
+          background: linear-gradient(180deg, rgba(15,118,110,.98), rgba(13,148,136,.98)) !important;
+          border-color: rgba(15,118,110,.55) !important;
+          color:#fff !important;
+          box-shadow: 0 14px 30px rgba(15,118,110,.20);
+        }
+        .ui-btn-primary:hover{
+          border-color: rgba(13,148,136,.85) !important;
+          box-shadow: 0 18px 44px rgba(15,118,110,.26);
+        }
+
+        /* Icons (inline SVG) */
+        .ui-ico{ width: 16px; height: 16px; display:inline-block; }
+        .ui-ico svg{ width: 16px; height: 16px; display:block; }
+
+        /* KPI grid */
+        .ui-kpis{
+          margin-top: 14px;
+          display:grid;
+          grid-template-columns: repeat(12, minmax(0,1fr));
+          gap: 14px;
+        }
+        .ui-kpi{
+          grid-column: span 3;
+          border-radius: var(--ui-radius);
+          border: 1px solid var(--ui-border);
+          background: var(--ui-card);
+          box-shadow: var(--ui-shadow);
+          padding: 14px 14px 12px;
+          text-decoration:none !important;
+          color: inherit !important;
+          position:relative;
+          overflow:hidden;
+          transition: transform .16s ease, box-shadow .16s ease;
+        }
+        .ui-kpi:hover{
+          transform: translateY(-2px);
+          box-shadow: var(--ui-shadow2);
+        }
+        @media(max-width: 1100px){ .ui-kpi{ grid-column: span 6; } }
+        @media(max-width: 640px){ .ui-kpi{ grid-column: span 12; } }
+
+        /* Accent line top */
+        .ui-kpi:before{
+          content:"";
+          position:absolute;
+          top:0; left:0; right:0;
+          height: 3px;
+          background: rgba(15,23,42,.10);
+        }
+        .ui-kpi.primary:before{ background: rgba(15,118,110,.55); }
+        .ui-kpi.warn:before{ background: rgba(245,158,11,.55); }
+        .ui-kpi.success:before{ background: rgba(22,163,74,.55); }
+        .ui-kpi.neutral:before{ background: rgba(15,23,42,.25); }
+
+        .ui-kpi-top{
+          display:flex;
+          align-items:flex-start;
+          justify-content:space-between;
+          gap: 14px;
+        }
+        .ui-kpi-title{
+          color: var(--ui-muted);
+          font-weight: 850;
+          font-size: 12.5px;
+          letter-spacing: .01em;
+        }
+        .ui-kpi-num{
+          margin-top: 8px;
+          font-weight: 950;
+          font-size: 26px;
+          color: var(--ui-text);
+          letter-spacing: -.02em;
+          line-height: 1;
+        }
+
+        .ui-kpi-icon{
+          width: 44px;
+          height: 44px;
+          border-radius: 16px;
+          border: 1px solid rgba(15,23,42,.10);
+          display:grid;
+          place-items:center;
+          background: rgba(248,250,252,.90);
+        }
+        .ui-kpi-icon.primary{ background: var(--ui-primary-2); border-color: rgba(15,118,110,.18); }
+        .ui-kpi-icon.warn{ background: var(--ui-warn-2); border-color: rgba(245,158,11,.18); }
+        .ui-kpi-icon.success{ background: var(--ui-success-2); border-color: rgba(22,163,74,.18); }
+        .ui-kpi-icon.neutral{ background: var(--ui-neutral-2); border-color: rgba(15,23,42,.12); }
+
+        .ui-kpi-icon svg{ width:18px; height:18px; }
+
+        /* Layout sections */
+        .ui-grid{
+          margin-top: 14px;
+          display:grid;
+          grid-template-columns: repeat(12, minmax(0,1fr));
+          gap: 14px;
+        }
+        .ui-card{
+          border-radius: var(--ui-radius);
+          border: 1px solid var(--ui-border);
+          background: var(--ui-card);
+          box-shadow: var(--ui-shadow);
+          padding: 14px;
+        }
+        .ui-card.half{ grid-column: span 6; }
+        .ui-card.third{ grid-column: span 4; }
+        @media(max-width: 980px){ .ui-card.half, .ui-card.third{ grid-column: span 12; } }
+
+        .ui-card-hd{
+          display:flex;
+          align-items:flex-start;
+          justify-content:space-between;
+          gap: 12px;
+        }
+        .ui-h4{
+          margin:0;
+          font-weight: 950;
+          color: var(--ui-text);
+          font-size: 15px;
+          letter-spacing: -.01em;
+        }
+        .ui-small{
+          margin-top: 6px;
+          color: var(--ui-muted);
+          font-weight: 650;
+          font-size: 12.5px;
+        }
+
+        .ui-link{
+          font-weight: 900;
+          font-size: 12.5px;
+          color: rgba(15,118,110,.95);
+          text-decoration:none !important;
+          border-radius: 12px;
+          padding: 8px 10px;
+          border: 1px solid rgba(15,118,110,.18);
+          background: rgba(240,253,250,.75);
+          white-space:nowrap;
+        }
+        .ui-link:hover{
+          background: rgba(204,251,241,.85);
+          text-decoration:none !important;
+        }
+
+        .ui-row{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          gap: 12px;
+          padding: 12px 0;
+          border-bottom: 1px solid rgba(15,23,42,.06);
+        }
+        .ui-row:last-child{ border-bottom:none; padding-bottom:0; }
+        .ui-row-title{ font-weight: 900; color: var(--ui-text); font-size: 13px; }
+        .ui-row-sub{ margin-top: 3px; font-weight: 650; color: var(--ui-muted); font-size: 12px; }
+
+        .ui-pill{
+          padding: 6px 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(15,23,42,.10);
+          background: rgba(248,250,252,.90);
+          font-weight: 900;
+          font-size: 12px;
+          white-space:nowrap;
+          color: var(--ui-text);
+        }
+
+        /* Progress */
+        .ui-progress{
+          margin-top: 10px;
+          height: 10px;
+          border-radius: 999px;
+          background: rgba(15,23,42,.08);
+          overflow:hidden;
+        }
+        .ui-progress > div{
+          height: 100%;
+          background: linear-gradient(90deg, rgba(15,118,110,.85), rgba(13,148,136,.95));
+          width: 0%;
+        }
+
+        /* Avatars */
+        .ui-avatars{ display:flex; gap: 10px; flex-wrap:wrap; margin-top: 12px; }
+        .ui-avatar{
+          width: 54px; height: 54px;
+          border-radius: 999px;
+          overflow:hidden;
+          border: 2px solid rgba(15,23,42,.10);
+          background:#e5e7eb;
+          box-shadow: 0 12px 24px rgba(2,6,23,.10);
+          transition: transform .14s ease, box-shadow .14s ease;
+        }
+        .ui-avatar:hover{
+          transform: translateY(-2px);
+          box-shadow: 0 16px 34px rgba(2,6,23,.14);
+        }
+        .ui-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+        /* Alert */
+        .ui-alert{
+          margin-top: 12px;
+          border-radius: 18px;
+          border: 1px solid rgba(15,23,42,.10);
+          background: rgba(248,250,252,.82);
+          padding: 12px;
+          color: var(--ui-muted);
+          font-weight: 650;
+          font-size: 12.5px;
+        }
+      </style>
+
+      <!-- ===================== -->
+      <!-- PAGE -->
+      <!-- ===================== -->
+      <section class="ui-page">
+        <div class="container-fluid ui-shell">
+          <div class="ui-inner">
+
+            <!-- HERO -->
+            <div class="ui-hero">
+              <div class="ui-top">
+                <div>
+                  <h2 class="ui-title">Dashboard</h2>
+                  <div class="ui-sub">
+                    <t t-esc="hospital.name or ''"/> — aperçu des missions et de votre activité.
+                  </div>
+                </div>
+
+                <div class="ui-actions">
+                  <a href="/my/missions/new" class="ui-btn ui-btn-primary">
+                    <span class="ui-ico">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </span>
+                    Nouvelle mission
+                  </a>
+
+                  <a href="/my/missions" class="ui-btn">
+                    <span class="ui-ico">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M7 7h10M7 12h10M7 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </span>
+                    Mes missions
+                  </a>
+
+                  <a href="/my/favorites" class="ui-btn">
+                    <span class="ui-ico">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 21s-7-4.6-9.5-8.6C.7 9.2 2.4 6.7 5.1 6.2c1.6-.3 3.2.4 4.1 1.6.9-1.2 2.5-1.9 4.1-1.6 2.7.5 4.4 3 2.6 6.2C19 16.4 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    Favoris
+                  </a>
+
+                  <a href="/my/security" class="ui-btn">
+                    <span class="ui-ico">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    Sécurité
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="ui-kpis">
+              <a class="ui-kpi neutral" href="/my/missions">
+                <div class="ui-kpi-top">
+                  <div>
+                    <div class="ui-kpi-title">Total missions</div>
+                    <div class="ui-kpi-num"><t t-esc="total_missions"/></div>
+                  </div>
+                  <div class="ui-kpi-icon neutral">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M7 7h10M7 12h10M7 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+
+              <a class="ui-kpi warn" href="/my/missions?status=draft">
+                <div class="ui-kpi-top">
+                  <div>
+                    <div class="ui-kpi-title">Draft</div>
+                    <div class="ui-kpi-num"><t t-esc="draft_count"/></div>
+                  </div>
+                  <div class="ui-kpi-icon warn">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M4 20h16M8 16l8-8 2 2-8 8H8v-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+
+              <a class="ui-kpi primary" href="/my/missions?status=published">
+                <div class="ui-kpi-top">
+                  <div>
+                    <div class="ui-kpi-title">Published</div>
+                    <div class="ui-kpi-num"><t t-esc="published_count"/></div>
+                  </div>
+                  <div class="ui-kpi-icon primary">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+
+              <!-- ✅ Assigned KPI -->
+              <a class="ui-kpi primary" href="/my/missions?status=assigned">
+                <div class="ui-kpi-top">
+                  <div>
+                    <div class="ui-kpi-title">Assigned</div>
+                    <div class="ui-kpi-num"><t t-esc="assigned_count or 0"/></div>
+                  </div>
+                  <div class="ui-kpi-icon primary">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4z" stroke="currentColor" stroke-width="2"/>
+                      <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+
+              <a class="ui-kpi success" href="/my/missions?status=done">
+                <div class="ui-kpi-top">
+                  <div>
+                    <div class="ui-kpi-title">Done</div>
+                    <div class="ui-kpi-num"><t t-esc="done_count"/></div>
+                  </div>
+                  <div class="ui-kpi-icon success">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+
+              <a class="ui-kpi neutral" href="/my/favorites" style="grid-column: span 4;">
+                <div class="ui-kpi-top">
+                  <div>
+                    <div class="ui-kpi-title">Radiologues favoris</div>
+                    <div class="ui-kpi-num"><t t-esc="favorites_count"/></div>
+                  </div>
+                  <div class="ui-kpi-icon neutral">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M12 21s-7-4.6-9.5-8.6C.7 9.2 2.4 6.7 5.1 6.2c1.6-.3 3.2.4 4.1 1.6.9-1.2 2.5-1.9 4.1-1.6 2.7.5 4.4 3 2.6 6.2C19 16.4 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+
+              <div class="ui-kpi primary" style="grid-column: span 8;">
+                <div class="ui-kpi-top">
+                  <div>
+                    <div class="ui-kpi-title">Complétion du profil</div>
+                    <div class="ui-kpi-num"><t t-esc="profile_percent"/>%</div>
+                  </div>
+                  <div class="ui-kpi-icon primary">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M4 20h16M6 20V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M9 10h6M9 13h6M9 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ui-progress" aria-label="profile progress">
+                  <div t-att-style="'width:' + str(profile_percent) + '%'"></div>
+                </div>
+                <div class="ui-small">
+                  Ajoutez photo, téléphone et email pour augmenter la confiance.
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTIONS -->
+            <div class="ui-grid">
+
+              <!-- Upcoming -->
+              <div class="ui-card half">
+                <div class="ui-card-hd">
+                  <div>
+                    <h3 class="ui-h4">Prochaines missions</h3>
+                    <div class="ui-small">À partir d’aujourd’hui : <t t-esc="today"/>.</div>
+                  </div>
+                  <a class="ui-link" href="/my/missions">Voir tout</a>
+                </div>
+
+                <t t-if="upcoming_missions">
+                  <t t-foreach="upcoming_missions" t-as="m">
+                    <div class="ui-row">
+                      <div style="min-width:0;">
+                        <div class="ui-row-title"><t t-esc="m.name"/></div>
+                        <div class="ui-row-sub">
+                          <t t-if="m.start_date"><t t-esc="m.start_date"/></t>
+                          <t t-if="m.end_date"> → <t t-esc="m.end_date"/></t>
+                          <t t-if="m.status"> • <t t-esc="m.status"/></t>
+                        </div>
+                      </div>
+                      <a class="ui-btn" t-att-href="'/my/missions/%s' % m.id">Ouvrir</a>
+                    </div>
+                  </t>
+                </t>
+                <t t-else="">
+                  <div class="ui-alert">Aucune mission à venir.</div>
+                </t>
+              </div>
+
+              <!-- Recent -->
+              <div class="ui-card half">
+                <div class="ui-card-hd">
+                  <div>
+                    <h3 class="ui-h4">Missions récentes</h3>
+                    <div class="ui-small">Dernières créations.</div>
+                  </div>
+                  <a class="ui-link" href="/my/missions">Voir tout</a>
+                </div>
+
+                <t t-if="recent_missions">
+                  <t t-foreach="recent_missions" t-as="m">
+                    <div class="ui-row">
+                      <div style="min-width:0;">
+                        <div class="ui-row-title"><t t-esc="m.name"/></div>
+                        <div class="ui-row-sub">
+                          Statut : <t t-esc="m.status"/>
+                          <t t-if="m.tarif"> • Tarif : <t t-esc="m.tarif"/> €</t>
+                        </div>
+                      </div>
+                      <span class="ui-pill"><t t-esc="m.status"/></span>
+                    </div>
+                  </t>
+                </t>
+                <t t-else="">
+                  <div class="ui-alert">Aucune mission pour le moment.</div>
+                </t>
+              </div>
+
+              <!-- Favorites -->
+              <div class="ui-card third">
+                <div class="ui-card-hd">
+                  <div>
+                    <h3 class="ui-h4">Favoris</h3>
+                    <div class="ui-small">Radiologues enregistrés.</div>
+                  </div>
+                  <a class="ui-link" href="/my/favorites">Gérer</a>
+                </div>
+
+                <t t-if="favorite_radiologists">
+                  <div class="ui-avatars">
+                    <t t-foreach="favorite_radiologists" t-as="r">
+                      <a t-att-href="'/my/radiologists/%s' % r.id" title="Voir profil" style="text-decoration:none;">
+                        <div class="ui-avatar">
+                          <t t-if="r.image_1920">
+                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id" alt="Avatar"/>
+                          </t>
+                          <t t-else="">
+                            <img t-att-src="'/web/static/img/user_menu_avatar.png'" alt="Avatar"/>
+                          </t>
+                        </div>
+                      </a>
+                    </t>
+                  </div>
+                </t>
+                <t t-else="">
+                  <div class="ui-alert">Aucun favori enregistré.</div>
+                </t>
+              </div>
+
+              <!-- Profile -->
+              <div class="ui-card third">
+                <div class="ui-card-hd">
+                  <div>
+                    <h3 class="ui-h4">Profil</h3>
+                    <div class="ui-small">Informations principales.</div>
+                  </div>
+                  <a class="ui-link" href="/my/account">Modifier</a>
+                </div>
+
+                <div class="ui-row">
+                  <div style="min-width:0;">
+                    <div class="ui-row-title">Ville</div>
+                    <div class="ui-row-sub"><t t-esc="hospital.city or '—'"/></div>
+                  </div>
+                  <span class="ui-pill">Localisation</span>
+                </div>
+
+                <div class="ui-row">
+                  <div style="min-width:0;">
+                    <div class="ui-row-title">Téléphone</div>
+                    <div class="ui-row-sub"><t t-esc="hospital.phone or '—'"/></div>
+                  </div>
+                  <span class="ui-pill">Contact</span>
+                </div>
+
+                <div class="ui-row">
+                  <div style="min-width:0;">
+                    <div class="ui-row-title">Email</div>
+                    <div class="ui-row-sub"><t t-esc="hospital.email or '—'"/></div>
+                  </div>
+                  <span class="ui-pill">Support</span>
+                </div>
+              </div>
+
+              <!-- Quick actions -->
+              <div class="ui-card third">
+                <div class="ui-card-hd">
+                  <div>
+                    <h3 class="ui-h4">Raccourcis</h3>
+                    <div class="ui-small">Accès rapide.</div>
+                  </div>
+                </div>
+
+                <div class="mt-2" style="display:flex; flex-direction:column; gap:10px;">
+                  <a href="/my/missions/new" class="ui-btn ui-btn-primary">Créer une mission</a>
+                  <a href="/my/missions" class="ui-btn">Voir mes missions</a>
+                  <a href="/my/radiologists" class="ui-btn">Parcourir radiologues</a>
+                  <a href="/my/favorites" class="ui-btn">Ouvrir favoris</a>
+                  <a href="/my/security" class="ui-btn">Paramètres sécurité</a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </t>
+  </template>
+</odoo>

@@ -1,59 +1,265 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-  <template id="radiolink_portal_layout_inherit" inherit_id="portal.portal_layout" name="RadioLink Portal Layout Inherit">
+    <template id="radiolink_portal_layout_inherit" inherit_id="portal.portal_layout"
+              name="RadioLink Portal Layout Inherit">
 
-    <!-- Injecter du CSS conditionnel dans le layout portail -->
-    <xpath expr="//t[@t-call='portal.frontend_layout']" position="inside">
+        <!-- Injecter du CSS conditionnel dans le layout portail -->
+        <xpath expr="//t[@t-call='portal.frontend_layout']" position="inside">
 
-      <!-- ✅ Appliquer full width seulement si une variable est activée dans la page -->
-      <t t-if="rl_fullwidth">
-        <style>
-          .o_portal_wrap > .container.pt-3{
-  padding-top: 0 !important;
-}
+            <!-- ✅ Appliquer full width seulement si une variable est activée dans la page -->
+            <t t-if="rl_fullwidth">
+                <style>
+                    .o_portal_wrap > .container.pt-3{
+                    padding-top: 0 !important;
+                    }
 
-/* sécurité : si le thème applique aussi un padding au wrap */
-.o_portal_wrap{
-  padding-top: 0 !important;
-}
-          .o_portal_wrap{
-  padding-top: 0 !important;
-}
+                    /* sécurité : si le thème applique aussi un padding au wrap */
+                    .o_portal_wrap{
+                    padding-top: 0 !important;
+                    }
+                    .o_portal_wrap{
+                    padding-top: 0 !important;
+                    }
 
-/* selon le thème, parfois c’est le main */
-.o_portal_wrap main{
-  padding-top: 0 !important;
-}
+                    /* selon le thème, parfois c’est le main */
+                    .o_portal_wrap main{
+                    padding-top: 0 !important;
+                    }
 
-/* sécurité : enlever margin-top éventuel */
-.radiolink-radiologists-page{
-  margin-top: 0 !important;
-}
-          /* Full width du container portail */
-          .o_portal_wrap > .container,
-          .o_portal_wrap .o_portal_container,
-          .o_portal_wrap .container.o_portal_container{
-            max-width: 100% !important;
-            width: 100% !important;
-          }
+                    /* sécurité : enlever margin-top éventuel */
+                    .radiolink-radiologists-page{
+                    margin-top: 0 !important;
+                    }
+                    /* Full width du container portail */
+                    .o_portal_wrap > .container,
+                    .o_portal_wrap .o_portal_container,
+                    .o_portal_wrap .container.o_portal_container{
+                    max-width: 100% !important;
+                    width: 100% !important;
+                    }
 
-          /* optionnel: enlever padding du container parent */
-          .o_portal_wrap > .container{
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-          }
+                    /* optionnel: enlever padding du container parent */
+                    .o_portal_wrap > .container{
+                    padding-left: 0 !important;
+                    padding-right: 0 !important;
+                    }
 
-          /* full height sur la zone main */
-          .o_portal_wrap{
-            min-height: 100vh;
-          }
+                    /* full height sur la zone main */
+                    .o_portal_wrap{
+                    min-height: 100vh;
+                    }
 
-          /* éviter scroll horizontal */
-          html, body { overflow-x: hidden; }
-        </style>
-      </t>
+                    /* éviter scroll horizontal */
+                    html, body { overflow-x: hidden; }
+                </style>
+            </t>
+            <t t-if="rl_ads">
+                <style>
+                    .rl-adcard{
+                    position: fixed;
+                    right: 18px;
+                    bottom: 18px;
+                    width: 420px;
+                    border-radius: 24px;
+                    border: 1px solid rgba(15,23,42,.12);
+                    background: rgba(255,255,255,.92);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    box-shadow: 0 18px 60px rgba(2,6,23,.22);
+                    overflow: hidden;
+                    z-index: 4000;
 
-    </xpath>
-  </template>
+                    transform: translateY(30px);
+                    opacity: 0;
+                    transition: transform .45s ease, opacity .45s ease;
+                    }
+                    .rl-adcard.rl-show{
+                    transform: translateY(0);
+                    opacity: 1;
+                    }
+                    .rl-adcard.rl-closed{
+                    transform: translateY(60px);
+                    opacity: 0;
+                    pointer-events: none;
+                    }
+
+                    .rl-adcard-head{
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    padding: 10px 12px 0;
+                    }
+                    .rl-ad-badge{
+                    font-weight: 950;
+                    font-size: 11px;
+                    color: #0f172a;
+                    background: rgba(245,158,11,.16);
+                    border: 1px solid rgba(245,158,11,.25);
+                    padding: 6px 10px;
+                    border-radius: 999px;
+                    }
+                    .rl-ad-close{
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 14px;
+                    border: 1px solid rgba(15,23,42,.12);
+                    background: rgba(248,250,252,.92);
+                    color:#0f172a;
+                    font-weight: 950;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    cursor:pointer;
+                    line-height:1;
+                    transition: transform .16s ease, background .16s ease;
+                    }
+                    .rl-ad-close:hover{
+                    background: rgba(239,246,255,.95);
+                    transform: translateY(-1px);
+                    }
+
+                    .rl-adcard-body{
+                    display:grid;
+                    grid-template-columns: 150px 1fr;
+                    gap: 12px;
+                    padding: 10px 12px 12px;
+                    align-items: center;
+                    }
+                    .rl-ad-img{
+                    width: 150px;
+                    height: 120px;
+                    border-radius: 18px;
+                    overflow:hidden;
+                    background: #e5e7eb;
+                    border: 2px solid #fff;
+                    box-shadow: 0 12px 24px rgba(2,6,23,.12);
+                    }
+                    .rl-ad-img img{
+                    width:100%;
+                    height:100%;
+                    object-fit: cover;
+                    display:block;
+                    }
+
+                    .rl-ad-title{
+                    font-weight: 950;
+                    font-size: 15px;
+                    color:#0f172a;
+                    line-height: 1.2;
+                    }
+                    .rl-ad-sub{
+                    margin-top: 6px;
+                    font-weight: 750;
+                    font-size: 12.5px;
+                    color:#64748b;
+                    line-height: 1.35;
+                    }
+
+                    .rl-ad-actions{
+                    margin-top: 10px;
+                    display:flex;
+                    gap: 10px;
+                    align-items:center;
+                    flex-wrap: wrap;
+                    }
+                    .rl-ad-btn{
+                    border-radius: 14px;
+                    padding: 10px 12px;
+                    font-weight: 950;
+                    font-size: 12px;
+                    border: 1px solid rgba(37,99,235,.22);
+                    background: rgba(239,246,255,.95);
+                    color: #1d4ed8;
+                    text-decoration:none !important;
+                    white-space: nowrap;
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    }
+                    .rl-ad-btn-primary{
+                    background: #2563eb;
+                    border-color: #2563eb;
+                    color: #fff;
+                    box-shadow: 0 12px 26px rgba(37,99,235,.18);
+                    }
+                    .rl-ad-btn-primary:hover{
+                    background:#1d4ed8;
+                    border-color:#1d4ed8;
+                    color:#fff;
+                    text-decoration:none !important;
+                    }
+
+                    /* responsive */
+                    @media(max-width: 520px){
+                    .rl-adcard{ left: 12px; right: 12px; width: auto; }
+                    .rl-adcard-body{ grid-template-columns: 120px 1fr; }
+                    .rl-ad-img{ width: 120px; height: 100px; }
+                    }
+                </style>
+
+                <div id="rl-adcard" class="rl-adcard" role="complementary" aria-label="Publicité">
+                    <div class="rl-adcard-head">
+                        <div class="rl-ad-badge">Publicité</div>
+                        <button type="button" class="rl-ad-close" aria-label="Fermer" title="Fermer">×</button>
+                    </div>
+
+                    <div class="rl-adcard-body">
+                        <div class="rl-ad-img">
+                            <img t-att-src="rl_ads_img or '/web/static/img/placeholder.png'" alt="Gel échographique"/>
+                        </div>
+
+                        <div>
+                            <div class="rl-ad-title">
+                                <t t-esc="rl_ads_title or 'Gel échographique Pro'"/>
+                            </div>
+                            <div class="rl-ad-sub">
+                                <t t-esc="rl_ads_sub or 'Hypoallergénique • Sans bulles • Compatible toutes sondes'"/>
+                            </div>
+
+                            <div class="rl-ad-actions">
+                                <a class="rl-ad-btn rl-ad-btn-primary"
+                                   t-att-href="rl_ads_url or '#'"
+                                   target="_blank" rel="noopener">Découvrir
+                                </a>
+
+                                <a class="rl-ad-btn"
+                                   t-att-href="rl_ads_url or '#'"
+                                   target="_blank" rel="noopener">Commander
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script type="text/javascript">
+                    <![CDATA[
+    (function(){
+      function bootAd(){
+        var card = document.getElementById('rl-adcard');
+        if(!card) return;
+
+        // show after 1.2s
+        setTimeout(function(){ card.classList.add('rl-show'); }, 1200);
+
+        // close
+        var btn = card.querySelector('.rl-ad-close');
+        if(btn){
+          btn.addEventListener('click', function(){
+            card.classList.add('rl-closed');
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bootAd);
+      } else {
+        bootAd();
+      }
+    })();
+    ]]>
+                </script>
+            </t>
+        </xpath>
+    </template>
 </odoo>

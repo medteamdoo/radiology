@@ -1,396 +1,1144 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-  <template id="portal_mission_details_modern" name="Portal - Mission Details (Airbnb Pro)">
-    <t t-set="rl_fullwidth" t-value="True"/>
-    <t t-set="breadcrumbs" t-value="False"/>
+    <template id="portal_mission_details_modern" name="Portal - Mission Details (Airbnb Pro)">
+        <t t-set="rl_fullwidth" t-value="True"/>
+        <t t-set="breadcrumbs" t-value="False"/>
 
-    <t t-call="portal.portal_layout">
-      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
 
-      <style>
-        :root{
-          --ab-text:#0f172a;
-          --ab-muted:#64748b;
-          --ab-border: rgba(15,23,42,.10);
-          --ab-chip:#f8fafc;
-          --ab-chip-border: rgba(15,23,42,.12);
-          --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
-          --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
-          --ab-radius2: 22px;
-          --ab-primary:#2563eb;
-        }
+            <style>
+                :root{
+                --ab-text:#0f172a;
+                --ab-muted:#64748b;
+                --ab-border: rgba(15,23,42,.10);
+                --ab-chip:#f8fafc;
+                --ab-chip-border: rgba(15,23,42,.12);
+                --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
+                --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
+                --ab-radius2: 22px;
+                --ab-primary:#2563eb;
+                }
 
-        /* Full width portal container but keep inner max-width */
-        .o_portal_wrap > .container{ max-width:100% !important; padding-left:0 !important; padding-right:0 !important; }
-        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+                /* Full width portal container but keep inner max-width */
+                .o_portal_wrap > .container{ max-width:100% !important; padding-left:0 !important; padding-right:0
+                !important; }
+                .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
 
-        .ab-page{ min-height:100vh; background:#fff; }
-        .ab-shell{ padding: 18px 0 56px; }
-        @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
-        @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
+                .ab-page{ min-height:100vh; background:#fff; }
+                .ab-shell{ padding: 18px 0 56px; }
+                @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
+                @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
 
-        .ab-inner{
-          max-width: 1320px;
-          margin: 0 auto;
-          padding-left: 18px;
-          padding-right: 18px;
-        }
-        @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
-        @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
+                .ab-inner{
+                max-width: 1320px;
+                margin: 0 auto;
+                padding-left: 18px;
+                padding-right: 18px;
+                }
+                @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
+                @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
 
-        /* Hero card */
-        .ab-hero{
-          border-radius: var(--ab-radius2);
-          border: 1px solid var(--ab-border);
-          background: rgba(255,255,255,.92);
-          box-shadow: var(--ab-shadow);
-          overflow:hidden;
-        }
-        .ab-hero-in{ padding: 14px 14px 16px; }
-        @media(min-width:992px){ .ab-hero-in{ padding: 18px 18px 20px; } }
+                /* Hero card */
+                .ab-hero{
+                border-radius: var(--ab-radius2);
+                border: 1px solid var(--ab-border);
+                background: rgba(255,255,255,.92);
+                box-shadow: var(--ab-shadow);
+                overflow:hidden;
+                }
+                .ab-hero-in{ padding: 14px 14px 16px; }
+                @media(min-width:992px){ .ab-hero-in{ padding: 18px 18px 20px; } }
 
-        .ab-title{
-          margin:0;
-          color: var(--ab-text);
-          font-weight: 950;
-          letter-spacing: -.02em;
-          font-size: 28px;
-          line-height: 1.1;
-        }
-        .ab-sub{
-          margin-top: 8px;
-          color: var(--ab-muted);
-          font-weight: 650;
-          font-size: 13.5px;
-          line-height: 1.55;
-          max-width: 900px;
-        }
+                .ab-title{
+                margin:0;
+                color: var(--ab-text);
+                font-weight: 950;
+                letter-spacing: -.02em;
+                font-size: 28px;
+                line-height: 1.1;
+                }
+                .ab-sub{
+                margin-top: 8px;
+                color: var(--ab-muted);
+                font-weight: 650;
+                font-size: 13.5px;
+                line-height: 1.55;
+                max-width: 900px;
+                }
 
-        /* Pills */
-        .ab-pills{
-          margin-top: 12px;
-          display:flex;
-          flex-wrap:wrap;
-          gap: 10px;
-        }
-        .ab-pill{
-          display:inline-flex;
-          align-items:center;
-          gap:8px;
-          padding: 9px 12px;
-          border-radius: 999px;
-          border: 1px solid var(--ab-chip-border);
-          background: var(--ab-chip);
-          color: var(--ab-text);
-          font-weight: 900;
-          font-size: 12.5px;
-          white-space: nowrap;
-        }
-        .ab-pill-price{
-          border-color: rgba(37,99,235,.22);
-          background: rgba(239,246,255,.95);
-          color:#1d4ed8;
-        }
+                /* Pills */
+                .ab-pills{
+                margin-top: 12px;
+                display:flex;
+                flex-wrap:wrap;
+                gap: 10px;
+                }
+                .ab-pill{
+                display:inline-flex;
+                align-items:center;
+                gap:8px;
+                padding: 9px 12px;
+                border-radius: 999px;
+                border: 1px solid var(--ab-chip-border);
+                background: var(--ab-chip);
+                color: var(--ab-text);
+                font-weight: 900;
+                font-size: 12.5px;
+                white-space: nowrap;
+                }
+                .ab-pill-price{
+                border-color: rgba(37,99,235,.22);
+                background: rgba(239,246,255,.95);
+                color:#1d4ed8;
+                }
 
-        /* Buttons (same as Missions) */
-        .ab-cta-btn{
-          border-radius: 12px !important;
-          padding: 10px 12px !important;
-          font-weight: 950 !important;
-          font-size: 13px !important;
-          text-decoration:none !important;
-          border: 1px solid rgba(37,99,235,.22) !important;
-          background: rgba(239,246,255,.95) !important;
-          color: #1d4ed8 !important;
-          display:inline-flex !important;
-          align-items:center !important;
-          justify-content:center !important;
-          gap: 8px !important;
-          cursor:pointer;
-          white-space: nowrap;
-        }
-        .ab-cta-btn:hover{
-          background: rgba(219,234,254,.95) !important;
-          color:#1d4ed8 !important;
-          text-decoration:none !important;
-        }
-        .ab-cta-btn-primary{
-          background: var(--ab-primary) !important;
-          border-color: var(--ab-primary) !important;
-          color: #fff !important;
-          box-shadow: 0 12px 26px rgba(37,99,235,.18);
-        }
-        .ab-cta-btn-primary:hover{
-          background: #1d4ed8 !important;
-          border-color:#1d4ed8 !important;
-          color:#fff !important;
-        }
+                /* Buttons (same as Missions) */
+                .ab-cta-btn{
+                border-radius: 12px !important;
+                padding: 10px 12px !important;
+                font-weight: 950 !important;
+                font-size: 13px !important;
+                text-decoration:none !important;
+                border: 1px solid rgba(37,99,235,.22) !important;
+                background: rgba(239,246,255,.95) !important;
+                color: #1d4ed8 !important;
+                display:inline-flex !important;
+                align-items:center !important;
+                justify-content:center !important;
+                gap: 8px !important;
+                cursor:pointer;
+                white-space: nowrap;
+                }
+                .ab-cta-btn:hover{
+                background: rgba(219,234,254,.95) !important;
+                color:#1d4ed8 !important;
+                text-decoration:none !important;
+                }
+                .ab-cta-btn-primary{
+                background: var(--ab-primary) !important;
+                border-color: var(--ab-primary) !important;
+                color: #fff !important;
+                box-shadow: 0 12px 26px rgba(37,99,235,.18);
+                }
+                .ab-cta-btn-primary:hover{
+                background: #1d4ed8 !important;
+                border-color:#1d4ed8 !important;
+                color:#fff !important;
+                }
 
-        /* Cards */
-        .ab-card{
-          border-radius: var(--ab-radius2);
-          border: 1px solid var(--ab-border);
-          background: rgba(255,255,255,.92);
-          box-shadow: var(--ab-shadow);
-          overflow:hidden;
-        }
-        .ab-card-hd{
-          padding: 12px 14px;
-          border-bottom: 1px solid rgba(15,23,42,.08);
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap:12px;
-          background: rgba(255,255,255,.80);
-        }
-        .ab-card-title{
-          margin:0;
-          font-weight: 950;
-          color: var(--ab-text);
-          font-size: 15px;
-          letter-spacing: -.01em;
-        }
-        .ab-card-bd{ padding: 14px; }
+                /* Cards */
+                .ab-card{
+                border-radius: var(--ab-radius2);
+                border: 1px solid var(--ab-border);
+                background: rgba(255,255,255,.92);
+                box-shadow: var(--ab-shadow);
+                overflow:hidden;
+                }
+                .ab-card-hd{
+                padding: 12px 14px;
+                border-bottom: 1px solid rgba(15,23,42,.08);
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:12px;
+                background: rgba(255,255,255,.80);
+                }
+                .ab-card-title{
+                margin:0;
+                font-weight: 950;
+                color: var(--ab-text);
+                font-size: 15px;
+                letter-spacing: -.01em;
+                }
+                .ab-card-bd{ padding: 14px; }
 
-        /* Description text */
-        .ab-desc{
-          color:#475569;
-          font-size: 13.5px;
-          font-weight: 650;
-          line-height: 1.7;
-          white-space: pre-wrap;
-        }
+                /* Description text */
+                .ab-desc{
+                color:#475569;
+                font-size: 13.5px;
+                font-weight: 650;
+                line-height: 1.7;
+                white-space: pre-wrap;
+                }
 
-        /* Chips */
-        .ab-chips{ display:flex; flex-wrap:wrap; gap: 8px; }
-        .ab-chip{
-          display:inline-flex;
-          align-items:center;
-          padding: 7px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(248,250,252,.90);
-          color: var(--ab-text);
-          font-weight: 850;
-          font-size: 12px;
-          white-space: nowrap;
-        }
+                /* Chips */
+                .ab-chips{ display:flex; flex-wrap:wrap; gap: 8px; }
+                .ab-chip{
+                display:inline-flex;
+                align-items:center;
+                padding: 7px 10px;
+                border-radius: 999px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.90);
+                color: var(--ab-text);
+                font-weight: 850;
+                font-size: 12px;
+                white-space: nowrap;
+                }
 
-        /* Hospital */
-        .ab-hosp{
-          display:flex;
-          gap: 12px;
-          align-items:center;
-        }
-        .ab-hosp-img{
-          width: 58px; height: 58px;
-          border-radius: 18px;
-          overflow:hidden;
-          background: #eef2ff;
-          border: 1px solid rgba(15,23,42,.10);
-          box-shadow: 0 12px 22px rgba(2,6,23,.10);
-          flex: 0 0 auto;
-        }
-        .ab-hosp-img img{ width:100%; height:100%; object-fit:cover; display:block; }
-        .ab-hosp-name{ font-weight: 950; color: var(--ab-text); margin:0; line-height:1.2; }
-        .ab-hosp-meta{ color: var(--ab-muted); font-weight: 700; font-size: 12.5px; margin-top:4px; }
+                /* Hospital */
+                .ab-hosp{
+                display:flex;
+                gap: 12px;
+                align-items:center;
+                }
+                .ab-hosp-img{
+                width: 58px; height: 58px;
+                border-radius: 18px;
+                overflow:hidden;
+                background: #eef2ff;
+                border: 1px solid rgba(15,23,42,.10);
+                box-shadow: 0 12px 22px rgba(2,6,23,.10);
+                flex: 0 0 auto;
+                }
+                .ab-hosp-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+                .ab-hosp-name{ font-weight: 950; color: var(--ab-text); margin:0; line-height:1.2; }
+                .ab-hosp-meta{ color: var(--ab-muted); font-weight: 700; font-size: 12.5px; margin-top:4px; }
 
-        /* Key/Value */
-        .ab-kv{ display:flex; flex-direction:column; gap: 10px; }
-        .ab-kv-row{
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap: 12px;
-          padding: 12px;
-          border-radius: 16px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(248,250,252,.75);
-        }
-        .ab-k{ color: var(--ab-muted); font-weight: 800; font-size: 12.5px; }
-        .ab-v{ color: var(--ab-text); font-weight: 950; font-size: 13px; text-align:right; white-space:nowrap; }
-      </style>
+                /* Key/Value */
+                .ab-kv{ display:flex; flex-direction:column; gap: 10px; }
+                .ab-kv-row{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 16px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.75);
+                }
+                .ab-k{ color: var(--ab-muted); font-weight: 800; font-size: 12.5px; }
+                .ab-v{ color: var(--ab-text); font-weight: 950; font-size: 13px; text-align:right; white-space:nowrap; }
 
-      <section class="ab-page">
-        <div class="container-fluid ab-shell">
-          <div class="ab-inner">
+                /* Small polish for modal */
+                .ab-modal-sub{
+                color: var(--ab-muted);
+                font-weight: 700;
+                font-size: 13px;
+                line-height: 1.45;
+                }
+                /* Assigned radiologist badge */
+                .ab-assigned{
+                display:flex;
+                align-items:center;
+                gap:10px;
+                padding: 9px 12px;
+                border-radius: 999px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.92);
+                box-shadow: 0 10px 22px rgba(2,6,23,.08);
+                }
+                .ab-assigned-ava{
+                width:32px; height:32px;
+                border-radius:999px;
+                overflow:hidden;
+                border:2px solid #fff;
+                background:#e5e7eb;
+                box-shadow: 0 8px 18px rgba(2,6,23,.10);
+                flex:0 0 auto;
+                }
+                .ab-assigned-ava img{ width:100%; height:100%; object-fit:cover; display:block; }
+                .ab-assigned-txt{ display:flex; flex-direction:column; line-height:1.15; }
+                .ab-assigned-k{ font-size:11.5px; font-weight:850; color: var(--ab-muted); }
+                .ab-assigned-v{ font-size:12.8px; font-weight:950; color: var(--ab-text); }
 
-            <!-- HERO -->
-            <div class="ab-hero">
-              <div class="ab-hero-in">
+                /* Review modal styles */
+                .ab-review-hero{
+                display:flex; align-items:center; gap:12px;
+                padding: 10px 12px;
+                border-radius: 16px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.85);
+                }
+                .ab-review-ava{
+                width:54px; height:54px; border-radius:18px;
+                overflow:hidden; background:#e5e7eb; border:1px solid rgba(15,23,42,.10);
+                flex:0 0 auto;
+                box-shadow: 0 10px 22px rgba(2,6,23,.10);
+                }
+                .ab-review-ava img{ width:100%; height:100%; object-fit:cover; display:block; }
+                .ab-review-name{ font-weight:950; color:var(--ab-text); margin:0; line-height:1.1; }
+                .ab-review-sub{ color:var(--ab-muted); font-weight:750; font-size:12.5px; margin-top:4px; }
 
-                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-                  <div>
-                    <h2 class="ab-title">
-                      <t t-esc="mission.name or 'Mission'"/>
-                    </h2>
+                .ab-stars{
+                display:flex; gap:10px; flex-wrap:wrap;
+                }
+                .ab-star-group{
+                flex:1 1 160px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.75);
+                border-radius: 16px;
+                padding: 10px;
+                }
+                .ab-star-label{ font-weight:900; font-size:12.5px; color:var(--ab-text); margin-bottom:6px; }
+                .ab-radio-row{ display:flex; gap:8px; flex-wrap:wrap; }
+                .ab-radio-row input{ display:none; }
+                .ab-radio-row label{
+                padding:6px 10px;
+                border-radius:999px;
+                border:1px solid rgba(15,23,42,.12);
+                background: rgba(255,255,255,.9);
+                font-weight:900;
+                font-size:12px;
+                cursor:pointer;
+                }
+                .ab-radio-row input:checked + label{
+                border-color: rgba(37,99,235,.35);
+                background: rgba(239,246,255,.95);
+                color:#1d4ed8;
+                }
 
-                    <div class="ab-sub">
-                      Détails complets de la mission : période, spécialités, marques et informations de l’établissement.
+                /* submit animation */
+                .ab-loading{
+                display:none;
+                align-items:center;
+                gap:10px;
+                font-weight:900;
+                }
+                .ab-spinner{
+                width:18px; height:18px;
+                border:3px solid rgba(37,99,235,.25);
+                border-top-color: rgba(37,99,235,1);
+                border-radius:999px;
+                animation: abspin .8s linear infinite;
+                }
+                @keyframes abspin{ to { transform: rotate(360deg);} }
+
+                /* Assign preview */
+                .ab-cand-preview{
+                margin-top: 12px;
+                border: 1px solid rgba(15,23,42,.10);
+                background: rgba(248,250,252,.75);
+                border-radius: 18px;
+                padding: 12px;
+                }
+                .ab-cand-row{ display:flex; gap:12px; align-items:center; }
+                .ab-cand-ava{
+                width:64px; height:64px; border-radius:20px; overflow:hidden;
+                background:#e5e7eb; border:1px solid rgba(15,23,42,.10);
+                box-shadow: 0 12px 22px rgba(2,6,23,.10);
+                flex:0 0 auto;
+                }
+                .ab-cand-ava img{ width:100%; height:100%; object-fit:cover; display:block; }
+                .ab-cand-name{ margin:0; font-weight:950; color:var(--ab-text); line-height:1.15; }
+                .ab-cand-meta{ margin-top:4px; color:var(--ab-muted); font-weight:800; font-size:12.5px; }
+                .ab-rating-pill{
+                display:inline-flex; align-items:center; gap:6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                border: 1px solid rgba(37,99,235,.22);
+                background: rgba(239,246,255,.95);
+                color:#1d4ed8;
+                font-weight:950;
+                font-size:12px;
+                margin-top:8px;
+                }
+                .ab-apps-list{
+                display:flex;
+                gap:14px;
+                overflow-x:auto;
+                overflow-y:hidden;
+                padding:4px 2px 8px;
+                scroll-snap-type:x proximity;
+                scrollbar-width:thin;
+                }
+                .ab-app-item{
+                display:flex;
+                flex-direction:column;
+                align-items:flex-start;
+                gap:10px;
+                min-width:220px;
+                max-width:220px;
+                padding:14px;
+                border-radius:22px;
+                border:1px solid rgba(15,23,42,.10);
+                background:linear-gradient(180deg, rgba(248,250,252,.96) 0%, rgba(241,245,249,.88) 100%);
+                text-decoration:none;
+                color:inherit;
+                box-shadow:0 10px 24px rgba(2,6,23,.06);
+                transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+                scroll-snap-align:start;
+                }
+                .ab-app-item:hover{
+                transform:translateX(8px);
+                border-color:rgba(37,99,235,.28);
+                box-shadow:0 16px 30px rgba(37,99,235,.14);
+                text-decoration:none;
+                color:inherit;
+                }
+                .ab-app-top{
+                width:100%;
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:10px;
+                }
+                .ab-app-avatar{
+                width:72px;
+                height:72px;
+                border-radius:22px;
+                overflow:hidden;
+                background:#e5e7eb;
+                border:1px solid rgba(15,23,42,.10);
+                flex:0 0 auto;
+                box-shadow:0 12px 24px rgba(2,6,23,.10);
+                }
+                .ab-app-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+                .ab-app-main{ min-width:0; width:100%; }
+                .ab-app-name{
+                margin:0;
+                color:var(--ab-text);
+                font-weight:950;
+                font-size:14px;
+                line-height:1.2;
+                }
+                .ab-app-sub{
+                margin-top:6px;
+                color:var(--ab-muted);
+                font-weight:800;
+                font-size:12px;
+                line-height:1.45;
+                min-height:34px;
+                }
+                .ab-app-side{
+                display:flex;
+                width:100%;
+                flex-direction:row;
+                align-items:center;
+                justify-content:space-between;
+                gap:8px;
+                margin-top:auto;
+                }
+                .ab-app-status{
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                padding:6px 10px;
+                border-radius:999px;
+                border:1px solid rgba(15,23,42,.10);
+                background:#fff;
+                color:var(--ab-text);
+                font-weight:900;
+                font-size:11.5px;
+                text-transform:capitalize;
+                }
+                .ab-app-link{
+                color:#1d4ed8;
+                font-weight:900;
+                font-size:11.5px;
+                }
+
+            </style>
+
+            <section class="ab-page">
+                <div class="container-fluid ab-shell">
+                    <div class="ab-inner">
+
+                        <!-- HERO -->
+                        <div class="ab-hero">
+                            <div class="ab-hero-in">
+
+                                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                                    <div>
+                                        <h2 class="ab-title">
+                                            <t t-esc="mission.name or 'Mission'"/>
+                                        </h2>
+
+                                        <div class="ab-sub">
+                                            Détails complets de la mission : période, spécialités, marques et
+                                            informations de l’établissement.
+                                        </div>
+
+                                        <div class="ab-pills">
+                                            <span class="ab-pill ab-pill-price">
+                                                <t t-esc="mission.tarif or '—'"/>
+                                                €
+                                                <span style="color:var(--ab-muted);font-weight:850;">
+                                                    /
+                                                    <t t-if="mission.tarif_type == 'hour'">heure</t>
+                                                    <t t-elif="mission.tarif_type == 'day'">jour</t>
+                                                    <t t-else="">mission</t>
+                                                </span>
+                                            </span>
+
+                                            <t t-if="mission.start_date">
+                                                <span class="ab-pill">Début :
+                                                    <t t-esc="mission.start_date"/>
+                                                </span>
+                                            </t>
+                                            <t t-if="mission.end_date">
+                                                <span class="ab-pill">Fin :
+                                                    <t t-esc="mission.end_date"/>
+                                                </span>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                                        <a href="/my/missions" class="ab-cta-btn">Retour</a>
+
+                                        <!-- ✅ Si mission assigned/done : afficher Assignée à (avatar + nom) -->
+                                        <t t-if="mission.status in ['assigned','done'] and mission.assigned_radiologist_id">
+                                            <t t-set="rid" t-value="mission.assigned_radiologist_id"/>
+
+                                            <a t-att-href="'/my/radiologists/%s' % rid.id"
+                                               class="ab-assigned"
+                                               style="text-decoration:none; color:inherit;"
+                                               title="Voir profil radiologue">
+
+                                                <div class="ab-assigned-ava">
+                                                    <t t-if="rid.image_1920">
+                                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % rid.id"
+                                                             alt="Radiologue"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <img t-att-src="'/web/static/img/user_menu_avatar.png'"
+                                                             alt="Radiologue"/>
+                                                    </t>
+                                                </div>
+
+                                                <div class="ab-assigned-txt">
+                                                    <div class="ab-assigned-k">Assignée à</div>
+                                                    <div class="ab-assigned-v">
+                                                        <t t-esc="rid.display_name"/>
+                                                    </div>
+                                                </div>
+
+                                            </a>
+                                        </t>
+
+
+                                        <!-- ✅ Bouton Affecter (published + can_assign) -->
+                                        <t t-if="can_assign">
+                                            <button type="button"
+                                                    class="ab-cta-btn ab-cta-btn-primary"
+                                                    data-bs-toggle="modal"
+                                                    t-att-data-bs-target="'#assignModal_%s' % mission.id">
+                                                Affecter un radiologue
+                                            </button>
+                                        </t>
+
+                                        <!-- ✅ Bouton Terminer (uniquement si assigned) -->
+                                        <t t-if="mission.status == 'assigned'">
+                                            <form method="post"
+                                                  t-att-action="'/my/missions/%s/done' % mission.id"
+                                                  class="d-inline">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <t t-if="mission.status == 'assigned' and mission.assigned_radiologist_id">
+                                                    <button type="button"
+                                                            class="ab-cta-btn ab-cta-btn-primary"
+                                                            data-bs-toggle="modal"
+                                                            t-att-data-bs-target="'#doneModal_%s' % mission.id">
+                                                        Terminer
+                                                    </button>
+                                                </t>
+
+                                            </form>
+                                        </t>
+
+                                        <a href="/my/missions" class="ab-cta-btn">
+                                            Trouver des radiologues compatibles
+                                        </a>
+
+                                        <a class="ab-cta-btn"
+                                           t-att-href="'/my/missions/%s/print' % mission.id"
+                                           target="_blank">
+                                            Imprimer PDF
+                                        </a>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- ✅ MODAL Affectation -->
+                        <div class="modal fade"
+                             t-if="is_owner"
+                             t-att-id="'assignModal_%s' % mission.id"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="border-radius:18px; overflow:hidden;">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" style="font-weight:950;">Affecter un candidat</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+
+                                    <form method="post" t-att-action="'/my/missions/%s/assign' % mission.id">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                        <div class="modal-body">
+                                            <div class="ab-modal-sub mb-2">
+                                                Choisis un radiologue parmi les candidatures :
+                                            </div>
+
+                                            <select class="form-select"
+                                                    name="application_id"
+                                                    required="required"
+                                                    t-att-id="'assignSelect_%s' % mission.id">
+                                                <option value="" selected="selected" disabled="disabled">— Sélectionner
+                                                    —
+                                                </option>
+
+                                                <t t-foreach="visible_application_ids" t-as="app">
+                                                    <t t-set="rid" t-value="app.radiologist_id"/>
+                                                    <t t-set="img_url"
+                                                       t-value="'/web/image/radiology.radiologist/%s/image_1920' % rid.id"/>
+
+                                                    <option t-att-value="app.id"
+                                                            t-att-data-name="rid.display_name"
+                                                            t-att-data-img="img_url">
+                                                        <t t-esc="rid.display_name"/>
+                                                    </option>
+                                                </t>
+
+
+                                            </select>
+
+
+                                            <!-- ✅ Preview candidat sélectionné -->
+                                            <div class="ab-cand-preview"
+                                                 t-att-id="'candPreview_%s' % mission.id"
+                                                 style="display:none;">
+                                                <div class="ab-cand-row">
+                                                    <div class="ab-cand-ava">
+                                                        <img t-att-id="'candImg_%s' % mission.id" src=""
+                                                             alt="Radiologue"/>
+                                                    </div>
+                                                    <div style="min-width:0;">
+                                                        <p class="ab-cand-name"
+                                                           t-att-id="'candName_%s' % mission.id"></p>
+                                                        <div class="ab-cand-meta">
+                                                            <span t-att-id="'candSpecs_%s' % mission.id"></span>
+                                                        </div>
+                                                        <div class="ab-rating-pill">
+                                                            ⭐ <span t-att-id="'candRate_%s' % mission.id"></span>/5
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                                Annuler
+                                            </button>
+                                            <button type="submit" class="btn btn-primary" style="font-weight:850;">
+                                                Confirmer l’affectation
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            (function () {
+
+                            function setupAssignPreview(missionId){
+                            var sel = document.getElementById("assignSelect_" + missionId);
+                            if(!sel) return;
+
+                            var preview = document.getElementById("candPreview_" + missionId);
+                            var img = document.getElementById("candImg_" + missionId);
+                            var name = document.getElementById("candName_" + missionId);
+                            var specs = document.getElementById("candSpecs_" + missionId);
+                            var rate = document.getElementById("candRate_" + missionId);
+
+                            function render(){
+                            var opt = sel.options[sel.selectedIndex];
+                            if(!opt || !opt.dataset || !opt.dataset.name){
+                            if(preview) preview.style.display = "none";
+                            return;
+                            }
+                            if(img) img.src = opt.dataset.img || "/web/static/img/user_menu_avatar.png";
+                            if(name) name.textContent = opt.dataset.name || "";
+                            if(specs) specs.textContent = opt.dataset.specs || "—";
+                            if(rate) rate.textContent = (opt.dataset.rate || "0");
+                            if(preview) preview.style.display = "block";
+                            }
+
+                            sel.addEventListener("change", render);
+                            render();
+                            }
+
+                            // ✅ au chargement : initialiser tous les selects présents
+                            document.addEventListener("DOMContentLoaded", function(){
+                            var selects = document.querySelectorAll("select[id^='assignSelect_']");
+                            selects.forEach(function(s){
+                            var id = s.id.replace("assignSelect_", "");
+                            setupAssignPreview(id);
+                            });
+                            });
+
+                            // ✅ quand le modal bootstrap s’ouvre : refresh (au cas où)
+                            document.addEventListener("shown.bs.modal", function(e){
+                            if(!e.target || !e.target.id) return;
+                            if(e.target.id.startsWith("assignModal_")){
+                            var missionId = e.target.id.replace("assignModal_", "");
+                            setupAssignPreview(missionId);
+                            }
+                            });
+
+                            })();
+                        </script>
+
+
+                        <!-- ✅ MODAL Done + Review -->
+                        <div class="modal fade"
+                             t-att-id="'doneModal_%s' % mission.id"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content" style="border-radius:18px; overflow:hidden;">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" style="font-weight:950;">Terminer la mission</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+
+                                    <form method="post"
+                                          t-att-action="'/my/missions/%s/done' % mission.id"
+                                          t-att-id="'doneForm_%s' % mission.id">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                        <div class="modal-body">
+
+                                            <t t-set="rid" t-value="mission.assigned_radiologist_id"/>
+
+                                            <div class="ab-review-hero mb-3">
+                                                <div class="ab-review-ava">
+                                                    <t t-if="rid and rid.image_1920">
+                                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % rid.id"
+                                                             alt="Radiologue"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <img t-att-src="'/web/static/img/user_menu_avatar.png'"
+                                                             alt="Radiologue"/>
+                                                    </t>
+                                                </div>
+                                                <div style="min-width:0;">
+                                                    <p class="ab-review-name">
+                                                        <t t-esc="rid.display_name if rid else 'Radiologue'"/>
+                                                    </p>
+                                                    <div class="ab-review-sub">Évalue ce radiologue (optionnel) puis
+                                                        confirme la fin de mission.
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- notes -->
+                                            <div class="ab-stars mb-3">
+
+                                                <!-- punctuality -->
+                                                <div class="ab-star-group">
+                                                    <div class="ab-star-label">Ponctualité</div>
+                                                    <div class="ab-radio-row">
+                                                        <t t-foreach="[1,2,3,4,5]" t-as="n">
+                                                            <input t-att-id="'p_%s_%s' % (mission.id, n)" type="radio"
+                                                                   name="punctuality" t-att-value="str(n)"/>
+                                                            <label t-att-for="'p_%s_%s' % (mission.id, n)">
+                                                                <t t-esc="n"/>
+                                                            </label>
+                                                        </t>
+                                                    </div>
+                                                </div>
+
+                                                <!-- human_relation -->
+                                                <div class="ab-star-group">
+                                                    <div class="ab-star-label">Relation humaine</div>
+                                                    <div class="ab-radio-row">
+                                                        <t t-foreach="[1,2,3,4,5]" t-as="n">
+                                                            <input t-att-id="'h_%s_%s' % (mission.id, n)" type="radio"
+                                                                   name="human_relation" t-att-value="str(n)"/>
+                                                            <label t-att-for="'h_%s_%s' % (mission.id, n)">
+                                                                <t t-esc="n"/>
+                                                            </label>
+                                                        </t>
+                                                    </div>
+                                                </div>
+
+                                                <!-- competence -->
+                                                <div class="ab-star-group">
+                                                    <div class="ab-star-label">Compétence</div>
+                                                    <div class="ab-radio-row">
+                                                        <t t-foreach="[1,2,3,4,5]" t-as="n">
+                                                            <input t-att-id="'c_%s_%s' % (mission.id, n)" type="radio"
+                                                                   name="competence" t-att-value="str(n)"/>
+                                                            <label t-att-for="'c_%s_%s' % (mission.id, n)">
+                                                                <t t-esc="n"/>
+                                                            </label>
+                                                        </t>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div>
+                                                <label class="form-label" style="font-weight:850;">Commentaire
+                                                    (optionnel)
+                                                </label>
+                                                <textarea class="form-control" name="comment" rows="3"
+                                                          placeholder="Ex: Très professionnel, bon relationnel..."></textarea>
+                                            </div>
+
+                                            <!-- loading row -->
+                                            <div class="ab-loading mt-3" t-att-id="'doneLoading_%s' % mission.id">
+                                                <span class="ab-spinner"></span>
+                                                <span>Finalisation en cours...</span>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                                Annuler
+                                            </button>
+
+                                            <!-- ✅ Animated submit -->
+                                            <button type="submit"
+                                                    class="btn btn-primary"
+                                                    style="font-weight:850;"
+                                                    t-att-onclick="'return window.abSubmitDone(%s);' % mission.id">
+                                                Confirmer et terminer
+                                            </button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ✅ Small JS (inline) to animate submit -->
+                        <script type="text/javascript">
+                            window.abSubmitDone = function(missionId){
+                            // optional confirm
+                            if(!confirm("Marquer cette mission comme terminée ?")) return false;
+
+                            var btn = event &amp;&amp; event.target ? event.target : null;
+                            var loading = document.getElementById("doneLoading_" + missionId);
+                            if(loading) loading.style.display = "flex";
+                            if(btn){
+                            btn.disabled = true;
+                            btn.innerText = "Traitement...";
+                            }
+
+                            // let the user see the animation for a short moment, then submit
+                            setTimeout(function(){
+                            var form = document.getElementById("doneForm_" + missionId);
+                            if(form) form.submit();
+                            }, 650);
+
+                            return false; // prevent immediate submit
+                            }
+                        </script>
+
+
+                        <!-- CONTENT -->
+                        <div class="row g-4 mt-3">
+
+                            <!-- Left -->
+                            <div class="col-lg-8">
+
+                                <!-- Description -->
+                                <div class="ab-card">
+                                    <div class="ab-card-hd">
+                                        <h3 class="ab-card-title">Description</h3>
+                                    </div>
+                                    <div class="ab-card-bd">
+                                        <t t-if="mission.description">
+                                            <div class="ab-desc">
+                                                <t t-esc="mission.description"/>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="ab-sub" style="margin:0;">Aucune description fournie.</div>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <!-- Avantages -->
+                                <div class="ab-card mt-4">
+                                    <div class="ab-card-hd">
+                                        <h3 class="ab-card-title">Avantages</h3>
+                                    </div>
+                                    <div class="ab-card-bd">
+                                        <t t-if="mission.avantage">
+                                            <div class="ab-desc">
+                                                <t t-esc="mission.avantage"/>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="ab-sub" style="margin:0;">Aucun avantage renseigné.</div>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <!-- Specialties + Brands -->
+                                <div class="ab-card mt-4">
+                                    <div class="ab-card-hd">
+                                        <h3 class="ab-card-title">Spécialités et marques</h3>
+                                    </div>
+                                    <div class="ab-card-bd">
+
+                                        <t t-if="mission.speciality_ids">
+                                            <div style="font-weight:950;color:var(--ab-text);margin-bottom:8px;">
+                                                Spécialités
+                                            </div>
+                                            <div class="ab-chips">
+                                                <t t-foreach="mission.speciality_ids" t-as="sp">
+                                                    <span class="ab-chip">
+                                                        <t t-esc="sp.name"/>
+                                                    </span>
+                                                </t>
+                                            </div>
+                                        </t>
+
+                                        <t t-if="mission.brand_ids">
+                                            <div style="font-weight:950;color:var(--ab-text);margin:14px 0 8px;">
+                                                Marques
+                                            </div>
+                                            <div class="ab-chips">
+                                                <t t-foreach="mission.brand_ids" t-as="br">
+                                                    <span class="ab-chip">
+                                                        <t t-esc="br.name"/>
+                                                    </span>
+                                                </t>
+                                            </div>
+                                        </t>
+
+                                        <t t-if="not mission.speciality_ids and not mission.brand_ids">
+                                            <div class="ab-sub" style="margin:0;">
+                                                Aucune spécialité ou marque sélectionnée.
+                                            </div>
+                                        </t>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Right -->
+                            <div class="col-lg-4">
+
+                                <!-- Hospital -->
+                                <div class="ab-card">
+                                    <div class="ab-card-hd">
+                                        <h3 class="ab-card-title">Établissement partenaire</h3>
+                                    </div>
+                                    <div class="ab-card-bd">
+
+                                        <div class="ab-hosp">
+                                            <div class="ab-hosp-img">
+                                                <t t-if="hospital and hospital.image_1920">
+                                                    <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % hospital.id"
+                                                         alt="Hôpital"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <img t-att-src="'/web/static/img/placeholder.png'" alt="Hôpital"/>
+                                                </t>
+                                            </div>
+
+                                            <div class="min-w-0">
+                                                <p class="ab-hosp-name">
+                                                    <t t-esc="(hospital and hospital.name) or 'Hôpital'"/>
+                                                </p>
+                                                <t t-if="hospital and hospital.city">
+                                                    <div class="ab-hosp-meta">
+                                                        <t t-esc="hospital.city"/>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- Recap -->
+                                <div class="ab-card mt-4">
+                                    <div class="ab-card-hd">
+                                        <h3 class="ab-card-title">Récapitulatif</h3>
+                                    </div>
+                                    <div class="ab-card-bd">
+                                        <div class="ab-kv">
+
+                                            <div class="ab-kv-row">
+                                                <div class="ab-k">Tarif</div>
+                                                <div class="ab-v">
+                                                    <t t-esc="mission.tarif or '—'"/>
+                                                    €
+                                                </div>
+                                            </div>
+
+                                            <div class="ab-kv-row">
+                                                <div class="ab-k">Type de tarif</div>
+                                                <div class="ab-v">
+                                                    <t t-if="mission.tarif_type == 'hour'">Par heure</t>
+                                                    <t t-elif="mission.tarif_type == 'day'">Par jour</t>
+                                                    <t t-else="">—</t>
+                                                </div>
+                                            </div>
+
+                                            <div class="ab-kv-row">
+                                                <div class="ab-k">Date début</div>
+                                                <div class="ab-v">
+                                                    <t t-esc="mission.start_date or '—'"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="ab-kv-row">
+                                                <div class="ab-k">Date fin</div>
+                                                <div class="ab-v">
+                                                    <t t-esc="mission.end_date or '—'"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="ab-kv-row">
+                                                <div class="ab-k">Spécialités</div>
+                                                <div class="ab-v">
+                                                    <t t-esc="len(mission.speciality_ids) if mission.speciality_ids else 0"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="ab-kv-row">
+                                                <div class="ab-k">Marques</div>
+                                                <div class="ab-v">
+                                                    <t t-esc="len(mission.brand_ids) if mission.brand_ids else 0"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="ab-kv-row">
+                                                <div class="ab-k">Avantages</div>
+                                                <div class="ab-v">
+                                                    <t t-if="mission.avantage">Oui</t>
+                                                    <t t-else="">—</t>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <t t-if="is_owner and False">
+                                    <div class="ab-card mt-4">
+                                        <div class="ab-card-hd">
+                                            <h3 class="ab-card-title">Postulants</h3>
+                                        </div>
+                                        <div class="ab-card-bd">
+                                            <t t-if="visible_application_ids">
+                                                <div class="ab-apps-list">
+                                                    <t t-foreach="visible_application_ids" t-as="app">
+                                                        <t t-set="rid" t-value="app.radiologist_id"/>
+                                                        <a t-att-href="'/my/radiologists/%s' % rid.id"
+                                                           class="ab-app-item"
+                                                           title="Voir profil radiologue">
+                                                            <div class="ab-app-top">
+                                                                <div class="ab-app-avatar">
+                                                                    <t t-if="rid.image_1920">
+                                                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % rid.id"
+                                                                             alt="Radiologue"/>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        <img t-att-src="'/web/static/img/user_menu_avatar.png'"
+                                                                             alt="Radiologue"/>
+                                                                    </t>
+                                                                </div>
+                                                                <div class="ab-app-status">
+                                                                    <t t-esc="app.status or 'pending'"/>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ab-app-main">
+                                                                <p class="ab-app-name">
+                                                                    <t t-esc="rid.display_name or 'Radiologue'"/>
+                                                                </p>
+                                                                <div class="ab-app-sub">
+                                                                    <t t-if="rid.specialty_ids">
+                                                                        <t t-esc="', '.join(rid.specialty_ids.mapped('name')[:2])"/>
+                                                                    </t>
+                                                                    <t t-else="">Aucune spécialité renseignée</t>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ab-app-side">
+                                                                <div class="ab-app-link">Voir profil</div>
+                                                            </div>
+                                                        </a>
+                                                    </t>
+                                                </div>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="ab-sub" style="margin:0;">Aucun postulant pour cette mission.</div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+
+                            </div>
+                        </div>
+
+                        <t t-if="is_owner">
+                            <div class="ab-card mt-4">
+                                <div class="ab-card-hd">
+                                    <h3 class="ab-card-title">Postulants</h3>
+                                </div>
+                                <div class="ab-card-bd">
+                                    <t t-if="visible_application_ids">
+                                        <div class="ab-apps-list">
+                                            <t t-foreach="visible_application_ids" t-as="app">
+                                                <t t-set="rid" t-value="app.radiologist_id"/>
+                                                <a t-att-href="'/my/radiologists/%s' % rid.id"
+                                                   class="ab-app-item"
+                                                   title="Voir profil radiologue">
+                                                    <div class="ab-app-top">
+                                                        <div class="ab-app-avatar">
+                                                            <t t-if="rid.image_1920">
+                                                                <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % rid.id"
+                                                                     alt="Radiologue"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <img t-att-src="'/web/static/img/user_menu_avatar.png'"
+                                                                     alt="Radiologue"/>
+                                                            </t>
+                                                        </div>
+                                                        <div class="ab-app-status">
+                                                            <t t-esc="app.status or 'pending'"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ab-app-main">
+                                                        <p class="ab-app-name">
+                                                            <t t-esc="rid.display_name or 'Radiologue'"/>
+                                                        </p>
+                                                        <div class="ab-app-sub">
+                                                            <t t-if="rid.specialty_ids">
+                                                                <t t-esc="', '.join(rid.specialty_ids.mapped('name')[:2])"/>
+                                                            </t>
+                                                            <t t-else="">Aucune spÃ©cialitÃ© renseignÃ©e</t>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ab-app-side">
+                                                        <div class="ab-app-link">Voir profil</div>
+                                                    </div>
+                                                </a>
+                                            </t>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="ab-sub" style="margin:0;">Aucun postulant pour cette mission.</div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+
                     </div>
-
-                    <div class="ab-pills">
-                      <span class="ab-pill ab-pill-price">
-                        <t t-esc="mission.tarif or '—'"/> €
-                        <span style="color:var(--ab-muted);font-weight:850;">/ mission</span>
-                      </span>
-
-                      <t t-if="mission.start_date">
-                        <span class="ab-pill">Début : <t t-esc="mission.start_date"/></span>
-                      </t>
-                      <t t-if="mission.end_date">
-                        <span class="ab-pill">Fin : <t t-esc="mission.end_date"/></span>
-                      </t>
-                    </div>
-                  </div>
-
-                  <div class="d-flex gap-2 flex-wrap">
-                    <a href="/my/missions" class="ab-cta-btn">Retour</a>
-
-                    <!-- si tu as une route dédiée, remplace href -->
-                    <a href="/my/missions" class="ab-cta-btn ab-cta-btn-primary">
-                      Trouver des radiologues compatibles
-                    </a>
-                  </div>
                 </div>
+            </section>
 
-              </div>
-            </div>
-
-            <!-- CONTENT -->
-            <div class="row g-4 mt-3">
-
-              <!-- Left -->
-              <div class="col-lg-8">
-
-                <!-- Description -->
-                <div class="ab-card">
-                  <div class="ab-card-hd">
-                    <h3 class="ab-card-title">Description</h3>
-                  </div>
-                  <div class="ab-card-bd">
-                    <t t-if="mission.description">
-                      <div class="ab-desc"><t t-esc="mission.description"/></div>
-                    </t>
-                    <t t-else="">
-                      <div class="ab-sub" style="margin:0;">Aucune description fournie.</div>
-                    </t>
-                  </div>
-                </div>
-
-                <!-- Specialties + Brands -->
-                <div class="ab-card mt-4">
-                  <div class="ab-card-hd">
-                    <h3 class="ab-card-title">Spécialités et marques</h3>
-                  </div>
-                  <div class="ab-card-bd">
-
-                    <t t-if="mission.speciality_ids">
-                      <div style="font-weight:950;color:var(--ab-text);margin-bottom:8px;">Spécialités</div>
-                      <div class="ab-chips">
-                        <t t-foreach="mission.speciality_ids" t-as="sp">
-                          <span class="ab-chip"><t t-esc="sp.name"/></span>
-                        </t>
-                      </div>
-                    </t>
-
-                    <t t-if="mission.brand_ids">
-                      <div style="font-weight:950;color:var(--ab-text);margin:14px 0 8px;">Marques</div>
-                      <div class="ab-chips">
-                        <t t-foreach="mission.brand_ids" t-as="br">
-                          <span class="ab-chip"><t t-esc="br.name"/></span>
-                        </t>
-                      </div>
-                    </t>
-
-                    <t t-if="not mission.speciality_ids and not mission.brand_ids">
-                      <div class="ab-sub" style="margin:0;">Aucune spécialité ou marque sélectionnée.</div>
-                    </t>
-
-                  </div>
-                </div>
-
-              </div>
-
-              <!-- Right -->
-              <div class="col-lg-4">
-
-                <!-- Hospital -->
-                <div class="ab-card">
-                  <div class="ab-card-hd">
-                    <h3 class="ab-card-title">Établissement partenaire</h3>
-                  </div>
-                  <div class="ab-card-bd">
-
-                    <div class="ab-hosp">
-                      <div class="ab-hosp-img">
-                        <t t-if="hospital and hospital.image_1920">
-                          <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % hospital.id" alt="Hôpital"/>
-                        </t>
-                        <t t-else="">
-                          <img t-att-src="'/web/static/img/placeholder.png'" alt="Hôpital"/>
-                        </t>
-                      </div>
-
-                      <div class="min-w-0">
-                        <p class="ab-hosp-name">
-                          <t t-esc="(hospital and hospital.name) or 'Hôpital'"/>
-                        </p>
-                        <t t-if="hospital and hospital.city">
-                          <div class="ab-hosp-meta"><t t-esc="hospital.city"/></div>
-                        </t>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                <!-- Recap -->
-                <div class="ab-card mt-4">
-                  <div class="ab-card-hd">
-                    <h3 class="ab-card-title">Récapitulatif</h3>
-                  </div>
-                  <div class="ab-card-bd">
-                    <div class="ab-kv">
-
-                      <div class="ab-kv-row">
-                        <div class="ab-k">Tarif</div>
-                        <div class="ab-v"><t t-esc="mission.tarif or '—'"/> €</div>
-                      </div>
-
-                      <div class="ab-kv-row">
-                        <div class="ab-k">Date début</div>
-                        <div class="ab-v"><t t-esc="mission.start_date or '—'"/></div>
-                      </div>
-
-                      <div class="ab-kv-row">
-                        <div class="ab-k">Date fin</div>
-                        <div class="ab-v"><t t-esc="mission.end_date or '—'"/></div>
-                      </div>
-
-                      <div class="ab-kv-row">
-                        <div class="ab-k">Spécialités</div>
-                        <div class="ab-v"><t t-esc="len(mission.speciality_ids) if mission.speciality_ids else 0"/></div>
-                      </div>
-
-                      <div class="ab-kv-row">
-                        <div class="ab-k">Marques</div>
-                        <div class="ab-v"><t t-esc="len(mission.brand_ids) if mission.brand_ids else 0"/></div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-    </t>
-  </template>
+        </t>
+    </template>
 
 </odoo>

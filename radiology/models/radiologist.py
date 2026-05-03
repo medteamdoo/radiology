@@ -32,6 +32,14 @@ class Radiologist(models.Model):
 
     bio = fields.Text()
     experience_years = fields.Integer()
+    hospital_id = fields.Many2one(
+        'radiology.hospital',
+        string="Hopital actuel"
+    )
+    hide_profile_for_current_hospital = fields.Boolean(
+        string="Masquer le profil pour l'hopital actuel",
+        default=False
+    )
     diplome_ids = fields.Many2many(
         'ir.attachment',
         'radiologist_diplome_rel',  # table pivot
@@ -68,18 +76,18 @@ class Radiologist(models.Model):
         string="Disponibilités"
     )
 
-    rating_ids = fields.One2many(
-        'radiology.rating',
+    review_ids = fields.One2many(
+        'radiology.radiologist.review',
         'radiologist_id',
-        string="Notes"
+        string="Avis"
     )
 
-    @api.depends('rating_ids.score')
+    @api.depends('review_ids.score_avg')
     def _compute_rating_avg(self):
         for rec in self:
-            if rec.rating_ids:
-                total = sum(r.score for r in rec.rating_ids)
-                rec.rating_count = len(rec.rating_ids)
+            if rec.review_ids:
+                total = sum(r.score_avg for r in rec.review_ids)
+                rec.rating_count = len(rec.review_ids)
                 rec.rating_avg = total / rec.rating_count
             else:
                 rec.rating_avg = 0.0
