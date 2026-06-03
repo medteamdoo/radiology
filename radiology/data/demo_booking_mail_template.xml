@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="mail_template_demo_booking_admin" model="mail.template">
+    <field name="name">Demo Booking Admin Notification</field>
+    <field name="model_id" ref="model_radiology_demo_booking"/>
+    <field name="subject">Nouvelle reservation de demo - {{ object.partner_name }}</field>
+    <field name="email_from">{{ user.email_formatted or user.company_id.email_formatted or 'noreply@example.com' }}</field>
+    <field name="email_to">{{ object._get_admin_notification_email() }}</field>
+    <field name="body_html" type="html">
+      <![CDATA[
+      <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#111827;">
+        <p>Une nouvelle reservation de demo a ete enregistree.</p>
+        <p><strong>Nom :</strong> {{ object.partner_name }}</p>
+        <p><strong>Email :</strong> {{ object.email }}</p>
+        <p><strong>Telephone :</strong> {{ object.phone }}</p>
+        <p><strong>Debut :</strong> {{ format_datetime(object.slot_id.start_datetime) }}</p>
+        <p><strong>Fin :</strong> {{ format_datetime(object.slot_id.end_datetime) }}</p>
+      </div>
+      ]]>
+    </field>
+    <field name="auto_delete" eval="False"/>
+  </record>
+</odoo>

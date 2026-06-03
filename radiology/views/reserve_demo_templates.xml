@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="reserve_demo_form" name="Reserve a Demo">
+    <t t-call="website.layout">
+      <section class="rl-demo-page">
+        <style>
+          .rl-demo-page{
+            --rl-demo-text:#0b1220;
+            --rl-demo-muted:#5f6b7a;
+            --rl-demo-border:rgba(15,23,42,.10);
+            --rl-demo-card:rgba(255,255,255,.92);
+            --rl-demo-shadow:0 16px 48px rgba(2,6,23,.10);
+            --rl-demo-shadow-soft:0 12px 28px rgba(15,118,110,.10);
+            --rl-demo-primary:#0f766e;
+            --rl-demo-primary-strong:#0b5f59;
+            --rl-demo-radius:26px;
+            background:
+              radial-gradient(900px 420px at 0% 0%, rgba(15,118,110,.12), transparent 58%),
+              linear-gradient(180deg, #f3fbfa 0%, #f8fafc 45%, #ffffff 100%);
+            padding: 56px 0 72px;
+          }
+          .rl-demo-shell{
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 18px;
+          }
+          @media(min-width:768px){
+            .rl-demo-shell{ padding: 0 28px; }
+          }
+          .rl-demo-grid{
+            display:grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+            gap: 24px;
+            align-items: stretch;
+          }
+          @media(max-width: 991.98px){
+            .rl-demo-grid{ grid-template-columns: 1fr; }
+          }
+          .rl-demo-panel{
+            border: 1px solid var(--rl-demo-border);
+            border-radius: var(--rl-demo-radius);
+            background: var(--rl-demo-card);
+            box-shadow: var(--rl-demo-shadow);
+            position: relative;
+            overflow: hidden;
+          }
+          .rl-demo-hero{
+            padding: 34px 30px 30px;
+            background:
+              linear-gradient(145deg, rgba(255,255,255,.98), rgba(239,253,250,.92)),
+              var(--rl-demo-card);
+          }
+          .rl-demo-hero:before{
+            content:"";
+            position:absolute;
+            inset:auto -80px -110px auto;
+            width:240px;
+            height:240px;
+            border-radius:999px;
+            background: radial-gradient(circle, rgba(15,118,110,.18) 0%, rgba(15,118,110,0) 70%);
+          }
+          .rl-demo-kicker{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            border:1px solid rgba(15,118,110,.16);
+            background: rgba(240,253,250,.96);
+            color: var(--rl-demo-primary);
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: .02em;
+            text-transform: uppercase;
+          }
+          .rl-demo-title{
+            margin: 18px 0 0;
+            color: var(--rl-demo-text);
+            font-size: clamp(34px, 5vw, 56px);
+            line-height: .96;
+            letter-spacing: -.04em;
+            font-weight: 950;
+            max-width: 10ch;
+          }
+          .rl-demo-subtitle{
+            margin: 18px 0 0;
+            max-width: 560px;
+            color: var(--rl-demo-muted);
+            font-size: 16px;
+            line-height: 1.65;
+            font-weight: 550;
+          }
+          .rl-demo-points{
+            margin: 28px 0 0;
+            display:grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+          }
+          @media(max-width: 640px){
+            .rl-demo-points{ grid-template-columns: 1fr; }
+          }
+          .rl-demo-point{
+            padding: 16px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(15,23,42,.08);
+            background: rgba(255,255,255,.78);
+            box-shadow: var(--rl-demo-shadow-soft);
+          }
+          .rl-demo-point strong{
+            display:block;
+            color: var(--rl-demo-text);
+            font-size: 14px;
+            font-weight: 900;
+          }
+          .rl-demo-point span{
+            display:block;
+            margin-top: 6px;
+            color: var(--rl-demo-muted);
+            font-size: 13px;
+            line-height: 1.5;
+            font-weight: 600;
+          }
+          .rl-demo-foot{
+            margin-top: 28px;
+            display:flex;
+            gap: 12px;
+            flex-wrap: wrap;
+          }
+          .rl-demo-pill{
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(15,23,42,.08);
+            background: rgba(248,250,252,.9);
+            color: var(--rl-demo-text);
+            font-size: 13px;
+            font-weight: 800;
+          }
+          .rl-demo-form-wrap{
+            padding: 30px;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+          }
+          .rl-demo-form-head h2{
+            margin:0;
+            color: var(--rl-demo-text);
+            font-size: 30px;
+            line-height: 1.02;
+            letter-spacing: -.03em;
+            font-weight: 950;
+          }
+          .rl-demo-form-head p{
+            margin: 12px 0 0;
+            color: var(--rl-demo-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            font-weight: 600;
+          }
+          .rl-demo-alert{
+            margin-top: 18px;
+            border-radius: 18px;
+            padding: 14px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 1.5;
+            border: 1px solid transparent;
+          }
+          .rl-demo-alert.is-error{
+            color: #991b1b;
+            background: rgba(254,242,242,.94);
+            border-color: rgba(239,68,68,.16);
+          }
+          .rl-demo-alert.is-success{
+            color: #166534;
+            background: rgba(240,253,244,.94);
+            border-color: rgba(34,197,94,.16);
+          }
+          .rl-demo-form{
+            margin-top: 24px;
+            display:grid;
+            gap: 16px;
+          }
+          .rl-demo-field label{
+            display:block;
+            margin-bottom: 8px;
+            color: var(--rl-demo-text);
+            font-size: 13px;
+            font-weight: 900;
+          }
+          .rl-demo-field input,
+          .rl-demo-field select{
+            width:100%;
+            min-height: 56px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(15,23,42,.10);
+            background: rgba(255,255,255,.96);
+            color: var(--rl-demo-text);
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
+            transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+          }
+          .rl-demo-field input:focus,
+          .rl-demo-field select:focus{
+            outline:none;
+            border-color: rgba(15,118,110,.46);
+            box-shadow: 0 0 0 4px rgba(15,118,110,.10);
+          }
+          .rl-demo-slot-empty{
+            margin-top: 24px;
+            border-radius: 20px;
+            padding: 18px;
+            background: rgba(248,250,252,.92);
+            border: 1px dashed rgba(15,23,42,.14);
+            color: var(--rl-demo-muted);
+            font-size: 14px;
+            line-height: 1.6;
+            font-weight: 650;
+          }
+          .rl-demo-submit{
+            margin-top: 6px;
+            min-height: 58px;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(180deg, var(--rl-demo-primary), var(--rl-demo-primary-strong));
+            color: #fff;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: -.01em;
+            box-shadow: 0 18px 36px rgba(15,118,110,.24);
+            transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+          }
+          .rl-demo-submit:hover{
+            transform: translateY(-1px);
+            filter: saturate(1.04);
+            box-shadow: 0 22px 42px rgba(15,118,110,.28);
+          }
+          .rl-demo-note{
+            margin-top: 16px;
+            color: var(--rl-demo-muted);
+            font-size: 12.5px;
+            line-height: 1.6;
+            font-weight: 650;
+          }
+        </style>
+
+        <div class="container rl-demo-shell">
+          <div class="rl-demo-grid">
+            <div class="rl-demo-panel rl-demo-hero">
+              <span class="rl-demo-kicker">Reserve a Demo</span>
+              <h1 class="rl-demo-title">Planifiez une demo de la plateforme.</h1>
+              <p class="rl-demo-subtitle">
+                Decouvrez comment la plateforme aide les etablissements de sante a publier leurs besoins,
+                suivre les missions et collaborer plus rapidement avec les radiologues.
+              </p>
+
+              <div class="rl-demo-points">
+                <div class="rl-demo-point">
+                  <strong>Presentation guidee</strong>
+                  <span>Un echange clair pour vous montrer le fonctionnement reel de la plateforme.</span>
+                </div>
+                <div class="rl-demo-point">
+                  <strong>Cas d usage metier</strong>
+                  <span>Nous adaptons la demo a votre etablissement, vos besoins et votre organisation.</span>
+                </div>
+                <div class="rl-demo-point">
+                  <strong>Creneaux en direct</strong>
+                  <span>Seuls les horaires encore disponibles sont affiches au visiteur.</span>
+                </div>
+                <div class="rl-demo-point">
+                  <strong>Reservation simple</strong>
+                  <span>Le creneau disparait automatiquement des qu il est reserve.</span>
+                </div>
+              </div>
+
+              <div class="rl-demo-foot">
+                <span class="rl-demo-pill">Demo personnalisee</span>
+                <span class="rl-demo-pill">Pour etablissements de sante</span>
+                <span class="rl-demo-pill">Disponibilites admin</span>
+              </div>
+            </div>
+
+            <div class="rl-demo-panel rl-demo-form-wrap">
+              <div class="rl-demo-form-head">
+                <h2>Reserver un rendez-vous</h2>
+                <p>
+                  Choisissez un creneau disponible puis laissez vos coordonnees pour confirmer la demonstration.
+                </p>
+              </div>
+
+              <t t-if="error">
+                <div class="rl-demo-alert is-error">
+                  <t t-esc="error"/>
+                </div>
+              </t>
+              <t t-if="success">
+                <div class="rl-demo-alert is-success">
+                  <t t-esc="success"/>
+                </div>
+              </t>
+
+              <t t-if="slots">
+                <form action="/reserve-demo" method="post" class="rl-demo-form">
+                  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                  <div class="rl-demo-field">
+                    <label for="reserve_demo_slot">Creneau disponible</label>
+                    <select id="reserve_demo_slot" name="slot_id" required="required">
+                      <option value="">Choisir un creneau</option>
+                      <t t-foreach="slots" t-as="slot">
+                        <option t-att-value="slot['id']"
+                                t-att-selected="'selected' if selected_slot_id == slot['id'] else None">
+                          <t t-esc="slot['full_label']"/>
+                        </option>
+                      </t>
+                    </select>
+                  </div>
+
+                  <div class="rl-demo-field">
+                    <label for="reserve_demo_name">Nom complet</label>
+                    <input id="reserve_demo_name"
+                           type="text"
+                           name="name"
+                           required="required"
+                           placeholder="Ex : Dr. Ahmed Saoud"
+                           t-att-value="values.get('name') or ''"/>
+                  </div>
+
+                  <div class="rl-demo-field">
+                    <label for="reserve_demo_email">Email</label>
+                    <input id="reserve_demo_email"
+                           type="email"
+                           name="email"
+                           required="required"
+                           placeholder="nom@etablissement.fr"
+                           t-att-value="values.get('email') or ''"/>
+                  </div>
+
+                  <div class="rl-demo-field">
+                    <label for="reserve_demo_phone">Telephone</label>
+                    <input id="reserve_demo_phone"
+                           type="text"
+                           name="phone"
+                           required="required"
+                           placeholder="+33 6 12 34 56 78"
+                           t-att-value="values.get('phone') or ''"/>
+                  </div>
+
+                  <button type="submit" class="rl-demo-submit">Reserver une demo</button>
+                </form>
+              </t>
+              <t t-else="">
+                <div class="rl-demo-slot-empty">
+                  Aucun creneau de demo n est disponible pour le moment. Revenez plus tard ou contactez l equipe.
+                </div>
+              </t>
+
+              <p class="rl-demo-note">
+                Chaque creneau reserve disparait automatiquement de cette page pour eviter les doubles reservations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </t>
+  </template>
+</odoo>

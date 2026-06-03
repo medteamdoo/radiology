@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="view_radiology_demo_slot_tree" model="ir.ui.view">
+    <field name="name">radiology.demo.slot.tree</field>
+    <field name="model">radiology.demo.slot</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="start_datetime"/>
+        <field name="end_datetime"/>
+        <field name="state"/>
+        <field name="active"/>
+        <field name="booking_count"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_radiology_demo_slot_form" model="ir.ui.view">
+    <field name="name">radiology.demo.slot.form</field>
+    <field name="model">radiology.demo.slot</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group>
+              <field name="start_datetime"/>
+              <field name="end_datetime"/>
+            </group>
+            <group>
+              <field name="state"/>
+              <field name="active"/>
+              <field name="booking_count" readonly="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Reservations">
+              <field name="booking_id" readonly="1">
+                <tree>
+                  <field name="partner_name"/>
+                  <field name="email"/>
+                  <field name="phone"/>
+                  <field name="booked_at"/>
+                  <field name="state"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_radiology_demo_slot_search" model="ir.ui.view">
+    <field name="name">radiology.demo.slot.search</field>
+    <field name="model">radiology.demo.slot</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="start_datetime"/>
+        <field name="state"/>
+        <filter string="Available" name="available" domain="[('state', '=', 'available')]"/>
+        <filter string="Booked" name="booked" domain="[('state', '=', 'booked')]"/>
+        <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="action_radiology_demo_slot" model="ir.actions.act_window">
+    <field name="name">Demo Slots</field>
+    <field name="res_model">radiology.demo.slot</field>
+    <field name="view_mode">tree,form</field>
+    <field name="search_view_id" ref="view_radiology_demo_slot_search"/>
+  </record>
+
+  <record id="view_radiology_demo_booking_tree" model="ir.ui.view">
+    <field name="name">radiology.demo.booking.tree</field>
+    <field name="model">radiology.demo.booking</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="partner_name"/>
+        <field name="email"/>
+        <field name="phone"/>
+        <field name="slot_id"/>
+        <field name="booked_at"/>
+        <field name="state"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_radiology_demo_booking_form" model="ir.ui.view">
+    <field name="name">radiology.demo.booking.form</field>
+    <field name="model">radiology.demo.booking</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group>
+              <field name="partner_name"/>
+              <field name="email"/>
+              <field name="phone"/>
+            </group>
+            <group>
+              <field name="slot_id"/>
+              <field name="booked_at" readonly="1"/>
+              <field name="state"/>
+            </group>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_radiology_demo_booking" model="ir.actions.act_window">
+    <field name="name">Demo Reservations</field>
+    <field name="res_model">radiology.demo.booking</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+</odoo>
