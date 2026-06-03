@@ -11,4 +11,6 @@ access_chat_conversation_user,chat.conversation user,model_radiology_chat_conver
 access_chat_message_user,chat.message user,model_radiology_chat_message,base.group_user,1,1,1,0
 access_radiology_notification_user,radiology.notification user,model_radiology_notification,base.group_user,1,1,1,1
 access_radiology_mobile_device_user,radiology.mobile.device user,model_radiology_mobile_device,base.group_user,1,1,1,1
+access_radiology_demo_slot_user,radiology.demo.slot user,model_radiology_demo_slot,base.group_user,1,1,1,1
+access_radiology_demo_booking_user,radiology.demo.booking user,model_radiology_demo_booking,base.group_user,1,1,1,1
 

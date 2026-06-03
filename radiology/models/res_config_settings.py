@@ -12,3 +12,7 @@ class RadiologyResConfigSettings(models.TransientModel):
         string="Firebase Push Secret",
         config_parameter="radiology.firebase_push_secret",
     )
+    radiology_demo_admin_email = fields.Char(
+        string="Demo Admin Email",
+        config_parameter="radiology.demo_admin_email",
+    )

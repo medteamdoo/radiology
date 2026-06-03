@@ -18,6 +18,12 @@
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
                 <app string="Radiology" name="radiology_settings">
+                    <block title="Demo Reservations">
+                        <setting string="Demo Admin Email"
+                                 help="Admin email that receives automatic notifications when a demo slot is booked.">
+                            <field name="radiology_demo_admin_email" placeholder="admin@your-company.com"/>
+                        </setting>
+                    </block>
                     <block title="Firebase Notifications">
                         <setting string="Firebase Push URL"
                                  help="HTTP Cloud Function URL used by Odoo to send push notifications.">

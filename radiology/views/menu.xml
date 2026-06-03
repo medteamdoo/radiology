@@ -7,6 +7,8 @@
         <menuitem id="menu_mission" name="Missions" parent="menu_radiology_root" action="action_mission"/>
         <menuitem id="menu_application" name="Candidatures" parent="menu_radiology_root" action="action_application"/>
         <menuitem id="menu_notification" name="Notifications" parent="menu_radiology_root" action="action_radiology_notification"/>
+        <menuitem id="menu_demo_slot" name="Demo Slots" parent="menu_radiology_root" action="action_radiology_demo_slot"/>
+        <menuitem id="menu_demo_booking" name="Demo Reservations" parent="menu_radiology_root" action="action_radiology_demo_booking"/>
         <menuitem id="menu_radiology_config"
               name="Configuration"
               parent="menu_radiology_root"

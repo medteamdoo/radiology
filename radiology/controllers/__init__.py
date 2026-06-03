@@ -1,4 +1,5 @@
 from . import hospital_signup
+from . import demo_booking
 from . import missions
 from . import portal_create_mission
 from . import portal_radiologists

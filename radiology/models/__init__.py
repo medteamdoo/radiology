@@ -11,3 +11,5 @@ from . import radiology_chat_message
 from . import notification
 from . import mobile_device
 from . import res_config_settings
+from . import demo_slot
+from . import demo_booking
