@@ -1,0 +1,27 @@
+name: Deploy Radiolink Odoo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+
+            cd /opt/odoo/addons/radiology
+            git pull origin main
+
+            cd /opt/odoo
+            docker compose exec -T web odoo -c /etc/odoo/odoo.conf -d radiology -u odoo_api_rest,radiology --stop-after-init
+            docker compose restart web
