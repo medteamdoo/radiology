@@ -1,905 +1,286 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="portal_my_missions_grouped" name="Portal - My Missions Grouped (Airbnb Theme)">
+    <template id="portal_my_missions_group_section" name="Portal - My Missions Group Section">
+        <section class="rv-candidatures-group">
+            <div class="rv-candidatures-group-head">
+                <div class="rv-candidatures-group-copy">
+                    <span class="rv-portal-section-kicker"><t t-esc="group_kicker"/></span>
+                    <h3><t t-esc="group_title"/></h3>
+                    <p><t t-esc="group_subtitle"/></p>
+                </div>
 
-        <t t-set="rl_fullwidth" t-value="True"/>
-        <t t-set="breadcrumbs" t-value="False"/>
+                <span class="rv-candidatures-count">
+                    <t t-esc="len(missions_group)"/> mission<t t-if="len(missions_group) &gt; 1">s</t>
+                </span>
+            </div>
 
-        <t t-call="portal.portal_layout">
-            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-if="missions_group">
+                <div class="rv-portal-mission-grid">
+                    <t t-foreach="missions_group" t-as="m">
+                        <article class="rv-portal-mission-card">
+                            <a t-att-href="'/my/missions/%s' % m.id" class="rv-portal-mission-media">
+                                <t t-if="m.hospital_id and m.hospital_id.image_1920">
+                                    <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % m.hospital_id.id"
+                                         alt="Mission"/>
+                                </t>
+                                <t t-else="">
+                                    <img src="/web/static/img/placeholder.png" alt="Mission"/>
+                                </t>
+                            </a>
 
-            <style>
-                :root{
-                --ab-text:#0f172a;
-                --ab-muted:#64748b;
-                --ab-border: rgba(15,23,42,.10);
-                --ab-chip:#f8fafc;
-                --ab-chip-border: rgba(15,23,42,.12);
-                --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
-                --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
-                --ab-radius2: 22px;
-                --ab-primary:#2563eb;
-                --ab-danger:#ef4444;
-                }
+                            <div class="rv-portal-mission-body">
+                                <div class="rv-portal-mission-head">
+                                    <div>
+                                        <h3><t t-esc="m.name or 'Mission'"/></h3>
+                                        <p>
+                                            <t t-esc="m.hospital_id.name if m.hospital_id else 'Etablissement partenaire'"/>
+                                            <t t-if="m.start_date or m.end_date">
+                                                <span class="rv-portal-separator">|</span>
+                                                <t t-if="m.start_date"><t t-esc="m.start_date"/></t>
+                                                <t t-if="m.end_date"><t t-esc="' -> %s' % m.end_date"/></t>
+                                            </t>
+                                        </p>
+                                    </div>
+                                    <span t-attf-class="rv-portal-status-chip #{group_status_css}">
+                                        <t t-esc="group_status_label"/>
+                                    </span>
+                                </div>
 
-                .o_portal_wrap > .container{ max-width:100% !important; padding-left:0 !important; padding-right:0
-                !important; }
-                .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+                                <div class="rv-portal-tag-row">
+                                    <t t-foreach="m.speciality_ids[:3]" t-as="sp">
+                                        <span class="rv-portal-tag-chip"><t t-esc="sp.name"/></span>
+                                    </t>
+                                    <t t-foreach="m.brand_ids[:2]" t-as="br">
+                                        <span class="rv-portal-tag-chip is-muted"><t t-esc="br.name"/></span>
+                                    </t>
+                                    <t t-if="len(m.speciality_ids) &gt; 3">
+                                        <span class="rv-portal-tag-chip is-muted">+<t t-esc="len(m.speciality_ids) - 3"/></span>
+                                    </t>
+                                    <t t-if="len(m.brand_ids) &gt; 2">
+                                        <span class="rv-portal-tag-chip is-muted">+<t t-esc="len(m.brand_ids) - 2"/></span>
+                                    </t>
+                                </div>
 
-                .ab-page{ min-height:100vh; background:#fff; }
-                .ab-shell{ padding: 18px 0 56px; }
-                @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
-                @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
+                                <div class="rv-portal-mission-meta">
+                                    <t t-if="m.assigned_radiologist_id and group_key in ['assigned', 'done']">
+                                        <a t-att-href="'/my/radiologists/%s' % m.assigned_radiologist_id.id"
+                                           class="rv-candidatures-assignee">
+                                            <span class="rv-candidatures-assignee-avatar">
+                                                <t t-if="m.assigned_radiologist_id.image_1920">
+                                                    <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % m.assigned_radiologist_id.id"
+                                                         alt="Radiologue"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
+                                                </t>
+                                            </span>
+                                            <span class="rv-candidatures-assignee-copy">
+                                                <small>Radiologue affecte</small>
+                                                <strong><t t-esc="m.assigned_radiologist_id.display_name or 'Radiologue'"/></strong>
+                                            </span>
+                                        </a>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="rv-portal-applicant-strip">
+                                            <div class="rv-portal-avatar-stack">
+                                                <t t-foreach="m.application_ids[:3]" t-as="app">
+                                                    <t t-set="r" t-value="app.radiologist_id"/>
+                                                    <span class="rv-portal-avatar-stack-item" t-att-title="r.display_name">
+                                                        <t t-if="r.image_1920">
+                                                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id" alt="Radiologue"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
+                                                        </t>
+                                                    </span>
+                                                </t>
+                                            </div>
 
-                .ab-inner{ max-width: 1320px; margin: 0 auto; padding-left: 18px; padding-right: 18px; }
-                @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
-                @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
+                                            <span class="rv-portal-applicant-count">
+                                                <t t-if="len(m.application_ids)">
+                                                    <t t-esc="len(m.application_ids)"/> candidature<t t-if="len(m.application_ids) &gt; 1">s</t>
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-if="group_key == 'draft'">Mission en preparation</t>
+                                                    <t t-else="">Aucune candidature</t>
+                                                </t>
+                                            </span>
+                                        </div>
+                                    </t>
 
-                .ab-hero{
-                border-radius: var(--ab-radius2);
-                border: 1px solid var(--ab-border);
-                background: rgba(255,255,255,.92);
-                box-shadow: var(--ab-shadow);
-                padding: 14px;
-                }
-                @media(min-width:768px){ .ab-hero{ padding: 16px; } }
-
-                .ab-top{ display:flex; justify-content:space-between; align-items:flex-start; gap: 14px; }
-                .ab-title{ margin:0; color: var(--ab-text); font-weight: 950; letter-spacing: -.02em; font-size: 26px;
-                line-height: 1.1; }
-                .ab-sub{ margin-top: 6px; color: var(--ab-muted); font-weight: 650; font-size: 13px; }
-
-                .ab-actions{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:flex-end; }
-
-                .ab-cta-btn{
-                border-radius: 12px !important;
-                padding: 10px 12px !important;
-                font-weight: 950 !important;
-                font-size: 13px !important;
-                text-decoration:none !important;
-                border: 1px solid rgba(37,99,235,.22) !important;
-                background: rgba(239,246,255,.95) !important;
-                color: #1d4ed8 !important;
-                display:inline-flex !important;
-                align-items:center !important;
-                justify-content:center !important;
-                gap: 8px !important;
-                cursor:pointer;
-                white-space:nowrap;
-                }
-                .ab-cta-btn:hover{ background: rgba(219,234,254,.95) !important; color:#1d4ed8 !important;
-                text-decoration:none !important; }
-                .ab-cta-btn-danger{
-                background: rgba(254,242,242,.95) !important;
-                border-color: rgba(239,68,68,.25) !important;
-                color: var(--ab-danger) !important;
-                }
-                .ab-cta-btn-danger:hover{
-                background: rgba(254,226,226,.95) !important;
-                border-color: rgba(239,68,68,.35) !important;
-                color: #dc2626 !important;
-                }
-
-                .ab-filters{
-                margin-top: 14px;
-                position: sticky;
-                top: 10px;
-                z-index: 10;
-                background: rgba(255,255,255,.85);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                border: 1px solid var(--ab-border);
-                border-radius: var(--ab-radius2);
-                box-shadow: var(--ab-shadow);
-                padding: 10px;
-                }
-                .ab-filters-row{ display:flex; align-items:center; gap: 10px; flex-wrap:wrap; }
-                .ab-chip{
-                display:inline-flex; align-items:center; gap:8px;
-                padding: 10px 12px;
-                border-radius: 999px;
-                border: 1px solid var(--ab-chip-border);
-                background: var(--ab-chip);
-                color: var(--ab-text);
-                font-weight: 850;
-                font-size: 13px;
-                white-space: nowrap;
-                }
-                .ab-chip select, .ab-chip input{
-                border:none !important; background: transparent !important; outline:none !important;
-                padding:0 !important; height:auto !important;
-                font-weight: 850; font-size: 13px; color: var(--ab-text);
-                min-width: 140px;
-                }
-                .ab-chip input[type="date"]{ min-width: 150px; }
-                .ab-chip-actions{ margin-left:auto; display:flex; gap:10px; flex-wrap:wrap; }
-
-                .ab-section{
-                margin-top: 18px;
-                }
-                .ab-section-title{
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 10px;
-                margin: 0 0 10px;
-                }
-                .ab-h4{
-                margin:0;
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 16px;
-                letter-spacing: -.01em;
-                }
-                .ab-count{
-                font-weight: 950;
-                font-size: 12px;
-                color: var(--ab-text);
-                padding: 6px 10px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.90);
-                white-space:nowrap;
-                }
-
-                .ab-grid{
-                display:grid;
-                grid-template-columns: repeat(4, minmax(0,1fr));
-                gap: 16px;
-                }
-                @media(max-width: 1250px){ .ab-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
-                @media(max-width: 980px){ .ab-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
-                @media(max-width: 640px){ .ab-grid{ grid-template-columns: 1fr; } }
-
-                .ab-card{
-                border-radius: var(--ab-radius2);
-                overflow:hidden;
-                border: 1px solid var(--ab-border);
-                background: #fff;
-                box-shadow: var(--ab-shadow);
-                transition: transform .16s ease, box-shadow .16s ease;
-                }
-                .ab-card:hover{ transform: translateY(-2px); box-shadow: var(--ab-shadow2); }
-
-                .ab-media{
-                position:relative;
-                width:100%;
-                aspect-ratio: 4/3;
-                background: #e5e7eb;
-                overflow:hidden;
-                }
-                .ab-media img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-                .ab-body{ padding: 12px 12px 14px; }
-                .ab-name{ margin:0; font-weight: 950; color: var(--ab-text); font-size: 15px; line-height: 1.25; }
-                .ab-meta{ margin-top: 4px; color: var(--ab-muted); font-weight: 750; font-size: 12.5px; }
-
-                .ab-tags{ margin-top: 8px; display:flex; flex-wrap:wrap; gap: 6px; }
-                .ab-tag{
-                display:inline-flex; align-items:center;
-                padding: 6px 10px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.90);
-                color: var(--ab-text);
-                font-weight: 850;
-                font-size: 12px;
-                white-space:nowrap;
-                }
-
-                .ab-bottom{
-                margin-top: 10px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 10px;
-                flex-wrap:wrap;
-                }
-                .ab-price{
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 14px;
-                white-space:nowrap;
-                }
-                .ab-price span{
-                color: var(--ab-muted);
-                font-weight: 750;
-                font-size: 12px;
-                margin-left: 4px;
-                }
-
-                .ab-card-actions{
-                display:flex;
-                gap: 8px;
-                align-items:center;
-                flex-wrap:wrap;
-                justify-content:flex-end;
-                margin-left:auto;
-                }
-                .ab-btn-mini{
-                border-radius: 12px !important;
-                padding: 8px 10px !important;
-                font-weight: 950 !important;
-                font-size: 12px !important;
-                text-decoration:none !important;
-                border: 1px solid rgba(15,23,42,.10) !important;
-                background: rgba(248,250,252,.90) !important;
-                color: var(--ab-text) !important;
-                display:inline-flex !important;
-                align-items:center !important;
-                gap: 6px !important;
-                cursor:pointer;
-                }
-                .ab-btn-mini:hover{
-                background: rgba(239,246,255,.95) !important;
-                border-color: rgba(37,99,235,.22) !important;
-                color:#1d4ed8 !important;
-                }
-
-                /* Applicants mini avatars */
-                .ab-applicants{
-                margin-top: 10px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 10px;
-                }
-                .ab-app-left{
-                display:flex;
-                align-items:center;
-                gap: 10px;
-                min-width:0;
-                }
-                .ab-app-count{
-                color: var(--ab-muted);
-                font-weight: 850;
-                font-size: 12.5px;
-                white-space:nowrap;
-                }
-                .ab-mini-avatars{
-                display:flex;
-                align-items:center;
-                }
-                .ab-mini-avatar{
-                width: 26px;
-                height: 26px;
-                border-radius: 999px;
-                overflow:hidden;
-                border: 2px solid #fff;
-                background:#e5e7eb;
-                box-shadow: 0 6px 14px rgba(2,6,23,.10);
-                margin-left: -8px;
-                }
-                .ab-mini-avatar:first-child{ margin-left: 0; }
-                .ab-mini-avatar img{
-                width:100%;
-                height:100%;
-                object-fit:cover;
-                display:block;
-                }
-                .ab-mini-more{
-                width: 26px;
-                height: 26px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.92);
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                margin-left: -8px;
-                font-weight: 950;
-                font-size: 11px;
-                color: var(--ab-text);
-                }
-            </style>
-
-            <section class="ab-page">
-                <div class="container-fluid ab-shell">
-                    <div class="ab-inner">
-
-                        <!-- HEADER -->
-                        <div class="ab-hero">
-                            <div class="ab-top">
-                                <div>
-                                    <h2 class="ab-title">Mes missions</h2>
-                                    <div class="ab-sub">
-                                        Vos missions regroupées par statut (Draft / Published / Done).
+                                    <div class="rv-portal-mission-price">
+                                        <strong><t t-esc="m.tarif or '-'"/> EUR</strong>
+                                        <small>
+                                            <t t-if="m.tarif_type == 'hour'">/ heure</t>
+                                            <t t-elif="m.tarif_type == 'day'">/ jour</t>
+                                            <t t-else="">/ mission</t>
+                                        </small>
                                     </div>
                                 </div>
 
-                                <div class="ab-actions">
-                                    <a href="/my/missions/new" class="ab-cta-btn">Publier une mission</a>
-                                    <a href="/my" class="ab-cta-btn">Mon portail</a>
+                                <div class="rv-portal-mission-actions rv-candidatures-card-actions">
+                                    <a class="rv-portal-btn rv-portal-btn-secondary"
+                                       t-att-href="'/my/missions/%s' % m.id">
+                                        Voir la mission
+                                    </a>
+
+                                    <form t-att-action="'/my/missions/%s/delete' % m.id"
+                                          method="post"
+                                          class="rv-candidatures-delete-form">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit"
+                                                class="rv-portal-btn rv-portal-btn-secondary rv-candidatures-delete-btn"
+                                                onclick="return confirm('Supprimer cette mission ?');">
+                                            <i class="fa fa-trash-o"/>
+                                            <span>Supprimer</span>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- FILTERS -->
-                        <form class="ab-filters" method="get" action="/my/missions">
-                            <t t-set="selected_specialty" t-value="selected_specialty or ''"/>
-                            <t t-set="selected_brand" t-value="selected_brand or ''"/>
-
-                            <div class="ab-filters-row">
-                                <div class="ab-chip">
-                                    <span>Spécialité</span>
-                                    <select name="specialty_id">
-                                        <option value="">Toutes</option>
-                                        <t t-foreach="specialties" t-as="s">
-                                            <option t-att-value="s.id"
-                                                    t-att-selected="1 if str(s.id) == str(selected_specialty) else None">
-                                                <t t-esc="s.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-
-                                <div class="ab-chip">
-                                    <span>Marque</span>
-                                    <select name="brand_id">
-                                        <option value="">Toutes</option>
-                                        <t t-foreach="brands" t-as="b">
-                                            <option t-att-value="b.id"
-                                                    t-att-selected="1 if str(b.id) == str(selected_brand) else None">
-                                                <t t-esc="b.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-
-                                <div class="ab-chip">
-                                    <span>Du</span>
-                                    <input type="date" name="date_from" t-att-value="date_from or ''"/>
-                                </div>
-
-                                <div class="ab-chip">
-                                    <span>Au</span>
-                                    <input type="date" name="date_to" t-att-value="date_to or ''"/>
-                                </div>
-
-                                <div class="ab-chip-actions">
-                                    <button class="ab-cta-btn" type="submit">Filtrer</button>
-                                    <a class="ab-cta-btn" href="/my/missions">Réinitialiser</a>
-                                </div>
-                            </div>
-                        </form>
-
-                        <!-- SECTION: Draft -->
-                        <div class="ab-section">
-                            <div class="ab-section-title">
-                                <h4 class="ab-h4">Draft</h4>
-                                <span class="ab-count">
-                                    <t t-esc="len(missions_draft)"/>
-                                    mission(s)
-                                </span>
-                            </div>
-
-                            <t t-if="missions_draft">
-                                <div class="ab-grid">
-                                    <t t-foreach="missions_draft" t-as="m">
-                                        <div class="ab-card">
-
-                                            <div class="ab-media">
-                                                <t t-if="m.hospital_id and m.hospital_id.image_1920">
-                                                    <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % m.hospital_id.id"
-                                                         alt="Mission"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <img t-att-src="'/web/static/img/placeholder.png'" alt="Mission"/>
-                                                </t>
-                                            </div>
-
-                                            <div class="ab-body">
-                                                <h5 class="ab-name">
-                                                    <t t-esc="m.name or 'Mission'"/>
-                                                </h5>
-
-                                                <div class="ab-meta">
-                                                    <t t-if="m.start_date or m.end_date">
-                                                        <t t-if="m.start_date">
-                                                            <t t-esc="m.start_date"/>
-                                                        </t>
-                                                        <t t-if="m.end_date">→
-                                                            <t t-esc="m.end_date"/>
-                                                        </t>
-                                                    </t>
-                                                    <t t-else="">Dates non renseignées</t>
-                                                </div>
-
-                                                <div class="ab-tags">
-                                                    <t t-foreach="m.speciality_ids[:3]" t-as="sp">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="sp.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.speciality_ids) &gt; 3">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.speciality_ids)-3"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-foreach="m.brand_ids[:2]" t-as="br">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="br.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.brand_ids) &gt; 2">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.brand_ids)-2"/>
-                                                        </span>
-                                                    </t>
-                                                </div>
-
-                                                <div class="ab-bottom">
-                                                    <div class="ab-price">
-                                                        <t t-esc="m.tarif or '—'"/>
-                                                        €
-                                                        <span>/
-                                                            <t t-if="m.tarif_type == 'hour'">heure</t>
-                                                            <t t-else="">jour</t>
-                                                        </span>
-                                                    </div>
-
-                                                    <div class="ab-card-actions">
-                                                        <a class="ab-btn-mini" t-att-href="'/my/missions/%s' % m.id">
-                                                            Voir ↗
-                                                        </a>
-
-                                                        <!-- DELETE -->
-                                                        <form t-att-action="'/my/missions/%s/delete' % m.id"
-                                                              method="post" class="d-inline">
-                                                            <input type="hidden" name="csrf_token"
-                                                                   t-att-value="request.csrf_token()"/>
-                                                            <button type="submit" class="ab-btn-mini ab-cta-btn-danger"
-                                                                    onclick="return confirm('Supprimer cette mission ?');">
-                                                                🗑 Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </t>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <div class="mt-2 alert alert-info border-0 shadow-sm"
-                                     style="border-radius:18px; background: rgba(255,255,255,.80);">
-                                    Aucune mission en Draft.
-                                </div>
-                            </t>
-                        </div>
-
-                        <!-- SECTION: Published -->
-                        <div class="ab-section">
-                            <div class="ab-section-title">
-                                <h4 class="ab-h4">Published</h4>
-                                <span class="ab-count">
-                                    <t t-esc="len(missions_published)"/>
-                                    mission(s)
-                                </span>
-                            </div>
-
-                            <t t-if="missions_published">
-                                <div class="ab-grid">
-                                    <t t-foreach="missions_published" t-as="m">
-                                        <div class="ab-card">
-                                            <div class="ab-media">
-                                                <t t-if="m.hospital_id and m.hospital_id.image_1920">
-                                                    <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % m.hospital_id.id"
-                                                         alt="Mission"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <img t-att-src="'/web/static/img/placeholder.png'" alt="Mission"/>
-                                                </t>
-                                            </div>
-
-                                            <div class="ab-body">
-                                                <h5 class="ab-name">
-                                                    <t t-esc="m.name or 'Mission'"/>
-                                                </h5>
-
-                                                <div class="ab-meta">
-                                                    <t t-if="m.start_date or m.end_date">
-                                                        <t t-if="m.start_date">
-                                                            <t t-esc="m.start_date"/>
-                                                        </t>
-                                                        <t t-if="m.end_date">→
-                                                            <t t-esc="m.end_date"/>
-                                                        </t>
-                                                    </t>
-                                                    <t t-else="">Dates non renseignées</t>
-                                                </div>
-
-                                                <div class="ab-tags">
-                                                    <t t-foreach="m.speciality_ids[:3]" t-as="sp">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="sp.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.speciality_ids) &gt; 3">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.speciality_ids)-3"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-foreach="m.brand_ids[:2]" t-as="br">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="br.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.brand_ids) &gt; 2">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.brand_ids)-2"/>
-                                                        </span>
-                                                    </t>
-                                                </div>
-
-                                                <!-- ✅ Applicants: count + mini avatars -->
-                                                <div class="ab-applicants">
-                                                    <div class="ab-app-left">
-
-                                                        <t t-set="apps" t-value="m.application_ids"/>
-                                                        <t t-set="apps_count" t-value="len(apps)"/>
-
-                                                        <div class="ab-app-count">
-                                                            <t t-if="apps_count">
-                                                                <t t-esc="apps_count"/>
-                                                                candidature
-                                                                <t t-if="apps_count &gt; 1">s</t>
-                                                            </t>
-                                                            <t t-else="">
-                                                                Aucune candidature
-                                                            </t>
-                                                        </div>
-
-                                                        <t t-if="apps_count">
-                                                            <div class="ab-mini-avatars" aria-label="candidatures">
-                                                                <t t-foreach="apps[:3]" t-as="app">
-                                                                    <t t-set="r" t-value="app.radiologist_id"/>
-                                                                    <div class="ab-mini-avatar"
-                                                                         t-att-title="r.display_name">
-                                                                        <t t-if="r.image_1920">
-                                                                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id"
-                                                                                 alt="avatar"/>
-                                                                        </t>
-                                                                        <t t-else="">
-                                                                            <img t-att-src="'/web/static/img/user_menu_avatar.png'"
-                                                                                 alt="avatar"/>
-                                                                        </t>
-                                                                    </div>
-                                                                </t>
-
-                                                                <t t-if="apps_count &gt; 3">
-                                                                    <div class="ab-mini-more"
-                                                                         t-att-title="'+' + str(apps_count - 3)">
-                                                                        +
-                                                                        <t t-esc="apps_count - 3"/>
-                                                                    </div>
-                                                                </t>
-                                                            </div>
-                                                        </t>
-
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="ab-bottom">
-                                                    <div class="ab-price">
-                                                        <t t-esc="m.tarif or '—'"/>
-                                                        €
-                                                        <span>/
-                                                            <t t-if="m.tarif_type == 'hour'">heure</t>
-                                                            <t t-else="">jour</t>
-                                                        </span>
-                                                    </div>
-
-                                                    <div class="ab-card-actions">
-                                                        <a class="ab-btn-mini" t-att-href="'/my/missions/%s' % m.id">
-                                                            Voir ↗
-                                                        </a>
-
-                                                        <form t-att-action="'/my/missions/%s/delete' % m.id"
-                                                              method="post" class="d-inline">
-                                                            <input type="hidden" name="csrf_token"
-                                                                   t-att-value="request.csrf_token()"/>
-                                                            <button type="submit" class="ab-btn-mini ab-cta-btn-danger"
-                                                                    onclick="return confirm('Supprimer cette mission ?');">
-                                                                🗑 Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </t>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <div class="mt-2 alert alert-info border-0 shadow-sm"
-                                     style="border-radius:18px; background: rgba(255,255,255,.80);">
-                                    Aucune mission Published.
-                                </div>
-                            </t>
-                        </div>
-                        <!-- SECTION: Assigned -->
-                        <div class="ab-section">
-                            <div class="ab-section-title">
-                                <h4 class="ab-h4">Assigned</h4>
-                                <span class="ab-count">
-                                    <t t-esc="len(missions_assigned)"/>
-                                    mission(s)
-                                </span>
-                            </div>
-
-                            <t t-if="missions_assigned">
-                                <div class="ab-grid">
-                                    <t t-foreach="missions_assigned" t-as="m">
-                                        <div class="ab-card">
-                                            <div class="ab-media">
-                                                <t t-if="m.hospital_id and m.hospital_id.image_1920">
-                                                    <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % m.hospital_id.id"
-                                                         alt="Mission"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <img t-att-src="'/web/static/img/placeholder.png'" alt="Mission"/>
-                                                </t>
-                                            </div>
-
-                                            <div class="ab-body">
-                                                <h5 class="ab-name">
-                                                    <t t-esc="m.name or 'Mission'"/>
-                                                </h5>
-
-                                                <div class="ab-meta">
-                                                    <t t-if="m.start_date or m.end_date">
-                                                        <t t-if="m.start_date">
-                                                            <t t-esc="m.start_date"/>
-                                                        </t>
-                                                        <t t-if="m.end_date">→
-                                                            <t t-esc="m.end_date"/>
-                                                        </t>
-                                                    </t>
-                                                    <t t-else="">Dates non renseignées</t>
-                                                </div>
-
-                                                <div class="ab-tags">
-                                                    <t t-foreach="m.speciality_ids[:3]" t-as="sp">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="sp.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.speciality_ids) &gt; 3">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.speciality_ids)-3"/>
-                                                        </span>
-                                                    </t>
-
-                                                    <t t-foreach="m.brand_ids[:2]" t-as="br">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="br.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.brand_ids) &gt; 2">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.brand_ids)-2"/>
-                                                        </span>
-                                                    </t>
-                                                </div>
-
-                                                <!-- ✅ Assigned to: mini avatar + name (clickable profile) -->
-                                                <t t-if="m.assigned_radiologist_id">
-                                                    <div class="ab-applicants" style="margin-top:12px;">
-                                                        <div class="ab-app-left" style="gap:8px;">
-                                                            <span class="ab-app-count">Assignée à</span>
-
-                                                            <a t-att-href="'/my/radiologists/%s' % m.assigned_radiologist_id.id"
-                                                               style="display:flex; align-items:center; gap:8px; text-decoration:none;">
-                                                                <div class="ab-mini-avatar" style="margin-left:0;">
-                                                                    <t t-if="m.assigned_radiologist_id.image_1920">
-                                                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % m.assigned_radiologist_id.id"
-                                                                             alt="avatar"/>
-                                                                    </t>
-                                                                    <t t-else="">
-                                                                        <img t-att-src="'/web/static/img/user_menu_avatar.png'"
-                                                                             alt="avatar"/>
-                                                                    </t>
-                                                                </div>
-                                                                <span style="font-weight:950; font-size:12.5px; color:var(--ab-text);">
-                                                                    <t t-esc="m.assigned_radiologist_id.display_name"/>
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </t>
-                                                <t t-else="">
-                                                    <div class="ab-applicants" style="margin-top:12px;">
-                                                        <div class="ab-app-left">
-                                                            <span class="ab-app-count">Aucun radiologue affecté</span>
-                                                        </div>
-                                                    </div>
-                                                </t>
-
-                                                <div class="ab-bottom">
-                                                    <div class="ab-price">
-                                                        <t t-esc="m.tarif or '—'"/>
-                                                        €
-                                                        <span>/
-                                                            <t t-if="m.tarif_type == 'hour'">heure</t>
-                                                            <t t-else="">jour</t>
-                                                        </span>
-                                                    </div>
-
-                                                    <div class="ab-card-actions">
-                                                        <a class="ab-btn-mini" t-att-href="'/my/missions/%s' % m.id">
-                                                            Voir ↗
-                                                        </a>
-
-                                                        <form t-att-action="'/my/missions/%s/delete' % m.id"
-                                                              method="post" class="d-inline">
-                                                            <input type="hidden" name="csrf_token"
-                                                                   t-att-value="request.csrf_token()"/>
-                                                            <button type="submit" class="ab-btn-mini ab-cta-btn-danger"
-                                                                    onclick="return confirm('Supprimer cette mission ?');">
-                                                                🗑 Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </t>
-                                </div>
-                            </t>
-
-                            <t t-else="">
-                                <div class="mt-2 alert alert-info border-0 shadow-sm"
-                                     style="border-radius:18px; background: rgba(255,255,255,.80);">
-                                    Aucune mission Assigned.
-                                </div>
-                            </t>
-                        </div>
-
-
-                        <!-- SECTION: Done -->
-                        <div class="ab-section">
-                            <div class="ab-section-title">
-                                <h4 class="ab-h4">Done</h4>
-                                <span class="ab-count">
-                                    <t t-esc="len(missions_done)"/>
-                                    mission(s)
-                                </span>
-                            </div>
-
-                            <t t-if="missions_done">
-                                <div class="ab-grid">
-                                    <t t-foreach="missions_done" t-as="m">
-                                        <div class="ab-card">
-                                            <div class="ab-media">
-                                                <t t-if="m.hospital_id and m.hospital_id.image_1920">
-                                                    <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % m.hospital_id.id"
-                                                         alt="Mission"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <img t-att-src="'/web/static/img/placeholder.png'" alt="Mission"/>
-                                                </t>
-                                            </div>
-
-                                            <div class="ab-body">
-                                                <h5 class="ab-name">
-                                                    <t t-esc="m.name or 'Mission'"/>
-                                                </h5>
-
-                                                <div class="ab-meta">
-                                                    <t t-if="m.start_date or m.end_date">
-                                                        <t t-if="m.start_date">
-                                                            <t t-esc="m.start_date"/>
-                                                        </t>
-                                                        <t t-if="m.end_date">→
-                                                            <t t-esc="m.end_date"/>
-                                                        </t>
-                                                    </t>
-                                                    <t t-else="">Dates non renseignées</t>
-                                                </div>
-
-                                                <div class="ab-tags">
-                                                    <t t-foreach="m.speciality_ids[:3]" t-as="sp">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="sp.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.speciality_ids) &gt; 3">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.speciality_ids)-3"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-foreach="m.brand_ids[:2]" t-as="br">
-                                                        <span class="ab-tag">
-                                                            <t t-esc="br.name"/>
-                                                        </span>
-                                                    </t>
-                                                    <t t-if="len(m.brand_ids) &gt; 2">
-                                                        <span class="ab-tag">+
-                                                            <t t-esc="len(m.brand_ids)-2"/>
-                                                        </span>
-                                                    </t>
-                                                </div>
-
-                                                <!-- ✅ Done: afficher uniquement l’avatar du radiologue affecté -->
-                                                <t t-if="m.assigned_radiologist_id">
-                                                    <div class="ab-applicants" style="margin-top:12px;">
-                                                        <div class="ab-app-left" style="gap:8px;">
-                                                            <span class="ab-app-count">Assignée à</span>
-
-                                                            <a t-att-href="'/my/radiologists/%s' % m.assigned_radiologist_id.id"
-                                                               class="ab-mini-avatar"
-                                                               style="margin-left:0;"
-                                                               t-att-title="m.assigned_radiologist_id.display_name">
-                                                                <t t-if="m.assigned_radiologist_id.image_1920">
-                                                                    <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % m.assigned_radiologist_id.id"
-                                                                         alt="avatar"/>
-                                                                </t>
-                                                                <t t-else="">
-                                                                    <img t-att-src="'/web/static/img/user_menu_avatar.png'"
-                                                                         alt="avatar"/>
-                                                                </t>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </t>
-                                                <t t-else="">
-                                                    <div class="ab-applicants" style="margin-top:12px;">
-                                                        <div class="ab-app-left">
-                                                            <span class="ab-app-count">Aucun radiologue affecté</span>
-                                                        </div>
-                                                    </div>
-                                                </t>
-
-
-                                                <div class="ab-bottom">
-                                                    <div class="ab-price">
-                                                        <t t-esc="m.tarif or '—'"/>
-                                                        €
-                                                        <span>/
-                                                            <t t-if="m.tarif_type == 'hour'">heure</t>
-                                                            <t t-else="">jour</t>
-                                                        </span>
-                                                    </div>
-
-                                                    <div class="ab-card-actions">
-                                                        <a class="ab-btn-mini" t-att-href="'/my/missions/%s' % m.id">
-                                                            Voir ↗
-                                                        </a>
-
-                                                        <form t-att-action="'/my/missions/%s/delete' % m.id"
-                                                              method="post" class="d-inline">
-                                                            <input type="hidden" name="csrf_token"
-                                                                   t-att-value="request.csrf_token()"/>
-                                                            <button type="submit" class="ab-btn-mini ab-cta-btn-danger"
-                                                                    onclick="return confirm('Supprimer cette mission ?');">
-                                                                🗑 Delete
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </t>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <div class="mt-2 alert alert-info border-0 shadow-sm"
-                                     style="border-radius:18px; background: rgba(255,255,255,.80);">
-                                    Aucune mission Done.
-                                </div>
-                            </t>
-                        </div>
-
-                    </div>
+                        </article>
+                    </t>
                 </div>
-            </section>
+            </t>
+            <t t-else="">
+                <div class="rv-portal-empty-state rv-candidatures-empty">
+                    <strong><t t-esc="group_empty_title"/></strong>
+                    <p><t t-esc="group_empty_text"/></p>
+                </div>
+            </t>
+        </section>
+    </template>
 
+    <template id="portal_my_missions_grouped" name="Portal - My Missions Grouped (RadioVac SaaS)">
+        <t t-set="rl_fullwidth" t-value="True"/>
+        <t t-set="breadcrumbs" t-value="False"/>
+        <t t-set="no_breadcrumbs" t-value="True"/>
+
+        <t t-call="portal.portal_layout">
+            <t t-set="rv_page_title" t-value="'Candidatures'"/>
+            <t t-set="rv_page_subtitle"
+               t-value="'Suivez vos missions hospitalieres et les candidatures recues dans une vue unifiee par statut.'"/>
+
+            <t t-call="radiology.rv_portal_shell">
+                <t t-set="rv_portal_active" t-value="'candidatures'"/>
+                <t t-set="total_missions"
+                   t-value="len(missions_draft) + len(missions_published) + len(missions_assigned) + len(missions_done)"/>
+                <t t-set="active_missions"
+                   t-value="len(missions_published) + len(missions_assigned)"/>
+
+                <div class="rv-portal-stack rv-candidatures-page">
+                    <section class="rv-portal-card rv-candidatures-intro">
+                        <div class="rv-portal-card-head">
+                            <div>
+                                <span class="rv-portal-section-kicker">Hub candidatures</span>
+                                <h2>Retrouvez toutes vos missions et leurs candidatures dans le meme flux.</h2>
+                                <p>
+                                    Filtrez vos missions par specialite, marque ou periode puis ouvrez rapidement
+                                    chaque detail pour suivre les profils associes.
+                                </p>
+                            </div>
+
+                            <div class="rv-portal-head-actions">
+                                <span class="rv-portal-soft-badge">
+                                    <i class="fa fa-briefcase"/>
+                                    <t t-esc="total_missions"/> missions visibles
+                                </span>
+                                <span class="rv-portal-soft-badge is-success">
+                                    <i class="fa fa-files-o"/>
+                                    <t t-esc="active_missions"/> missions actives
+                                </span>
+                                <a href="/my/missions/new" class="rv-portal-btn rv-portal-btn-primary">Publier une mission</a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <form class="rv-portal-filter-bar" method="get" action="/my/missionss">
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_my_specialty_id">Specialite</label>
+                            <select id="rv_my_specialty_id" name="specialty_id">
+                                <option value="">Toutes</option>
+                                <t t-foreach="specialties" t-as="s">
+                                    <option t-att-value="s.id"
+                                            t-att-selected="1 if str(s.id) == str(selected_specialty or '') else None">
+                                        <t t-esc="s.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_my_brand_id">Marque</label>
+                            <select id="rv_my_brand_id" name="brand_id">
+                                <option value="">Toutes</option>
+                                <t t-foreach="brands" t-as="b">
+                                    <option t-att-value="b.id"
+                                            t-att-selected="1 if str(b.id) == str(selected_brand or '') else None">
+                                        <t t-esc="b.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_my_date_from">Du</label>
+                            <input id="rv_my_date_from" type="date" name="date_from" t-att-value="date_from or ''"/>
+                        </div>
+
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_my_date_to">Au</label>
+                            <input id="rv_my_date_to" type="date" name="date_to" t-att-value="date_to or ''"/>
+                        </div>
+
+                        <div class="rv-portal-filter-actions">
+                            <button type="submit" class="rv-portal-btn rv-portal-btn-primary">Filtrer</button>
+                            <a href="/my/missionss" class="rv-portal-btn rv-portal-btn-secondary">Reinitialiser</a>
+                        </div>
+                    </form>
+
+                    <t t-set="missions_group" t-value="missions_draft"/>
+                    <t t-set="group_key" t-value="'draft'"/>
+                    <t t-set="group_kicker" t-value="'Brouillons'"/>
+                    <t t-set="group_title" t-value="'Missions en preparation'"/>
+                    <t t-set="group_subtitle" t-value="'Finalisez les informations avant diffusion aux radiologues.'"/>
+                    <t t-set="group_status_label" t-value="'Brouillon'"/>
+                    <t t-set="group_status_css" t-value="'is-draft'"/>
+                    <t t-set="group_empty_title" t-value="'Aucune mission en brouillon.'"/>
+                    <t t-set="group_empty_text" t-value="'Toutes vos missions pretes ont deja ete diffusees ou traitees.'"/>
+                    <t t-call="radiology.portal_my_missions_group_section"/>
+
+                    <t t-set="missions_group" t-value="missions_published"/>
+                    <t t-set="group_key" t-value="'published'"/>
+                    <t t-set="group_kicker" t-value="'Diffusion active'"/>
+                    <t t-set="group_title" t-value="'Missions publiees'"/>
+                    <t t-set="group_subtitle" t-value="'Suivez les offres ouvertes et les candidatures qui arrivent.'"/>
+                    <t t-set="group_status_label" t-value="'Publiee'"/>
+                    <t t-set="group_status_css" t-value="'is-published'"/>
+                    <t t-set="group_empty_title" t-value="'Aucune mission publiee.'"/>
+                    <t t-set="group_empty_text" t-value="'Publiez une nouvelle mission pour lancer le matching RadioVac.'"/>
+                    <t t-call="radiology.portal_my_missions_group_section"/>
+
+                    <t t-set="missions_group" t-value="missions_assigned"/>
+                    <t t-set="group_key" t-value="'assigned'"/>
+                    <t t-set="group_kicker" t-value="'Mission verrouillee'"/>
+                    <t t-set="group_title" t-value="'Missions affectees'"/>
+                    <t t-set="group_subtitle" t-value="'Visualisez les missions deja attribuees et le radiologue retenu.'"/>
+                    <t t-set="group_status_label" t-value="'Affectee'"/>
+                    <t t-set="group_status_css" t-value="'is-assigned'"/>
+                    <t t-set="group_empty_title" t-value="'Aucune mission affectee.'"/>
+                    <t t-set="group_empty_text" t-value="'Les missions confirmees apparaitront ici une fois un radiologue choisi.'"/>
+                    <t t-call="radiology.portal_my_missions_group_section"/>
+
+                    <t t-set="missions_group" t-value="missions_done"/>
+                    <t t-set="group_key" t-value="'done'"/>
+                    <t t-set="group_kicker" t-value="'Historique'"/>
+                    <t t-set="group_title" t-value="'Missions terminees'"/>
+                    <t t-set="group_subtitle" t-value="'Consultez rapidement les missions cloturees et leur affectation finale.'"/>
+                    <t t-set="group_status_label" t-value="'Terminee'"/>
+                    <t t-set="group_status_css" t-value="'is-done'"/>
+                    <t t-set="group_empty_title" t-value="'Aucune mission terminee.'"/>
+                    <t t-set="group_empty_text" t-value="'Votre historique apparaitra ici des qu une mission sera finalisee.'"/>
+                    <t t-call="radiology.portal_my_missions_group_section"/>
+                </div>
+            </t>
         </t>
     </template>
 </odoo>

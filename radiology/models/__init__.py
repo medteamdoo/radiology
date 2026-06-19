@@ -8,6 +8,7 @@ from . import speciality
 from . import radiologist_availability
 from . import radiology_chat_conversation
 from . import radiology_chat_message
+from . import radiology_suspicious_message
 from . import notification
 from . import mobile_device
 from . import res_config_settings

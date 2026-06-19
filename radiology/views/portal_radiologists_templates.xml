@@ -1,604 +1,315 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="portal_all_radiologists" name="Portal - Radiologists (Airbnb Theme)">
-
+    <template id="portal_all_radiologists" name="Portal - Radiologists (RadioVac SaaS)">
         <t t-set="rl_fullwidth" t-value="True"/>
         <t t-set="breadcrumbs" t-value="False"/>
+        <t t-set="no_breadcrumbs" t-value="True"/>
 
         <t t-call="portal.portal_layout">
-            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-set="rv_page_title" t-value="'Radiologues'"/>
+            <t t-set="rv_page_subtitle"
+               t-value="'Parcourez les radiologues disponibles et trouvez le bon profil pour vos missions.'"/>
 
-            <style>
-                :root{
-                --ab-text:#0f172a;
-                --ab-muted:#64748b;
-                --ab-border: rgba(15,23,42,.10);
-                --ab-chip:#f8fafc;
-                --ab-chip-border: rgba(15,23,42,.12);
-                --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
-                --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
-                --ab-radius2: 22px;
-                --ab-primary:#2563eb;
-                }
+            <t t-call="radiology.rv_portal_shell">
+                <t t-set="rv_portal_active" t-value="'radiologists'"/>
 
-                /* Full width portal (page only) */
-                .o_portal_wrap > .container{
-                max-width:100% !important;
-                padding-left:0 !important;
-                padding-right:0 !important;
-                }
-                .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+                <t t-set="visible_radiologists_count" t-value="len(radiologists)"/>
+                <t t-set="active_slots_count" t-value="len(radiologists.mapped('availability_ids').filtered('active'))"/>
+                <t t-set="covered_specialties_count" t-value="len(radiologists.mapped('specialty_ids'))"/>
+                <t t-set="covered_brands_count" t-value="len(radiologists.mapped('brand_ids'))"/>
+                <t t-set="selected_specialty" t-value="request.params.get('specialty_id') or ''"/>
+                <t t-set="selected_brand" t-value="request.params.get('brand_id') or ''"/>
 
-                /* Page */
-                .ab-page{ min-height:100vh; background:#fff; }
-                .ab-shell{ padding: 18px 0 56px; }
-                @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
-                @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
+                <div class="rv-portal-stack rv-radiologists-page">
+                    <input type="hidden" id="csrf_token" t-att-value="request.csrf_token()"/>
 
-                /* Inner container (fix edges) */
-                .ab-inner{
-                max-width: 1320px;
-                margin: 0 auto;
-                padding-left: 18px;
-                padding-right: 18px;
-                }
-                @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
-                @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
-
-                /* Header card (same as missions) */
-                .ab-hero{
-                border-radius: var(--ab-radius2);
-                border: 1px solid var(--ab-border);
-                background: rgba(255,255,255,.92);
-                box-shadow: var(--ab-shadow);
-                padding: 14px;
-                }
-                @media(min-width:768px){ .ab-hero{ padding: 16px; } }
-
-                .ab-top{
-                display:flex;
-                justify-content:space-between;
-                align-items:flex-start;
-                gap: 14px;
-                margin:0;
-                }
-                .ab-title{
-                margin:0;
-                color: var(--ab-text);
-                font-weight: 950;
-                letter-spacing: -.02em;
-                font-size: 26px;
-                line-height: 1.1;
-                }
-                .ab-sub{
-                margin-top: 6px;
-                color: var(--ab-muted);
-                font-weight: 650;
-                font-size: 13px;
-                }
-                .ab-actions{
-                display:flex;
-                flex-wrap:wrap;
-                gap:10px;
-                align-items:center;
-                justify-content:flex-end;
-                }
-
-                /* Buttons = same as "Voir l’offre" */
-                .ab-cta-btn{
-                border-radius: 12px !important;
-                padding: 10px 12px !important;
-                font-weight: 950 !important;
-                font-size: 13px !important;
-                text-decoration:none !important;
-                border: 1px solid rgba(37,99,235,.22) !important;
-                background: rgba(239,246,255,.95) !important;
-                color: #1d4ed8 !important;
-                display:inline-flex !important;
-                align-items:center !important;
-                justify-content:center !important;
-                gap: 8px !important;
-                cursor:pointer;
-                }
-                .ab-cta-btn:hover{
-                background: rgba(219,234,254,.95) !important;
-                color:#1d4ed8 !important;
-                text-decoration:none !important;
-                }
-                .ab-cta-btn-primary{
-                background: var(--ab-primary) !important;
-                border-color: var(--ab-primary) !important;
-                color:#fff !important;
-                box-shadow: 0 12px 26px rgba(37,99,235,.18);
-                }
-                .ab-cta-btn-primary:hover{
-                background:#1d4ed8 !important;
-                border-color:#1d4ed8 !important;
-                color:#fff !important;
-                }
-
-                /* Filters bar (chips style) */
-                .ab-filters{
-                margin-top: 14px;
-                position: sticky;
-                top: 10px;
-                z-index: 10;
-                background: rgba(255,255,255,.85);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                border: 1px solid var(--ab-border);
-                border-radius: var(--ab-radius2);
-                box-shadow: var(--ab-shadow);
-                padding: 10px;
-                }
-                .ab-filters-row{
-                display:flex;
-                align-items:center;
-                gap: 10px;
-                flex-wrap:wrap;
-                }
-                .ab-chip{
-                display:inline-flex;
-                align-items:center;
-                gap:8px;
-                padding: 10px 12px;
-                border-radius: 999px;
-                border: 1px solid var(--ab-chip-border);
-                background: var(--ab-chip);
-                color: var(--ab-text);
-                font-weight: 850;
-                font-size: 13px;
-                white-space: nowrap;
-                }
-                .ab-chip select{
-                border:none !important;
-                background: transparent !important;
-                outline:none !important;
-                padding:0 !important;
-                height:auto !important;
-                font-weight: 850;
-                font-size: 13px;
-                color: var(--ab-text);
-                min-width: 160px;
-                }
-                .ab-chip select:focus{ box-shadow:none !important; }
-
-                .ab-chip-actions{
-                margin-left:auto;
-                display:flex;
-                gap:10px;
-                flex-wrap:wrap;
-                }
-
-                /* Grid cards (same as missions) */
-                .ab-grid{
-                margin-top: 16px;
-                display:grid;
-                grid-template-columns: repeat(4, minmax(0,1fr));
-                gap: 16px;
-                }
-                @media(max-width: 1250px){ .ab-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
-                @media(max-width: 980px){ .ab-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
-                @media(max-width: 640px){ .ab-grid{ grid-template-columns: 1fr; } }
-
-                .ab-card{
-                border-radius: var(--ab-radius2);
-                overflow:hidden;
-                border: 1px solid var(--ab-border);
-                background: #fff;
-                box-shadow: var(--ab-shadow);
-                transition: transform .16s ease, box-shadow .16s ease;
-                }
-                .ab-card:hover{
-                transform: translateY(-2px);
-                box-shadow: var(--ab-shadow2);
-                }
-
-                .ab-media{
-                position:relative;
-                width:100%;
-                aspect-ratio: 4/3;
-                background: #e5e7eb;
-                overflow:hidden;
-                }
-                .ab-media img{
-                width:100%;
-                height:100%;
-                object-fit:cover;
-                display:block;
-                }
-
-                /* Small badge (rating) */
-                .ab-badge{
-                position:absolute;
-                left: 10px;
-                bottom: 10px;
-                padding: 6px 10px;
-                border-radius: 999px;
-                background: rgba(255,255,255,.92);
-                border: 1px solid rgba(15,23,42,.10);
-                font-weight: 950;
-                font-size: 12px;
-                color: var(--ab-text);
-                box-shadow: 0 10px 22px rgba(2,6,23,.10);
-                display:inline-flex;
-                align-items:center;
-                gap:8px;
-                }
-
-                .ab-body{ padding: 12px 12px 14px; }
-
-                .ab-name{
-                margin:0;
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 15px;
-                line-height: 1.25;
-                }
-
-                .ab-meta{
-                margin-top: 4px;
-                color: var(--ab-muted);
-                font-weight: 750;
-                font-size: 12.5px;
-                }
-
-                .ab-tags{
-                margin-top: 8px;
-                display:flex;
-                flex-wrap:wrap;
-                gap: 6px;
-                }
-                .ab-tag{
-                display:inline-flex;
-                align-items:center;
-                padding: 6px 10px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.90);
-                color: var(--ab-text);
-                font-weight: 850;
-                font-size: 12px;
-                white-space:nowrap;
-                }
-
-                .ab-bottom{
-                margin-top: 10px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 10px;
-                }
-
-                .ab-left{
-                min-width:0;
-                display:flex;
-                flex-direction:column;
-                gap: 2px;
-                }
-
-                .ab-small{
-                color: var(--ab-muted);
-                font-weight: 750;
-                font-size: 12px;
-                white-space:nowrap;
-                overflow:hidden;
-                text-overflow:ellipsis;
-                max-width: 220px;
-                }
-                /* Stars (5) */
-                .ab-stars{
-                display:inline-flex;
-                gap:2px;
-                line-height:1;
-                }
-                .ab-star{
-                font-size: 13px;
-                color: rgba(15,23,42,.25);
-                }
-                .ab-star.on{
-                color: #fbbf24;
-                text-shadow: 0 1px 0 rgba(0,0,0,.08);
-                }
-                .ab-star-num{
-                margin-left: 6px;
-                font-weight: 950;
-                font-size: 12px;
-                color: var(--ab-text);
-                }
-
-                /* Favorite heart */
-                .ab-fav{
-                position:absolute;
-                top: 10px;
-                right: 10px;
-                width: 38px;
-                height: 38px;
-                border-radius: 999px;
-                background: rgba(255,255,255,.92);
-                border: 1px solid rgba(15,23,42,.10);
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                box-shadow: 0 10px 22px rgba(2,6,23,.10);
-                cursor:pointer;
-                user-select:none;
-                transition: transform .15s ease, background .15s ease, border-color .15s ease;
-                z-index: 5;
-                }
-                .ab-fav:hover{ transform: scale(1.04); }
-                .ab-fav .ab-fav-icon{
-                font-size: 16px;
-                line-height: 1;
-                color: rgba(15,23,42,.45);
-                transition: color .15s ease, transform .15s ease;
-                }
-                .ab-fav.is-fav{
-                background: rgba(254,242,242,.95);
-                border-color: rgba(239,68,68,.25);
-                }
-                .ab-fav.is-fav .ab-fav-icon{
-                color: #ef4444;
-                transform: scale(1.05);
-                }
-            </style>
-
-            <section class="ab-page">
-                <div class="container-fluid ab-shell">
-                    <div class="ab-inner">
-
-                        <!-- ✅ CSRF token for JS (hidden, no design impact) -->
-                        <input type="hidden" id="csrf_token" t-att-value="request.csrf_token()"/>
-
-                        <!-- HEADER CARD -->
-                        <div class="ab-hero">
-                            <div class="ab-top">
-                                <div>
-                                    <h2 class="ab-title">Radiologues</h2>
-                                    <div class="ab-sub">
-                                        Consultez les profils disponibles et filtrez par spécialité et marque.
-                                    </div>
-                                </div>
-
-                                <div class="ab-actions">
-                                    <a href="/my" class="ab-cta-btn">Mon portail</a>
-                                </div>
+                    <section class="rv-radiologists-stats">
+                        <article class="rv-radiologists-stat-card">
+                            <span class="rv-radiologists-stat-icon"><i class="fa fa-user-md"/></span>
+                            <div class="rv-radiologists-stat-copy">
+                                <small>Radiologues</small>
+                                <strong><t t-esc="visible_radiologists_count"/></strong>
+                                <span>Profils visibles</span>
                             </div>
+                        </article>
+
+                        <article class="rv-radiologists-stat-card">
+                            <span class="rv-radiologists-stat-icon"><i class="fa fa-calendar-check-o"/></span>
+                            <div class="rv-radiologists-stat-copy">
+                                <small>Creneaux actifs</small>
+                                <strong><t t-esc="active_slots_count"/></strong>
+                                <span>Disponibilites renseignees</span>
+                            </div>
+                        </article>
+
+                        <article class="rv-radiologists-stat-card">
+                            <span class="rv-radiologists-stat-icon"><i class="fa fa-shield"/></span>
+                            <div class="rv-radiologists-stat-copy">
+                                <small>Specialites</small>
+                                <strong><t t-esc="covered_specialties_count"/></strong>
+                                <span>Competences couvertes</span>
+                            </div>
+                        </article>
+
+                        <article class="rv-radiologists-stat-card">
+                            <span class="rv-radiologists-stat-icon"><i class="fa fa-hospital-o"/></span>
+                            <div class="rv-radiologists-stat-copy">
+                                <small>Equipements</small>
+                                <strong><t t-esc="covered_brands_count"/></strong>
+                                <span>Marques referencees</span>
+                            </div>
+                        </article>
+                    </section>
+
+                    <form class="rv-radiologists-filter-bar" method="get" action="/my/radiologists">
+                        <div class="rv-radiologists-filter-field">
+                            <label for="rv_radiologists_specialty">Specialite</label>
+                            <select id="rv_radiologists_specialty" name="specialty_id">
+                                <option value="">Toutes</option>
+                                <t t-foreach="specialties" t-as="s">
+                                    <option t-att-value="s.id"
+                                            t-att-selected="1 if str(s.id) == str(selected_specialty) else None">
+                                        <t t-esc="s.name"/>
+                                    </option>
+                                </t>
+                            </select>
                         </div>
 
-                        <!-- FILTERS -->
-                        <form class="ab-filters" method="get" action="/my/radiologists">
-                            <t t-set="selected_specialty" t-value="request.params.get('specialty_id') or ''"/>
-                            <t t-set="selected_brand" t-value="request.params.get('brand_id') or ''"/>
+                        <div class="rv-radiologists-filter-field">
+                            <label for="rv_radiologists_brand">Marque / equipement</label>
+                            <select id="rv_radiologists_brand" name="brand_id">
+                                <option value="">Toutes</option>
+                                <t t-foreach="brands" t-as="b">
+                                    <option t-att-value="b.id"
+                                            t-att-selected="1 if str(b.id) == str(selected_brand) else None">
+                                        <t t-esc="b.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
 
-                            <div class="ab-filters-row">
+                        <div class="rv-radiologists-filter-hint">
+                            <span class="rv-radiologists-filter-hint-dot"/>
+                            <span>Filtres live sur les profils visibles</span>
+                        </div>
 
-                                <div class="ab-chip">
-                                    <span>Spécialité</span>
-                                    <select name="specialty_id">
-                                        <option value="">Toutes</option>
-                                        <t t-foreach="specialties" t-as="s">
-                                            <option t-att-value="s.id"
-                                                    t-att-selected="1 if str(s.id) == str(selected_specialty) else None">
-                                                <t t-esc="s.name"/>
-                                            </option>
+                        <div class="rv-radiologists-filter-actions">
+                            <button type="submit" class="rv-portal-btn rv-portal-btn-primary">Filtrer</button>
+                            <a href="/my/radiologists" class="rv-portal-btn rv-portal-btn-secondary">Reinitialiser</a>
+                        </div>
+                    </form>
+
+                    <t t-if="radiologists">
+                        <div class="rv-radiologists-grid">
+                            <t t-foreach="radiologists" t-as="r">
+                                <t t-set="is_fav" t-value="True if (fav_ids and (r.id in fav_ids)) else False"/>
+                                <t t-set="has_active_availability" t-value="bool(r.availability_ids.filtered('active'))"/>
+                                <t t-set="location_label"
+                                   t-value="r.hospital_id.city or (r.hospital_id.name if r.hospital_id else 'France')"/>
+
+                                <article class="rv-radiologist-card">
+                                    <a t-att-href="'/my/radiologists/%s' % r.id" class="rv-radiologist-photo">
+                                        <t t-if="r.image_1920">
+                                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id"
+                                                 alt="Photo radiologue"/>
                                         </t>
-                                    </select>
-                                </div>
-
-                                <div class="ab-chip">
-                                    <span>Marque</span>
-                                    <select name="brand_id">
-                                        <option value="">Toutes</option>
-                                        <t t-foreach="brands" t-as="b">
-                                            <option t-att-value="b.id"
-                                                    t-att-selected="1 if str(b.id) == str(selected_brand) else None">
-                                                <t t-esc="b.name"/>
-                                            </option>
+                                        <t t-else="">
+                                            <img src="/web/static/img/user_menu_avatar.png" alt="Avatar radiologue"/>
                                         </t>
-                                    </select>
-                                </div>
+                                    </a>
 
-                                <div class="ab-chip-actions">
-                                    <button class="ab-cta-btn" type="submit">Filtrer</button>
-                                    <a class="ab-cta-btn" href="/my/radiologists">Réinitialiser</a>
-                                </div>
-
-                            </div>
-                        </form>
-
-                        <!-- GRID -->
-                        <t t-if="radiologists">
-                            <div class="ab-grid">
-
-                                <t t-foreach="radiologists" t-as="r">
-                                    <div class="ab-card">
-
-                                        <!-- IMAGE -->
-                                        <div class="ab-media">
-                                            <t t-if="r.image_1920">
-                                                <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id"
-                                                     alt="Photo radiologue"/>
-                                            </t>
-                                            <t t-else="">
-                                                <img t-att-src="'/web/static/img/user_menu_avatar.png'" alt="Avatar"/>
-                                            </t>
-
-                                            <t t-set="is_fav"
-                                               t-value="True if (fav_ids and (r.id in fav_ids)) else False"/>
-
-                                            <div t-attf-class="ab-fav #{'is-fav' if is_fav else ''}"
-                                                 t-att-data-rid="r.id"
-                                                 title="Ajouter / retirer des favoris">
-                                                <span class="ab-fav-icon">♥</span>
+                                    <div class="rv-radiologist-info">
+                                        <div class="rv-radiologist-top">
+                                            <div class="rv-radiologist-heading">
+                                                <h3><t t-esc="r.display_name or 'Radiologue'"/></h3>
+                                                <div class="rv-radiologist-meta">
+                                                    <span>
+                                                        <i class="fa fa-briefcase"/>
+                                                        <t t-if="r.experience_years">
+                                                            <t t-esc="r.experience_years"/> ans d'experience
+                                                        </t>
+                                                        <t t-else="">Experience non renseignee</t>
+                                                    </span>
+                                                    <span>
+                                                        <i class="fa fa-map-marker"/>
+                                                        <t t-esc="location_label"/>
+                                                    </span>
+                                                </div>
                                             </div>
 
-                                            <!-- Rating (visible seulement Premium/Pro) -->
-                                            <t t-if="can_see">
-                                                <t t-if="r.rating_count and r.rating_count &gt; 0">
-                                                    <t t-set="avg" t-value="float(r.rating_avg or 0.0)"/>
-                                                    <t t-set="filled" t-value="int(round(avg))"/>
-
-                                                    <div class="ab-badge">
-                                                        <span class="ab-stars" aria-label="rating">
-                                                            <span t-attf-class="ab-star #{'on' if filled &gt;= 1 else ''}">
-                                                                ★
-                                                            </span>
-                                                            <span t-attf-class="ab-star #{'on' if filled &gt;= 2 else ''}">
-                                                                ★
-                                                            </span>
-                                                            <span t-attf-class="ab-star #{'on' if filled &gt;= 3 else ''}">
-                                                                ★
-                                                            </span>
-                                                            <span t-attf-class="ab-star #{'on' if filled &gt;= 4 else ''}">
-                                                                ★
-                                                            </span>
-                                                            <span t-attf-class="ab-star #{'on' if filled &gt;= 5 else ''}">
-                                                                ★
-                                                            </span>
+                                            <div class="rv-radiologist-tools">
+                                                <t t-if="can_see">
+                                                    <t t-if="r.rating_count and r.rating_count &gt; 0">
+                                                        <span class="rv-radiologist-rating">
+                                                            <i class="fa fa-star"/>
+                                                            <t t-esc="'%.1f' % (r.rating_avg or 0.0)"/>
                                                         </span>
-
-                                                        <span class="ab-star-num">
-                                                            <t t-esc="round(avg, 1)"/>
-                                                        </span>
-                                                    </div>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span class="rv-radiologist-rating is-muted">Nouveau</span>
+                                                    </t>
                                                 </t>
-                                            </t>
-                                            <t t-else="">
-                                                <!-- Version freemium: badge locked -->
-                                                <div class="ab-badge" style="opacity:.9;">
-                                                    <span style="font-weight:950;">🔒 Score Premium</span>
-                                                    <a href="/my/subscription" class="ms-2"
-                                                       style="color:#2563eb; font-weight:900; text-decoration:none;">
-                                                        Passer Premium
-                                                    </a>
-                                                </div>
-                                            </t>
+                                                <t t-else="">
+                                                    <span class="rv-radiologist-rating is-locked">
+                                                        <i class="fa fa-lock"/>
+                                                        Score Premium
+                                                    </span>
+                                                </t>
 
+                                                <button type="button"
+                                                        t-attf-class="rv-radiologist-fav #{'is-fav' if is_fav else ''}"
+                                                        t-att-data-rid="r.id"
+                                                        aria-label="Ajouter ou retirer des favoris"
+                                                        title="Ajouter ou retirer des favoris">
+                                                    <i t-attf-class="fa #{'fa-heart' if is_fav else 'fa-heart-o'}"/>
+                                                </button>
+                                            </div>
                                         </div>
 
-                                        <!-- CONTENT -->
-                                        <div class="ab-body">
-                                            <h5 class="ab-name">
-                                                <t t-esc="r.display_name or 'Radiologue'"/>
-                                            </h5>
+                                        <div class="rv-radiologist-status-row">
+                                            <t t-if="has_active_availability">
+                                                <span class="rv-radiologist-status is-available">
+                                                    <span class="rv-radiologist-status-dot"/>
+                                                    Disponibilites actives
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="rv-radiologist-status is-pending">
+                                                    <span class="rv-radiologist-status-dot"/>
+                                                    Planning a confirmer
+                                                </span>
+                                            </t>
 
-                                            <div class="ab-meta">
-                                                <t t-if="r.experience_years">
-                                                    <t t-esc="r.experience_years"/>
-                                                    ans d’expérience
-                                                </t>
-                                                <t t-else="">Expérience non renseignée</t>
-                                            </div>
+                                            <t t-if="can_see and r.rating_count">
+                                                <span class="rv-radiologist-supporting">
+                                                    <t t-esc="r.rating_count"/> avis verifies
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="rv-radiologist-supporting">Profil RadioVac</span>
+                                            </t>
+                                        </div>
 
-                                            <div class="ab-tags">
-                                                <t t-foreach="r.specialty_ids[:3]" t-as="sp">
-                                                    <span class="ab-tag">
-                                                        <t t-esc="sp.name"/>
-                                                    </span>
+                                        <div class="rv-radiologist-chips">
+                                            <t t-if="r.specialty_ids">
+                                                <t t-foreach="r.specialty_ids[:2]" t-as="sp">
+                                                    <span class="rv-radiologist-chip"><t t-esc="sp.name"/></span>
                                                 </t>
-                                                <t t-if="len(r.specialty_ids) &gt; 3">
-                                                    <span class="ab-tag">+
-                                                        <t t-esc="len(r.specialty_ids)-3"/>
-                                                    </span>
+                                                <t t-if="len(r.specialty_ids) &gt; 2">
+                                                    <span class="rv-radiologist-chip is-muted">+<t t-esc="len(r.specialty_ids) - 2"/></span>
                                                 </t>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="rv-radiologist-chip is-muted">Specialites a completer</span>
+                                            </t>
+                                        </div>
 
+                                        <div class="rv-radiologist-chips is-secondary">
+                                            <t t-if="r.brand_ids">
                                                 <t t-foreach="r.brand_ids[:2]" t-as="br">
-                                                    <span class="ab-tag">
-                                                        <t t-esc="br.name"/>
-                                                    </span>
+                                                    <span class="rv-radiologist-chip is-secondary"><t t-esc="br.name"/></span>
                                                 </t>
                                                 <t t-if="len(r.brand_ids) &gt; 2">
-                                                    <span class="ab-tag">+
-                                                        <t t-esc="len(r.brand_ids)-2"/>
-                                                    </span>
+                                                    <span class="rv-radiologist-chip is-secondary">+<t t-esc="len(r.brand_ids) - 2"/></span>
                                                 </t>
-                                            </div>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="rv-radiologist-chip is-secondary">Equipements a completer</span>
+                                            </t>
+                                        </div>
 
-                                            <div class="ab-bottom">
+                                        <div class="rv-radiologist-bottom">
+                                            <span class="rv-radiologist-bottom-note">
+                                                <t t-if="r.hospital_id">
+                                                    <t t-esc="r.hospital_id.name"/>
+                                                </t>
+                                                <t t-else="">Profil disponible sur RadioVac</t>
+                                            </span>
 
-                                                <a t-att-href="'/my/radiologists/%s' % r.id"
-                                                   class="ab-cta-btn">
-                                                    Voir profil ↗
-                                                </a>
-                                            </div>
-
+                                            <a t-att-href="'/my/radiologists/%s' % r.id"
+                                               class="rv-radiologist-action">
+                                                Voir profil
+                                                <i class="fa fa-arrow-right"/>
+                                            </a>
                                         </div>
                                     </div>
-                                </t>
+                                </article>
+                            </t>
+                        </div>
+                    </t>
 
-                            </div>
-                        </t>
+                    <t t-else="">
+                        <div class="rv-portal-empty-state">
+                            <strong>Aucun radiologue ne correspond a vos criteres.</strong>
+                            <p>Ajustez vos filtres ou reinitialisez la recherche pour afficher davantage de profils.</p>
+                        </div>
+                    </t>
 
-                        <t t-else="">
-                            <div class="mt-4 alert alert-info border-0 shadow-sm"
-                                 style="border-radius:18px; background: rgba(255,255,255,.80);">
-                                Aucun radiologue ne correspond à vos critères.
-                            </div>
-                        </t>
+                    <script type="text/javascript">
+                        <![CDATA[
+                        (function () {
+                          function getCsrf() {
+                            var el = document.getElementById("csrf_token");
+                            return el ? el.value : null;
+                          }
 
-                    </div>
+                          document.addEventListener("click", async function (e) {
+                            var btn = e.target.closest(".rv-radiologist-fav");
+                            if (!btn) return;
+
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            var rid = btn.getAttribute("data-rid");
+                            if (!rid) return;
+
+                            var csrf = getCsrf();
+
+                            try {
+                              var payload = {
+                                jsonrpc: "2.0",
+                                method: "call",
+                                params: { radiologist_id: parseInt(rid) },
+                                id: Date.now()
+                              };
+
+                              var res = await fetch("/my/radiologists/favorite/toggle", {
+                                method: "POST",
+                                credentials: "same-origin",
+                                headers: Object.assign({
+                                  "Content-Type": "application/json",
+                                  "X-Requested-With": "XMLHttpRequest"
+                                }, csrf ? { "X-CSRFToken": csrf } : {}),
+                                body: JSON.stringify(payload)
+                              });
+
+                              var data = await res.json();
+                              var result = data && data.result ? data.result : null;
+                              if (!result || !result.ok) return;
+
+                              var icon = btn.querySelector("i");
+                              if (result.is_favorite) {
+                                btn.classList.add("is-fav");
+                                if (icon) {
+                                  icon.classList.remove("fa-heart-o");
+                                  icon.classList.add("fa-heart");
+                                }
+                              } else {
+                                btn.classList.remove("is-fav");
+                                if (icon) {
+                                  icon.classList.remove("fa-heart");
+                                  icon.classList.add("fa-heart-o");
+                                }
+                              }
+                            } catch (err) {
+                              // ignore
+                            }
+                          }, true);
+                        })();
+                        ]]>
+                    </script>
                 </div>
-            </section>
-
-            <!-- ✅ JS FIX: JSON-RPC + CSRF + credentials -->
-            <script type="text/javascript">
-                (function(){
-                function getCsrf(){
-                var el = document.getElementById('csrf_token');
-                return el ? el.value : null;
-                }
-
-                document.addEventListener('click', async function(e){
-                var btn = e.target.closest('.ab-fav');
-                if (!btn) return;
-
-                e.preventDefault();
-                e.stopPropagation();
-
-                var rid = btn.getAttribute('data-rid');
-                if (!rid) return;
-
-                var csrf = getCsrf();
-
-                try{
-                var payload = {
-                jsonrpc: "2.0",
-                method: "call",
-                params: { radiologist_id: parseInt(rid) },
-                id: Date.now()
-                };
-
-                var res = await fetch('/my/radiologists/favorite/toggle', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                ...(csrf ? {'X-CSRFToken': csrf} : {})
-                },
-                body: JSON.stringify(payload)
-                });
-
-                var data = await res.json();
-
-                // Odoo JSON-RPC: résultat dans data.result
-                var result = data &amp;&amp; data.result ? data.result : null;
-
-                if (result &amp;&amp; result.ok){
-                if (result.is_favorite) btn.classList.add('is-fav');
-                else btn.classList.remove('is-fav');
-                } else {
-                // debug si besoin
-                // console.log('toggle failed', data);
-                }
-                }catch(err){
-                // console.log(err);
-                }
-                }, true);
-                })();
-            </script>
-
+            </t>
         </t>
     </template>
 </odoo>

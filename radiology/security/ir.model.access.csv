@@ -9,6 +9,7 @@ access_radiology_radiologist_review,radiology.radiologist.review,model_radiology
 access_radiologist_availability_user,availability user,model_radiology_radiologist_availability,base.group_user,1,1,1,1
 access_chat_conversation_user,chat.conversation user,model_radiology_chat_conversation,base.group_user,1,1,1,0
 access_chat_message_user,chat.message user,model_radiology_chat_message,base.group_user,1,1,1,0
+access_radiology_suspicious_message_admin,radiology.suspicious.message admin,model_radiology_suspicious_message,base.group_system,1,0,0,0
 access_radiology_notification_user,radiology.notification user,model_radiology_notification,base.group_user,1,1,1,1
 access_radiology_mobile_device_user,radiology.mobile.device user,model_radiology_mobile_device,base.group_user,1,1,1,1
 access_radiology_demo_slot_user,radiology.demo.slot user,model_radiology_demo_slot,base.group_user,1,1,1,1

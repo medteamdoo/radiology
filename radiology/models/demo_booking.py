@@ -17,6 +17,7 @@ class RadiologyDemoBooking(models.Model):
     partner_name = fields.Char(required=True, string="Full Name")
     email = fields.Char(required=True)
     phone = fields.Char(required=True)
+    additional_info = fields.Text(string="Additional Information")
     booked_at = fields.Datetime(default=fields.Datetime.now, readonly=True)
     state = fields.Selection(
         [

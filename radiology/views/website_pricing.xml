@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="radiovac_website_pricing" name="RadioVac Website Pricing">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="pageName" t-value="'radiovac_pricing'"/>
+            <t t-set="title" t-value="'RadioVac | Tarifs pour la coordination radiologique'"/>
+            <t t-set="meta_description"
+               t-value="'Comparez les plans RadioVac Freemium, Premium et Pro pour publier, matcher et coordonner vos missions de radiologie avec plus de fluidite.'"/>
+
+            <t t-set="mission_model" t-value="request.env['radiology.mission'].sudo()"/>
+            <t t-set="hospital_model" t-value="request.env['radiology.hospital'].sudo()"/>
+            <t t-set="radiologist_model" t-value="request.env['radiology.radiologist'].sudo()"/>
+            <t t-set="specialty_model" t-value="request.env['radiology.specialty'].sudo()"/>
+            <t t-set="published_missions_count" t-value="mission_model.search_count([('status', '=', 'published')])"/>
+            <t t-set="hospital_count" t-value="hospital_model.search_count([])"/>
+            <t t-set="radiologist_count" t-value="radiologist_model.search_count([])"/>
+            <t t-set="specialty_count" t-value="specialty_model.search_count([])"/>
+
+            <div id="wrap" class="oe_structure rv-home-page rv-pricing-page">
+                <section class="rv-home-hero rv-pricing-hero">
+                    <div class="container rv-home-shell">
+                        <nav class="rv-home-navbar" aria-label="Navigation RadioVac Tarifs">
+                            <a href="/radiovac-home" class="rv-home-brand" data-rv-transition-link="true">
+                                <img src="/radiology/static/src/img/radiovac.png"
+                                     alt="Logo RadioVac"
+                                     class="rv-home-logo"/>
+                                <span class="rv-home-brand-text">RadioVac</span>
+                            </a>
+
+                            <div class="rv-home-nav-links">
+                                <a href="/radiovac-home#plateforme" data-rv-transition-link="true">Plateforme</a>
+                                <a href="/radiovac-home#fonctionnalites" data-rv-transition-link="true">
+                                    Fonctionnalites
+                                </a>
+                                <a href="/radiovac-home#radiologues" data-rv-transition-link="true">Radiologues</a>
+                                <a href="/radiovac-home#etablissements" data-rv-transition-link="true">Etablissements
+                                </a>
+                                <a href="#plans" class="is-active">Tarifs</a>
+                                <a href="/radiovac-home#ressources" data-rv-transition-link="true">Ressources</a>
+                            </div>
+
+                            <div class="rv-home-nav-actions">
+                                <a href="/web/login" class="rv-home-nav-login">Se connecter</a>
+                                <a href="/reserve-demo" class="rv-home-btn rv-home-btn-primary rv-home-btn-sm"
+                                   data-rv-transition-link="true">
+                                    Reserver une demo
+                                </a>
+                            </div>
+                        </nav>
+                    </div>
+                </section>
+
+                <section id="plans" class="rv-home-section rv-pricing-plans">
+                    <div class="container rv-home-shell">
+                        <div class="rv-home-section-head rv-home-section-head-center" data-rv-reveal="true">
+                            <span class="rv-home-section-kicker">Tarification RadioVac</span>
+                            <h2>Des offres adaptées à votre utilisation</h2>
+                            <p>
+                                Choisissez le plan qui correspond à vos besoins : publication de missions,
+                                accès aux profils qualifiés, matching intelligent et accompagnement selon votre niveau
+                                d’usage.
+                            </p>
+                        </div>
+
+                        <div class="row g-4 rv-pricing-card-grid">
+                            <!-- Beginner -->
+                            <div class="col-12 col-lg-4">
+                                <article class="rv-pricing-card" data-rv-reveal="true">
+                                    <div class="rv-pricing-card-top">
+                                        <span class="rv-pricing-plan-tag">Beginner</span>
+                                        <h3>Beginner</h3>
+                                        <p>Pour démarrer simplement avec RadioVac et publier vos premières missions.</p>
+                                    </div>
+
+                                    <div class="rv-pricing-price">
+                                        <strong>0 EUR</strong>
+                                        <span>par mois</span>
+                                    </div>
+
+                                    <ul class="rv-pricing-feature-list list-unstyled">
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Publication des missions
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Accès à la plateforme RadioVac
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Réception des candidatures
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Visualisation des candidats avec informations limitées
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Support par e-mail
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Tableau de bord simplifié
+                                        </li>
+                                    </ul>
+
+                                    <a href="/hospital/signup" class="rv-home-btn rv-home-btn-secondary rv-pricing-btn">
+                                        Order now
+                                    </a>
+                                </article>
+                            </div>
+
+                            <!-- Professional -->
+                            <div class="col-12 col-lg-4">
+                                <article class="rv-pricing-card is-featured" data-rv-reveal="true">
+                                    <div class="rv-pricing-card-top">
+                                        <span class="rv-pricing-plan-tag is-featured">Plan recommandé</span>
+                                        <h3>Professional</h3>
+                                        <p>Pour les structures qui veulent gagner en visibilité, suivre leurs
+                                            candidatures et accéder aux profils qualifiés.
+                                        </p>
+                                    </div>
+
+                                    <div class="rv-pricing-price">
+                                        <strong>39.99 EUR</strong>
+                                        <span>par mois</span>
+                                    </div>
+
+                                    <ul class="rv-pricing-feature-list list-unstyled">
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Mise en avant des annonces
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Accès complet aux profils qualifiés
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Messagerie intégrée
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Notifications prioritaires
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Gestion avancée des candidatures
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Support prioritaire
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Statistiques de recrutement
+                                        </li>
+                                    </ul>
+
+                                    <a href="/reserve-demo" class="rv-home-btn rv-home-btn-primary rv-pricing-btn"
+                                       data-rv-transition-link="true">
+                                        Start now
+                                    </a>
+                                </article>
+                            </div>
+
+                            <!-- Premium -->
+                            <div class="col-12 col-lg-4">
+                                <article class="rv-pricing-card" data-rv-reveal="true">
+                                    <div class="rv-pricing-card-top">
+                                        <span class="rv-pricing-plan-tag">Premium</span>
+                                        <h3>Premium</h3>
+                                        <p>Pour les organisations qui souhaitent un accompagnement avancé, du
+                                            multi-utilisateurs et une coordination prioritaire.
+                                        </p>
+                                    </div>
+
+                                    <div class="rv-pricing-price">
+                                        <strong>59.99 EUR</strong>
+                                        <span>par mois</span>
+                                    </div>
+
+                                    <ul class="rv-pricing-feature-list list-unstyled">
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Compte multi-utilisateurs
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Accompagnement dédié
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Matching intelligent des profils
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Diffusion prioritaire des missions
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Accès anticipé aux nouvelles fonctionnalités
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Reporting personnalisé
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Assistance premium
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Formation et onboarding de l’équipe
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Solutions adaptées aux besoins spécifiques
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check"/>
+                                            Chat avec les candidats
+                                        </li>
+                                    </ul>
+
+                                    <a href="/reserve-demo" class="rv-home-btn rv-home-btn-secondary rv-pricing-btn"
+                                       data-rv-transition-link="true">
+                                        Contact us
+                                    </a>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="rv-home-section rv-pricing-table-image-section">
+    <div class="container rv-home-shell">
+        <div class="rv-pricing-table-image-wrapper" data-rv-reveal="true">
+            <img src="/radiology/static/src/img/table.png"
+                 alt="Tableau comparatif des offres RadioVac"
+                 class="rv-pricing-table-image"/>
+        </div>
+    </div>
+</section>
+                <section class="rv-home-section rv-pricing-commission-image-section">
+    <div class="container rv-home-shell">
+        <div class="rv-pricing-commission-image-wrapper" data-rv-reveal="true">
+            <img src="/radiology/static/src/img/commission.png"
+                 alt="Commission au succès RadioVac"
+                 class="rv-pricing-commission-image"/>
+        </div>
+    </div>
+</section>
+
+                <section class="rv-home-section rv-home-final-cta rv-pricing-final-cta">
+                    <div class="container rv-home-shell">
+                        <div class="rv-home-final-cta-card" data-rv-reveal="true">
+                            <div class="rv-home-final-cta-copy">
+                                <span class="rv-home-section-kicker">Choisir le bon plan</span>
+                                <h2>Besoin d'un cadrage sur le plan adapte a votre organisation ?</h2>
+                                <p>
+                                    Reservez une demonstration personnalisee et decouvrez quel niveau
+                                    RadioVac correspond le mieux a votre volume de missions, vos equipes
+                                    et vos objectifs de coordination.
+                                </p>
+                                <div class="rv-home-resource-links">
+                                    <a href="/radiovac-home" data-rv-transition-link="true">Retour a la plateforme</a>
+                                    <a href="/hospital/signup">Tester le freemium</a>
+                                    <a href="/web/login">Acces plateforme</a>
+                                </div>
+                            </div>
+
+                            <div class="rv-home-final-cta-actions">
+                                <a href="/reserve-demo" class="rv-home-btn rv-home-btn-primary"
+                                   data-rv-transition-link="true">
+                                    Reserver une demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>

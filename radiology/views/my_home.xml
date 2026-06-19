@@ -1,232 +1,240 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <template id="portal_my_home_custom" name="Portal Home Custom">
+        <t t-set="rl_fullwidth" t-value="True"/>
+        <t t-set="breadcrumbs" t-value="False"/>
+
         <t t-call="portal.portal_layout">
+            <t t-set="rv_page_title" t-value="'Mon espace'"/>
+            <t t-set="rv_page_subtitle"
+               t-value="'Retrouvez vos missions, vos alertes et vos raccourcis dans un dashboard hospitalier moderne.'"/>
 
-            <style>
-                .rl-hero{
-                background: linear-gradient(135deg, rgba(59,130,246,.10), rgba(168,85,247,.10));
-                border: 1px solid rgba(0,0,0,.06);
-                border-radius: 18px;
-                padding: 18px 18px;
-                }
-                .rl-hero h3{ margin:0; font-weight:800; color:#0B1220; }
-                .rl-hero p{ margin:6px 0 0; color:#667085; }
+            <t t-call="radiology.rv_portal_shell">
+                <t t-set="rv_portal_active" t-value="'dashboard'"/>
+                <t t-set="rv_portal_hospital" t-value="hospital"/>
 
-                .rl-card-link{ display:block; text-decoration:none; }
-                .rl-card{
-                border: 1px solid rgba(0,0,0,.06);
-                border-radius: 16px;
-                background: rgba(255,255,255,.92);
-                box-shadow: 0 10px 28px rgba(2,6,23,.06);
-                transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-                overflow:hidden;
-                height: 100%;
-                }
-                .rl-card:hover{
-                transform: translateY(-3px);
-                box-shadow: 0 18px 44px rgba(2,6,23,.10);
-                border-color: rgba(59,130,246,.25);
-                }
-                .rl-card-top{
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 12px;
-                padding: 14px 16px;
-                border-bottom: 1px solid rgba(0,0,0,.05);
-                background: linear-gradient(90deg, rgba(59,130,246,.10), rgba(168,85,247,.06));
-                }
-                .rl-icon{
-                width: 42px;
-                height: 42px;
-                border-radius: 12px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                background: rgba(255,255,255,.75);
-                border: 1px solid rgba(0,0,0,.06);
-                }
-                .rl-icon i{
-                font-size: 18px;
-                color: #0B1220;
-                opacity: .9;
-                }
-                .rl-badge{
-                font-size: 12px;
-                font-weight: 700;
-                padding: 6px 10px;
-                border-radius: 999px;
-                background: rgba(17,24,39,.06);
-                color: #111827;
-                white-space: nowrap;
-                }
-                .rl-body{ padding: 14px 16px; }
-                .rl-title{
-                margin: 0;
-                font-size: 18px;
-                font-weight: 800;
-                color: #0B1220;
-                }
-                .rl-text{
-                margin: 6px 0 0;
-                color: #667085;
-                line-height: 1.35;
-                }
-                .rl-arrow{
-                margin-top: 10px;
-                color:#0B1220;
-                opacity:.55;
-                font-weight:700;
-                }
-            </style>
+                <div class="rv-portal-stack rv-dashboard-page">
+                    <section class="rv-dashboard-hero rv-portal-card">
+                        <div class="rv-dashboard-hero-copy">
+                            <span class="rv-portal-section-kicker">Pilotage centralise</span>
+                            <h2>Un espace clair pour publier, suivre et coordonner vos missions en temps reel.</h2>
+                            <p>
+                                RadioVac rassemble vos besoins, vos candidats et vos notifications dans une interface
+                                connectee, legere et orientee action.
+                            </p>
 
-            <div class="container py-4">
+                            <div class="rv-dashboard-hero-chips">
+                                <span class="rv-dashboard-mini-chip">
+                                    <i class="fa fa-bolt"/>
+                                    <t t-esc="active_count or 0"/> besoins actifs
+                                </span>
+                                <span class="rv-dashboard-mini-chip">
+                                    <i class="fa fa-check-circle-o"/>
+                                    Profil complet a <t t-esc="profile_percent or 0"/>%
+                                </span>
+                            </div>
+                        </div>
 
-                <div class="rl-hero mb-3">
-                    <h3>Mon espace</h3>
-                    <p>Accédez rapidement à vos missions, favoris, profil, sécurité et statistiques.</p>
+                        <div class="rv-dashboard-hero-actions">
+                            <a href="/my/missions/new" class="rv-portal-btn rv-portal-btn-primary">
+                                <i class="fa fa-plus-circle"/>
+                                <span>Publier une mission</span>
+                            </a>
+                            <a href="/my/missions" class="rv-portal-btn rv-portal-btn-secondary">
+                                <i class="fa fa-list-ul"/>
+                                <span>Voir les missions</span>
+                            </a>
+                        </div>
+
+                        <div class="rv-dashboard-profile-card">
+                            <span class="rv-dashboard-panel-kicker">Profil et organisation</span>
+                            <div class="rv-dashboard-profile-head">
+                                <strong>Complet a <t t-esc="profile_percent or 0"/>%</strong>
+                                <small><t t-esc="hospital.name if hospital else 'Compte RadioVac'"/></small>
+                            </div>
+
+                            <div class="rv-portal-progress-bar">
+                                <span t-attf-style="width: #{profile_percent or 0}%;"/>
+                            </div>
+
+                            <p>
+                                Ajoutez vos informations hospitalieres et vos points de contact pour accelerer le matching.
+                            </p>
+
+                            <div class="rv-dashboard-profile-metrics">
+                                <span>
+                                    <strong><t t-esc="published_count or 0"/></strong>
+                                    <small>Publiees</small>
+                                </span>
+                                <span>
+                                    <strong><t t-esc="assigned_count or 0"/></strong>
+                                    <small>Affectees</small>
+                                </span>
+                                <span>
+                                    <strong><t t-esc="done_count or 0"/></strong>
+                                    <small>Terminees</small>
+                                </span>
+                            </div>
+
+                            <a href="/my/account" class="rv-portal-inline-link">Mettre a jour le compte</a>
+                        </div>
+                    </section>
+
+                    <section class="rv-dashboard-stat-grid">
+                        <a href="/my/missions" class="rv-dashboard-stat-card">
+                            <span class="rv-dashboard-stat-icon"><i class="fa fa-briefcase"/></span>
+                            <span class="rv-dashboard-stat-copy">
+                                <small>Missions actives</small>
+                                <strong><t t-esc="active_count or 0"/></strong>
+                                <span>Publiees ou deja affectees</span>
+                            </span>
+                            <span class="rv-dashboard-stat-arrow"><i class="fa fa-angle-right"/></span>
+                        </a>
+
+                        <a href="/my/missionss" class="rv-dashboard-stat-card">
+                            <span class="rv-dashboard-stat-icon"><i class="fa fa-files-o"/></span>
+                            <span class="rv-dashboard-stat-copy">
+                                <small>Candidatures</small>
+                                <strong><t t-esc="applications_count or 0"/></strong>
+                                <span>Profils recus sur vos missions</span>
+                            </span>
+                            <span class="rv-dashboard-stat-arrow"><i class="fa fa-angle-right"/></span>
+                        </a>
+
+                        <a href="/my/favorites" class="rv-dashboard-stat-card">
+                            <span class="rv-dashboard-stat-icon"><i class="fa fa-heart-o"/></span>
+                            <span class="rv-dashboard-stat-copy">
+                                <small>Favoris</small>
+                                <strong><t t-esc="favorites_count or 0"/></strong>
+                                <span>Radiologues en veille active</span>
+                            </span>
+                            <span class="rv-dashboard-stat-arrow"><i class="fa fa-angle-right"/></span>
+                        </a>
+
+                        <a href="/my/chat" class="rv-dashboard-stat-card">
+                            <span class="rv-dashboard-stat-icon"><i class="fa fa-bell-o"/></span>
+                            <span class="rv-dashboard-stat-copy">
+                                <small>Notifications</small>
+                                <strong><t t-esc="unread_notifications_count or 0"/></strong>
+                                <span>Alertes a traiter rapidement</span>
+                            </span>
+                            <span class="rv-dashboard-stat-arrow"><i class="fa fa-angle-right"/></span>
+                        </a>
+                    </section>
+
+                    <div class="rv-dashboard-grid">
+                        <section class="rv-portal-card rv-dashboard-panel rv-dashboard-panel-missions">
+                            <div class="rv-portal-card-head">
+                                <div>
+                                    <span class="rv-portal-section-kicker">Flux missions</span>
+                                    <h3>Dernieres missions creees</h3>
+                                </div>
+                                <a href="/my/missions" class="rv-portal-inline-link">Tout ouvrir</a>
+                            </div>
+
+                            <div class="rv-dashboard-mission-list">
+                                <t t-if="recent_missions">
+                                    <t t-foreach="recent_missions" t-as="mission">
+                                        <a t-att-href="'/my/missions/%s' % mission.id" class="rv-dashboard-mission-row">
+                                            <span class="rv-dashboard-mission-icon"><i class="fa fa-stethoscope"/></span>
+                                            <span class="rv-dashboard-mission-copy">
+                                                <strong><t t-esc="mission.name or 'Mission'"/></strong>
+                                                <small>
+                                                    <t t-if="mission.start_date">
+                                                        <t t-esc="mission.start_date"/>
+                                                    </t>
+                                                    <t t-if="mission.end_date">
+                                                        <t t-esc="' -> %s' % mission.end_date"/>
+                                                    </t>
+                                                </small>
+                                            </span>
+                                            <span t-attf-class="rv-portal-status-chip is-#{mission.status or 'draft'}">
+                                                <t t-if="mission.status == 'published'">Publiee</t>
+                                                <t t-elif="mission.status == 'assigned'">Affectee</t>
+                                                <t t-elif="mission.status == 'done'">Terminee</t>
+                                                <t t-else="">Brouillon</t>
+                                            </span>
+                                            <span class="rv-dashboard-row-arrow"><i class="fa fa-angle-right"/></span>
+                                        </a>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <div class="rv-portal-empty-state">
+                                        <strong>Aucune mission recente</strong>
+                                        <p>Commencez par publier un nouveau besoin pour alimenter votre dashboard.</p>
+                                    </div>
+                                </t>
+                            </div>
+                        </section>
+
+                        <section class="rv-portal-card rv-dashboard-panel rv-dashboard-panel-actions">
+                            <div class="rv-portal-card-head">
+                                <div>
+                                    <span class="rv-portal-section-kicker">Raccourcis</span>
+                                    <h3>Actions rapides</h3>
+                                </div>
+                            </div>
+
+                            <div class="rv-dashboard-quick-grid">
+                                <a href="/my/missions/new" class="rv-dashboard-quick-card">
+                                    <span class="rv-dashboard-quick-icon"><i class="fa fa-plus-circle"/></span>
+                                    <strong>Nouvelle mission</strong>
+                                    <small>Publier en quelques clics</small>
+                                </a>
+                                <a href="/my/radiologists" class="rv-dashboard-quick-card">
+                                    <span class="rv-dashboard-quick-icon"><i class="fa fa-user-md"/></span>
+                                    <strong>Radiologues</strong>
+                                    <small>Explorer les profils verifies</small>
+                                </a>
+                                <a href="/my/chat" class="rv-dashboard-quick-card">
+                                    <span class="rv-dashboard-quick-icon"><i class="fa fa-comments-o"/></span>
+                                    <strong>Messages</strong>
+                                    <small>Reprendre les echanges</small>
+                                </a>
+                                <a href="/my/security" class="rv-dashboard-quick-card">
+                                    <span class="rv-dashboard-quick-icon"><i class="fa fa-shield"/></span>
+                                    <strong>Securite</strong>
+                                    <small>Gerer l'acces au compte</small>
+                                </a>
+                            </div>
+                        </section>
+
+                        <section class="rv-portal-card rv-dashboard-panel rv-dashboard-panel-notices">
+                            <div class="rv-portal-card-head">
+                                <div>
+                                    <span class="rv-portal-section-kicker">Alertes et suivi</span>
+                                    <h3>Notifications recentes</h3>
+                                </div>
+                                <a href="/my/chat" class="rv-portal-inline-link">Tout voir</a>
+                            </div>
+
+                            <div class="rv-dashboard-notice-list">
+                                <t t-if="recent_notifications">
+                                    <t t-foreach="recent_notifications" t-as="notif">
+                                        <a t-att-href="'/my/notifications/%s/read' % notif.id"
+                                           t-attf-class="rv-dashboard-notice-row #{'is-unread' if not notif.is_read else 'is-read'}">
+                                            <span t-attf-class="rv-dashboard-notice-dot is-#{notif.type or 'info'}"/>
+                                            <span class="rv-dashboard-notice-copy">
+                                                <strong><t t-esc="notif.title or 'Notification'"/></strong>
+                                                <p><t t-esc="notif.message or 'Mise a jour disponible.'"/></p>
+                                            </span>
+                                            <small class="rv-dashboard-notice-time">
+                                                <t t-esc="notif.create_date.strftime('%d/%m/%Y %H:%M') if notif.create_date else ''"/>
+                                            </small>
+                                        </a>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <div class="rv-portal-empty-state">
+                                        <strong>Aucune notification</strong>
+                                        <p>Votre espace est a jour. Les nouvelles alertes apparaitront ici.</p>
+                                    </div>
+                                </t>
+                            </div>
+                        </section>
+                    </div>
                 </div>
-
-                <div class="row g-3">
-
-                    <!-- Missions -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <a href="/my/missionss" class="rl-card-link">
-                            <div class="rl-card">
-                                <div class="rl-card-top">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rl-icon">
-                                            <i class="fa fa-briefcase"/>
-                                        </div>
-                                        <span class="rl-badge">Missions</span>
-                                    </div>
-                                    <span class="text-muted small">Ouvrir →</span>
-                                </div>
-                                <div class="rl-body">
-                                    <div class="rl-title">Mes missions</div>
-                                    <div class="rl-text">Consulter l’état et l’historique de vos missions.</div>
-                                    <div class="rl-arrow">Voir les missions</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Favoris -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <a href="/my/favorites" class="rl-card-link">
-                            <div class="rl-card">
-                                <div class="rl-card-top">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rl-icon">
-                                            <i class="fa fa-heart"/>
-                                        </div>
-                                        <span class="rl-badge">Favoris</span>
-                                    </div>
-                                    <span class="text-muted small">Ouvrir →</span>
-                                </div>
-                                <div class="rl-body">
-                                    <div class="rl-title">Mes favoris</div>
-                                    <div class="rl-text">Retrouver rapidement vos éléments enregistrés.</div>
-                                    <div class="rl-arrow">Voir les favoris</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Profil -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <a href="/my/account" class="rl-card-link">
-                            <div class="rl-card">
-                                <div class="rl-card-top">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rl-icon">
-                                            <i class="fa fa-user"/>
-                                        </div>
-                                        <span class="rl-badge">Profil</span>
-                                    </div>
-                                    <span class="text-muted small">Ouvrir →</span>
-                                </div>
-                                <div class="rl-body">
-                                    <div class="rl-title">Mon profil</div>
-                                    <div class="rl-text">Mettre à jour vos informations et préférences.</div>
-                                    <div class="rl-arrow">Gérer mon compte</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Sécurité -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <a href="/my/security" class="rl-card-link">
-                            <div class="rl-card">
-                                <div class="rl-card-top">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rl-icon">
-                                            <i class="fa fa-shield"/>
-                                        </div>
-                                        <span class="rl-badge">Sécurité</span>
-                                    </div>
-                                    <span class="text-muted small">Ouvrir →</span>
-                                </div>
-                                <div class="rl-body">
-                                    <div class="rl-title">Connexion &amp; sécurité</div>
-                                    <div class="rl-text">Modifier votre mot de passe et sécuriser votre compte.</div>
-                                    <div class="rl-arrow">Paramètres de sécurité</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Dashboard -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <a href="/my/dashboard" class="rl-card-link">
-                            <div class="rl-card">
-                                <div class="rl-card-top">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rl-icon">
-                                            <i class="fa fa-line-chart"/>
-                                        </div>
-                                        <span class="rl-badge">Dashboard</span>
-                                    </div>
-                                    <span class="text-muted small">Ouvrir →</span>
-                                </div>
-                                <div class="rl-body">
-                                    <div class="rl-title">Mon dashboard</div>
-                                    <div class="rl-text">Visualiser vos statistiques et indicateurs clés.</div>
-                                    <div class="rl-arrow">Voir le dashboard</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Évaluations -->
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <a href="/my/evaluations" class="rl-card-link">
-                            <div class="rl-card">
-                                <div class="rl-card-top">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <div class="rl-icon">
-                                            <i class="fa fa-star"/>
-                                        </div>
-                                        <span class="rl-badge">Évaluations</span>
-                                    </div>
-                                    <span class="text-muted small">Ouvrir →</span>
-                                </div>
-                                <div class="rl-body">
-                                    <div class="rl-title">Mes évaluations</div>
-                                    <div class="rl-text">
-                                        Consulter vos avis, notes et retours.
-                                    </div>
-                                    <div class="rl-arrow">Voir les évaluations</div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-
-                </div>
-            </div>
+            </t>
         </t>
     </template>
 </odoo>

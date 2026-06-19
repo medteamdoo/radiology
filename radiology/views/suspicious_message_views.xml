@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_radiology_suspicious_message_tree" model="ir.ui.view">
+        <field name="name">radiology.suspicious.message.tree</field>
+        <field name="model">radiology.suspicious.message</field>
+        <field name="arch" type="xml">
+            <tree string="Messages suspects" create="false" delete="false">
+                <field name="create_date"/>
+                <field name="sender_name"/>
+                <field name="sender_type"/>
+                <field name="hospital_id"/>
+                <field name="radiologist_id"/>
+                <field name="detection_type"/>
+                <field name="detected_emails"/>
+                <field name="detected_phones"/>
+                <field name="message"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_radiology_suspicious_message_form" model="ir.ui.view">
+        <field name="name">radiology.suspicious.message.form</field>
+        <field name="model">radiology.suspicious.message</field>
+        <field name="arch" type="xml">
+            <form string="Message suspect" create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="create_date" readonly="1"/>
+                            <field name="sender_type" readonly="1"/>
+                            <field name="sender_name" readonly="1"/>
+                            <field name="detection_type" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="hospital_id" readonly="1"/>
+                            <field name="radiologist_id" readonly="1"/>
+                            <field name="conversation_id" readonly="1"/>
+                            <field name="chat_message_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Expediteur">
+                        <field name="sender_hospital_id" readonly="1"/>
+                        <field name="sender_radiologist_id" readonly="1"/>
+                    </group>
+
+                    <group string="Coordonnees detectees">
+                        <field name="detected_emails" widget="text" readonly="1"/>
+                        <field name="detected_phones" widget="text" readonly="1"/>
+                    </group>
+
+                    <group string="Contenu">
+                        <field name="message" widget="text" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_radiology_suspicious_message" model="ir.actions.act_window">
+        <field name="name">Messages suspects</field>
+        <field name="res_model">radiology.suspicious.message</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

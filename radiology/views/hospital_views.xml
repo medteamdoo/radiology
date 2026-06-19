@@ -48,10 +48,12 @@
                         <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                             <div class="o_kanban_image">
                                 <t t-if="record.image_1920.raw_value">
-                                    <img t-att-src="'data:image/png;base64,%s' % record.image_1920.raw_value"/>
+                                    <img t-att-src="'data:image/png;base64,%s' % record.image_1920.raw_value"
+                                         t-att-alt="record.name.value or 'Photo hopital'"/>
                                 </t>
                                 <t t-else="">
-                                    <img src="/web/static/src/img/placeholder.png"/>
+                                    <img src="/web/static/src/img/placeholder.png"
+                                         alt="Image hopital indisponible"/>
                                 </t>
                             </div>
                             <div class="o_kanban_details">

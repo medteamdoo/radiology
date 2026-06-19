@@ -1,842 +1,248 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="portal_all_missions" name="Portal - All Missions (Airbnb Theme)">
-
+    <template id="portal_all_missions" name="Portal - All Missions (RadioVac SaaS)">
         <t t-set="rl_fullwidth" t-value="True"/>
         <t t-set="rl_ads" t-value="True"/>
         <t t-set="rl_ads_img" t-value="'/radiology/static/src/img/gel_eco.png'"/>
-        <t t-set="rl_ads_title" t-value="'Gel échographique Pro'"/>
-        <t t-set="rl_ads_sub" t-value="'Hypoallergénique • Sans bulles • Compatible toutes sondes'"/>
+        <t t-set="rl_ads_title" t-value="'Gel echographique Pro'"/>
+        <t t-set="rl_ads_sub" t-value="'Hypoallergenique - Sans bulles - Compatible toutes sondes'"/>
         <t t-set="rl_ads_url" t-value="'#'"/>
         <t t-set="breadcrumbs" t-value="False"/>
+        <t t-set="no_breadcrumbs" t-value="True"/>
 
         <t t-call="portal.portal_layout">
-            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-set="rv_page_title" t-value="'Missions'"/>
+            <t t-set="rv_page_subtitle"
+               t-value="'Parcourez les besoins publies, appliquez vos filtres et activez le matching RadioVac.'"/>
 
-            <style>
-                :root{
-                --ab-text:#0f172a;
-                --ab-muted:#64748b;
-                --ab-border: rgba(15,23,42,.10);
-                --ab-chip:#f8fafc;
-                --ab-chip-border: rgba(15,23,42,.12);
-                --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
-                --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
-                --ab-radius2: 22px;
-                --ab-primary:#2563eb;
-                }
+            <t t-call="radiology.rv_portal_shell">
+                <t t-set="rv_portal_active" t-value="'missions'"/>
 
-                /* Full width portal (page only) */
-                .o_portal_wrap > .container{
-                max-width:100% !important;
-                padding-left:0 !important;
-                padding-right:0 !important;
-                }
-                .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
-
-                /* Page */
-                .ab-page{ min-height:100vh; background:#fff; }
-                .ab-shell{ padding: 18px 0 56px; }
-                @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
-                @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
-
-                /* Inner container (fix edges) */
-                .ab-inner{
-                max-width: 1320px;
-                margin: 0 auto;
-                padding-left: 18px;
-                padding-right: 18px;
-                }
-                @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
-                @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
-
-                /* Header card */
-                .ab-hero{
-                border-radius: var(--ab-radius2);
-                border: 1px solid var(--ab-border);
-                background: rgba(255,255,255,.92);
-                box-shadow: var(--ab-shadow);
-                padding: 14px;
-                }
-                @media(min-width:768px){ .ab-hero{ padding: 16px; } }
-
-                .ab-top{
-                display:flex;
-                justify-content:space-between;
-                align-items:flex-start;
-                gap: 14px;
-                }
-                .ab-title{
-                margin:0;
-                color: var(--ab-text);
-                font-weight: 950;
-                letter-spacing: -.02em;
-                font-size: 26px;
-                line-height: 1.1;
-                }
-                .ab-sub{
-                margin-top: 6px;
-                color: var(--ab-muted);
-                font-weight: 650;
-                font-size: 13px;
-                }
-                .ab-actions{
-                display:flex;
-                flex-wrap:wrap;
-                gap:10px;
-                align-items:center;
-                justify-content:flex-end;
-                }
-
-                /* Buttons */
-                .ab-cta-btn{
-                border-radius: 12px !important;
-                padding: 10px 12px !important;
-                font-weight: 950 !important;
-                font-size: 13px !important;
-                text-decoration:none !important;
-                border: 1px solid rgba(37,99,235,.22) !important;
-                background: rgba(239,246,255,.95) !important;
-                color: #1d4ed8 !important;
-                display:inline-flex !important;
-                align-items:center !important;
-                justify-content:center !important;
-                gap: 8px !important;
-                cursor:pointer;
-                white-space:nowrap;
-                }
-                .ab-cta-btn:hover{
-                background: rgba(219,234,254,.95) !important;
-                color:#1d4ed8 !important;
-                text-decoration:none !important;
-                }
-                .ab-cta-btn-primary{
-                background: var(--ab-primary) !important;
-                border-color: var(--ab-primary) !important;
-                color:#fff !important;
-                box-shadow: 0 12px 26px rgba(37,99,235,.18);
-                }
-                .ab-cta-btn-primary:hover{
-                background:#1d4ed8 !important;
-                border-color:#1d4ed8 !important;
-                color:#fff !important;
-                }
-
-                /* Filters bar */
-                .ab-filters{
-                margin-top: 14px;
-                position: sticky;
-                top: 10px;
-                z-index: 10;
-                background: rgba(255,255,255,.85);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                border: 1px solid var(--ab-border);
-                border-radius: var(--ab-radius2);
-                box-shadow: var(--ab-shadow);
-                padding: 10px;
-                }
-                .ab-filters-row{
-                display:flex;
-                align-items:center;
-                gap: 10px;
-                flex-wrap:wrap;
-                }
-                .ab-chip{
-                display:inline-flex;
-                align-items:center;
-                gap:8px;
-                padding: 10px 12px;
-                border-radius: 999px;
-                border: 1px solid var(--ab-chip-border);
-                background: var(--ab-chip);
-                color: var(--ab-text);
-                font-weight: 850;
-                font-size: 13px;
-                white-space: nowrap;
-                }
-                .ab-chip select,
-                .ab-chip input{
-                border:none !important;
-                background: transparent !important;
-                outline:none !important;
-                padding:0 !important;
-                height:auto !important;
-                font-weight: 850;
-                font-size: 13px;
-                color: var(--ab-text);
-                min-width: 140px;
-                }
-                .ab-chip input[type="date"]{ min-width: 150px; }
-                .ab-chip select:focus,
-                .ab-chip input:focus{ box-shadow:none !important; }
-
-                .ab-chip-actions{
-                margin-left:auto;
-                display:flex;
-                gap:10px;
-                flex-wrap:wrap;
-                }
-
-                /* Grid */
-                .ab-grid{
-                margin-top: 16px;
-                display:grid;
-                grid-template-columns: repeat(4, minmax(0,1fr));
-                gap: 16px;
-                }
-                @media(max-width: 1250px){ .ab-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
-                @media(max-width: 980px){ .ab-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
-                @media(max-width: 640px){ .ab-grid{ grid-template-columns: 1fr; } }
-
-                /* Card */
-                .ab-card{
-                border-radius: var(--ab-radius2);
-                overflow:hidden;
-                border: 1px solid var(--ab-border);
-                background: #fff;
-                box-shadow: var(--ab-shadow);
-                transition: transform .16s ease, box-shadow .16s ease;
-                }
-                .ab-card:hover{
-                transform: translateY(-2px);
-                box-shadow: var(--ab-shadow2);
-                }
-
-                .ab-media{
-                position:relative;
-                width:100%;
-                aspect-ratio: 4/3;
-                background: #e5e7eb;
-                overflow:hidden;
-                }
-                .ab-media img{
-                width:100%;
-                height:100%;
-                object-fit:cover;
-                display:block;
-                }
-
-                .ab-body{ padding: 12px 12px 14px; }
-                .ab-name{
-                margin:0;
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 15px;
-                line-height: 1.25;
-                }
-                .ab-meta{
-                margin-top: 4px;
-                color: var(--ab-muted);
-                font-weight: 750;
-                font-size: 12.5px;
-                }
-
-                .ab-tags{
-                margin-top: 8px;
-                display:flex;
-                flex-wrap:wrap;
-                gap: 6px;
-                }
-                .ab-tag{
-                display:inline-flex;
-                align-items:center;
-                padding: 6px 10px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.90);
-                color: var(--ab-text);
-                font-weight: 850;
-                font-size: 12px;
-                white-space:nowrap;
-                }
-
-                /* Applicants mini avatars */
-                .ab-applicants{
-                margin-top: 10px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 10px;
-                }
-                .ab-app-left{
-                display:flex;
-                align-items:center;
-                gap: 10px;
-                min-width:0;
-                }
-                .ab-app-count{
-                color: var(--ab-muted);
-                font-weight: 850;
-                font-size: 12.5px;
-                white-space:nowrap;
-                }
-                .ab-mini-avatars{
-                display:flex;
-                align-items:center;
-                }
-                .ab-mini-avatar{
-                width: 26px;
-                height: 26px;
-                border-radius: 999px;
-                overflow:hidden;
-                border: 2px solid #fff;
-                background:#e5e7eb;
-                box-shadow: 0 6px 14px rgba(2,6,23,.10);
-                margin-left: -8px; /* overlap */
-                }
-                .ab-mini-avatar:first-child{ margin-left: 0; }
-                .ab-mini-avatar img{
-                width:100%;
-                height:100%;
-                object-fit:cover;
-                display:block;
-                }
-                .ab-mini-more{
-                width: 26px;
-                height: 26px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.92);
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                margin-left: -8px;
-                font-weight: 950;
-                font-size: 11px;
-                color: var(--ab-text);
-                }
-
-                .ab-bottom{
-                margin-top: 10px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 10px;
-                }
-                .ab-price{
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 14px;
-                white-space:nowrap;
-                }
-                .ab-price span{
-                color: var(--ab-muted);
-                font-weight: 750;
-                font-size: 12px;
-                margin-left: 4px;
-                }
-                /* Right recommended sidebar */
-                .ab-recbar{
-                position: fixed;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 340px;
-                max-height: 78vh;
-                overflow: auto;
-                border-radius: 22px;
-                border: 1px solid var(--ab-border);
-                background: rgba(255,255,255,.92);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                box-shadow: var(--ab-shadow2);
-                z-index: 2000;
-                padding: 12px;
-                opacity: 1;
-                transition: transform .35s ease, opacity .35s ease;
-                }
-
-                /* start hidden (slide from right) */
-                .ab-recbar-right{
-                right: 14px;
-                transform: translate(120%, -50%);
-                }
-                .ab-recbar-right.ab-show{
-                transform: translate(0, -50%);
-                }
-
-                .ab-recbar-head{
-                padding: 6px 6px 10px;
-                border-bottom: 1px solid var(--ab-border);
-                margin-bottom: 10px;
-                }
-                .ab-recbar-title{
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 14px;
-                line-height: 1.1;
-                }
-                .ab-recbar-sub{
-                margin-top: 4px;
-                color: var(--ab-muted);
-                font-weight: 750;
-                font-size: 12px;
-                }
-
-                .ab-recbar-list{
-                display:flex;
-                flex-direction: column;
-                gap: 10px;
-                }
-
-                /* card item */
-                .ab-recitem{
-                display:flex;
-                gap: 10px;
-                padding: 10px;
-                border-radius: 18px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.92);
-                text-decoration: none !important;
-                color: inherit !important;
-                transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
-                }
-                .ab-recitem:hover{
-                transform: translateY(-1px);
-                box-shadow: 0 12px 26px rgba(2,6,23,.10);
-                background: rgba(239,246,255,.90);
-                }
-
-                .ab-recitem-avatar{
-                width: 72px;
-                height: 72px;
-                border-radius: 18px;
-                overflow: hidden;
-                background: #e5e7eb;
-                flex: 0 0 auto;
-                border: 2px solid #fff;
-                box-shadow: 0 10px 20px rgba(2,6,23,.10);
-                }
-                .ab-recitem-avatar img{
-                width:100%;
-                height:100%;
-                object-fit: cover;
-                display:block;
-                }
-
-                .ab-recitem-info{
-                min-width: 0;
-                display:flex;
-                flex-direction: column;
-                justify-content: center;
-                gap: 6px;
-                }
-
-                .ab-recitem-name{
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 14px;
-                line-height: 1.2;
-                overflow:hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                }
-
-                /* stars */
-                .ab-recitem-rating{
-                display:flex;
-                align-items:center;
-                gap: 8px;
-                flex-wrap: wrap;
-                }
-                .ab-stars{
-                display:inline-flex;
-                gap: 2px;
-                font-size: 14px;
-                line-height: 1;
-                color: #f59e0b; /* doré */
-                }
-                .ab-star{ opacity: .25; }
-                .ab-recbar-head{
-                display:flex;
-                align-items:flex-start;
-                justify-content:space-between;
-                gap: 10px;
-                padding: 6px 6px 10px;
-                border-bottom: 1px solid var(--ab-border);
-                margin-bottom: 10px;
-                }
-
-                .ab-recbar-close{
-                width: 34px;
-                height: 34px;
-                border-radius: 12px;
-                border: 1px solid rgba(15,23,42,.12);
-                background: rgba(248,250,252,.92);
-                color: var(--ab-text);
-                font-weight: 950;
-                line-height: 1;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                cursor:pointer;
-                transition: transform .16s ease, background .16s ease;
-                }
-                .ab-recbar-close:hover{
-                background: rgba(239,246,255,.95);
-                transform: translateY(-1px);
-                }
-
-                /* Closed state */
-                .ab-recbar.ab-closed{
-                transform: translate(120%, -50%) !important;
-                opacity: 0;
-                pointer-events: none;
-                }
-
-                /* text */
-                .ab-rating-text{
-                color: var(--ab-muted);
-                font-weight: 850;
-                font-size: 12px;
-                }
-                .ab-rating-count{
-                color: var(--ab-muted);
-                font-weight: 750;
-                margin-left: 2px;
-                }
-
-                .ab-recbar-moreline{
-                text-align:center;
-                color: var(--ab-muted);
-                font-weight: 850;
-                font-size: 12px;
-                padding: 6px 8px;
-                }
-
-                /* optional: hide on mobile */
-                @media(max-width: 900px){
-                .ab-recbar{ display:none; }
-                }
-            </style>
-
-            <section class="ab-page">
-                <div class="container-fluid ab-shell">
-                    <div class="ab-inner">
-
-                        <!-- HEADER CARD -->
-                        <div class="ab-hero">
-                            <div class="ab-top">
-                                <div>
-                                    <h2 class="ab-title">Missions</h2>
-                                    <div class="ab-sub">
-                                        Parcourez les missions : filtres + cartes premium.
-                                    </div>
-                                </div>
-
-                                <div class="ab-actions">
-                                    <a href="/my/missions/new" class="ab-cta-btn">Publier une mission</a>
-                                    <a href="/my" class="ab-cta-btn">Mon portail</a>
-                                </div>
+                <div class="rv-portal-stack rv-missions-page">
+                    <section class="rv-portal-card rv-missions-intro">
+                        <div class="rv-portal-card-head">
+                            <div>
+                                <span class="rv-portal-section-kicker">Hub missions</span>
+                                <h2>Une lecture claire de toutes les offres actives.</h2>
+                                <p>
+                                    Filtrez vos missions par specialite, marque ou periode puis ouvrez rapidement les
+                                    profils les plus coherents.
+                                </p>
+                            </div>
+                            <div class="rv-portal-head-actions">
+                                <span class="rv-portal-soft-badge">
+                                    <i class="fa fa-briefcase"/>
+                                    <t t-esc="len(missions)"/> missions visibles
+                                </span>
+                                <a href="/my/missions/new" class="rv-portal-btn rv-portal-btn-primary">Publier une mission</a>
                             </div>
                         </div>
+                    </section>
 
-                        <t t-if="recommended_radiologists">
-                            <aside id="ab-recbar" class="ab-recbar ab-recbar-right"
-                                   aria-label="Radiologues recommandés">
-                                <div class="ab-recbar-head">
-                                    <div>
-                                        <div class="ab-recbar-title">Radiologues recommandés</div>
-                                        <div class="ab-recbar-sub">Basé sur votre mission</div>
-                                    </div>
-
-                                    <button type="button" class="ab-recbar-close" aria-label="Fermer" title="Fermer">×
-                                    </button>
+                    <t t-if="recommended_radiologists">
+                        <section class="rv-portal-card rv-portal-match-panel">
+                            <div class="rv-portal-card-head">
+                                <div>
+                                    <span class="rv-portal-section-kicker">Matching intelligent</span>
+                                    <h3>Profils recommandes pour votre mission</h3>
                                 </div>
+                                <span class="rv-portal-soft-badge is-success">
+                                    <i class="fa fa-star-o"/>
+                                    <t t-esc="len(recommended_radiologists)"/> profils recommandes
+                                </span>
+                            </div>
 
-                                <div class="ab-recbar-list">
-                                    <t t-foreach="recommended_radiologists[:6]" t-as="rr">
-                                        <a class="ab-recitem" t-att-href="'/my/radiologists/%s' % rr.id"
-                                           t-att-title="rr.display_name">
-                                            <div class="ab-recitem-avatar">
+                            <div class="rv-portal-match-list">
+                                <t t-foreach="recommended_radiologists" t-as="rr">
+                                    <a t-att-href="'/my/radiologists/%s' % rr.id"
+                                       t-attf-class="rv-portal-match-card #{'is-featured' if rr == recommended_radiologists[0] else ''}">
+                                        <div class="rv-portal-match-main">
+                                            <div class="rv-portal-match-avatar">
                                                 <t t-if="rr.image_1920">
                                                     <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % rr.id"
-                                                         alt="avatar"/>
+                                                         alt="Radiologue"/>
                                                 </t>
                                                 <t t-else="">
-                                                    <img t-att-src="'/web/static/img/user_menu_avatar.png'"
-                                                         alt="avatar"/>
+                                                    <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
                                                 </t>
                                             </div>
 
-                                            <div class="ab-recitem-info">
-                                                <div class="ab-recitem-name">
-                                                    <t t-esc="rr.display_name or 'Radiologue'"/>
+                                            <div class="rv-portal-match-copy">
+                                                <div class="rv-portal-match-title-row">
+                                                    <strong><t t-esc="rr.display_name or 'Radiologue'"/></strong>
+                                                    <span class="rv-portal-soft-badge">
+                                                        <i class="fa fa-map-marker"/>
+                                                        <t t-esc="(rr.hospital_id.city or rr.hospital_id.name or 'France') if rr.hospital_id else 'France'"/>
+                                                    </span>
                                                 </div>
-
-                                                <div class="ab-recitem-rating">
-                                                    <div class="ab-stars" t-att-data-rating="rr.rating_avg or 0.0">
-                                                        <span class="ab-star">★</span>
-                                                        <span class="ab-star">★</span>
-                                                        <span class="ab-star">★</span>
-                                                        <span class="ab-star">★</span>
-                                                        <span class="ab-star">★</span>
-                                                    </div>
-                                                    <div class="ab-rating-text">
-                                                        <t t-esc="'%.1f' % (rr.rating_avg or 0.0)"/>
-                                                        / 5
-                                                        <span class="ab-rating-count">
-                                                            (<t t-esc="rr.rating_count or 0"/>)
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </t>
-
-                                    <t t-if="len(recommended_radiologists) &gt; 6">
-                                        <div class="ab-recbar-moreline">
-                                            +
-                                            <t t-esc="len(recommended_radiologists) - 6"/>
-                                            autres radiologues recommandés
-                                        </div>
-                                    </t>
-                                </div>
-                            </aside>
-                        </t>
-
-                        <!-- FILTERS -->
-                        <form class="ab-filters" method="get" action="/my/missions">
-                            <t t-set="selected_specialty" t-value="request.params.get('specialty_id') or ''"/>
-                            <t t-set="selected_brand" t-value="request.params.get('brand_id') or ''"/>
-
-                            <div class="ab-filters-row">
-                                <div class="ab-chip">
-                                    <span>Spécialité</span>
-                                    <select name="specialty_id">
-                                        <option value="">Toutes</option>
-                                        <t t-foreach="specialties" t-as="s">
-                                            <option t-att-value="s.id"
-                                                    t-att-selected="1 if str(s.id) == str(selected_specialty) else None">
-                                                <t t-esc="s.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-
-                                <div class="ab-chip">
-                                    <span>Marque</span>
-                                    <select name="brand_id">
-                                        <option value="">Toutes</option>
-                                        <t t-foreach="brands" t-as="b">
-                                            <option t-att-value="b.id"
-                                                    t-att-selected="1 if str(b.id) == str(selected_brand) else None">
-                                                <t t-esc="b.name"/>
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-
-                                <div class="ab-chip">
-                                    <span>Du</span>
-                                    <input type="date" name="date_from"
-                                           t-att-value="request.params.get('date_from') or ''"/>
-                                </div>
-
-                                <div class="ab-chip">
-                                    <span>Au</span>
-                                    <input type="date" name="date_to"
-                                           t-att-value="request.params.get('date_to') or ''"/>
-                                </div>
-
-                                <div class="ab-chip-actions">
-                                    <button class="ab-cta-btn" type="submit">Filtrer</button>
-                                    <a class="ab-cta-btn" href="/my/missions">Réinitialiser</a>
-                                </div>
-                            </div>
-                        </form>
-
-                        <!-- LISTINGS -->
-                        <t t-if="missions">
-                            <div class="ab-grid">
-
-                                <t t-foreach="missions" t-as="m">
-                                    <div class="ab-card">
-
-                                        <div class="ab-media">
-                                            <t t-if="m.hospital_id and m.hospital_id.image_1920">
-                                                <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % m.hospital_id.id"
-                                                     alt="Mission"/>
-                                            </t>
-                                            <t t-else="">
-                                                <img t-att-src="'/web/static/img/placeholder.png'" alt="Mission"/>
-                                            </t>
-                                        </div>
-
-                                        <div class="ab-body">
-                                            <h5 class="ab-name">
-                                                <t t-esc="m.name or 'Mission'"/>
-                                            </h5>
-
-                                            <div class="ab-meta">
-                                                <t t-if="m.hospital_id">
-                                                    <t t-esc="m.hospital_id.name"/>
-                                                </t>
-                                                <t t-if="m.start_date or m.end_date">
-                                                    •
-                                                    <t t-if="m.start_date">
-                                                        <t t-esc="m.start_date"/>
+                                                <p>
+                                                    <t t-if="rr.experience_years">
+                                                        <t t-esc="rr.experience_years"/> ans d'experience
                                                     </t>
-                                                    <t t-if="m.end_date">→
-                                                        <t t-esc="m.end_date"/>
+                                                    <t t-else="">Profil verifie RadioVac</t>
+                                                </p>
+                                                <div class="rv-portal-tag-row">
+                                                    <t t-foreach="rr.specialty_ids[:2]" t-as="sp">
+                                                        <span class="rv-portal-tag-chip"><t t-esc="sp.name"/></span>
                                                     </t>
-                                                </t>
-                                            </div>
-
-                                            <div class="ab-tags">
-                                                <t t-foreach="m.speciality_ids[:3]" t-as="sp">
-                                                    <span class="ab-tag">
-                                                        <t t-esc="sp.name"/>
-                                                    </span>
-                                                </t>
-                                                <t t-foreach="m.brand_ids[:2]" t-as="br">
-                                                    <span class="ab-tag">
-                                                        <t t-esc="br.name"/>
-                                                    </span>
-                                                </t>
-                                                <t t-if="len(m.speciality_ids) &gt; 3">
-                                                    <span class="ab-tag">+
-                                                        <t t-esc="len(m.speciality_ids)-3"/>
-                                                    </span>
-                                                </t>
-                                                <t t-if="len(m.brand_ids) &gt; 2">
-                                                    <span class="ab-tag">+
-                                                        <t t-esc="len(m.brand_ids)-2"/>
-                                                    </span>
-                                                </t>
-                                            </div>
-
-                                            <!-- Applicants: count + mini avatars -->
-                                            <div class="ab-applicants">
-                                                <div class="ab-app-left">
-
-                                                    <t t-set="apps" t-value="m.application_ids"/>
-                                                    <t t-set="apps_count" t-value="len(apps)"/>
-
-                                                    <div class="ab-app-count">
-                                                        <t t-if="apps_count">
-                                                            <t t-esc="apps_count"/>
-                                                            candidat
-                                                            <t t-if="apps_count &gt; 1">s</t>
-                                                        </t>
-                                                        <t t-else="">
-                                                            Aucun candidat
-                                                        </t>
-                                                    </div>
-
-                                                    <t t-if="apps_count">
-                                                        <div class="ab-mini-avatars" aria-label="candidats">
-                                                            <t t-foreach="apps[:3]" t-as="app">
-                                                                <t t-set="r" t-value="app.radiologist_id"/>
-                                                                <div class="ab-mini-avatar"
-                                                                     t-att-title="r.display_name">
-                                                                    <t t-if="r.image_1920">
-                                                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id"
-                                                                             alt="avatar"/>
-                                                                    </t>
-                                                                    <t t-else="">
-                                                                        <img t-att-src="'/web/static/img/user_menu_avatar.png'"
-                                                                             alt="avatar"/>
-                                                                    </t>
-                                                                </div>
-                                                            </t>
-
-                                                            <t t-if="apps_count &gt; 3">
-                                                                <div class="ab-mini-more"
-                                                                     t-att-title="'+' + str(apps_count - 3)">
-                                                                    +
-                                                                    <t t-esc="apps_count - 3"/>
-                                                                </div>
-                                                            </t>
-                                                        </div>
+                                                    <t t-foreach="rr.brand_ids[:2]" t-as="br">
+                                                        <span class="rv-portal-tag-chip is-muted"><t t-esc="br.name"/></span>
                                                     </t>
-
                                                 </div>
-                                            </div>
-
-                                            <div class="ab-bottom">
-                                                <div class="ab-price">
-                                                    <t t-esc="m.tarif or '—'"/>
-                                                    €
-                                                    <span>
-                                                        /
-                                                        <t t-if="m.tarif_type == 'hour'">heure</t>
-                                                        <t t-elif="m.tarif_type == 'day'">jour</t>
-                                                        <t t-else="">mission</t>
-                                                    </span>
-                                                </div>
-
-                                                <a class="ab-cta-btn" t-att-href="'/my/missions/%s' % m.id">Voir l’offre
-                                                    ↗
-                                                </a>
                                             </div>
                                         </div>
 
-                                    </div>
+                                        <div class="rv-portal-match-score" t-attf-style="--rv-match: #{int((rr.rating_avg or 0.0) * 20)};">
+                                            <span><t t-esc="int((rr.rating_avg or 0.0) * 20)"/>%</span>
+                                            <small>Compatibilite</small>
+                                        </div>
+                                    </a>
                                 </t>
-
                             </div>
-                        </t>
+                        </section>
+                    </t>
 
-                        <t t-else="">
-                            <div class="mt-4 alert alert-info border-0 shadow-sm"
-                                 style="border-radius:18px; background: rgba(255,255,255,.80);">
-                                Aucune mission ne correspond à vos filtres.
-                            </div>
-                        </t>
+                    <form class="rv-portal-filter-bar" method="get" action="/my/missions">
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_specialty_id">Specialite</label>
+                            <select id="rv_specialty_id" name="specialty_id">
+                                <option value="">Toutes</option>
+                                <t t-foreach="specialties" t-as="s">
+                                    <option t-att-value="s.id"
+                                            t-att-selected="1 if str(s.id) == str(request.params.get('specialty_id') or '') else None">
+                                        <t t-esc="s.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
 
-                    </div><!-- /ab-inner -->
-                </div><!-- /ab-shell -->
-            </section>
-            <t t-if="recommended_radiologists">
-                <script type="text/javascript">
-                    <![CDATA[
-    (function () {
-      function fillStars() {
-        var blocks = document.querySelectorAll('#ab-recbar .ab-stars');
-        blocks.forEach(function (el) {
-          var r = parseFloat(el.getAttribute('data-rating') || '0');
-          if (isNaN(r)) r = 0;
-          var full = Math.floor(r); // 0..5
-          var stars = el.querySelectorAll('.ab-star');
-          stars.forEach(function (s, idx) {
-            s.style.opacity = (idx < full) ? '1' : '.25';
-          });
-        });
-      }
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_brand_id">Marque</label>
+                            <select id="rv_brand_id" name="brand_id">
+                                <option value="">Toutes</option>
+                                <t t-foreach="brands" t-as="b">
+                                    <option t-att-value="b.id"
+                                            t-att-selected="1 if str(b.id) == str(request.params.get('brand_id') or '') else None">
+                                        <t t-esc="b.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
 
-      function bindClose() {
-        var bar = document.getElementById('ab-recbar');
-        if (!bar) return;
-        var btn = bar.querySelector('.ab-recbar-close');
-        if (!btn) return;
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_date_from">Du</label>
+                            <input id="rv_date_from" type="date" name="date_from"
+                                   t-att-value="request.params.get('date_from') or ''"/>
+                        </div>
 
-        btn.addEventListener('click', function () {
-          bar.classList.add('ab-closed');
-        });
-      }
+                        <div class="rv-portal-filter-field">
+                            <label for="rv_date_to">Au</label>
+                            <input id="rv_date_to" type="date" name="date_to"
+                                   t-att-value="request.params.get('date_to') or ''"/>
+                        </div>
 
-      function showRecBar() {
-        var el = document.getElementById('ab-recbar');
-        if (!el) return;
+                        <div class="rv-portal-filter-actions">
+                            <button type="submit" class="rv-portal-btn rv-portal-btn-primary">Filtrer</button>
+                            <a href="/my/missions" class="rv-portal-btn rv-portal-btn-secondary">Reinitialiser</a>
+                        </div>
+                    </form>
 
-        setTimeout(function () {
-          el.classList.add('ab-show');
-          fillStars();
-          bindClose();
-        }, 2000);
-      }
+                    <t t-if="missions">
+                        <div class="rv-portal-mission-grid">
+                            <t t-foreach="missions" t-as="m">
+                                <article class="rv-portal-mission-card">
+                                    <a t-att-href="'/my/missions/%s' % m.id" class="rv-portal-mission-media">
+                                        <t t-if="m.hospital_id and m.hospital_id.image_1920">
+                                            <img t-att-src="'/web/image/radiology.hospital/%s/image_1920' % m.hospital_id.id"
+                                                 alt="Mission"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img src="/web/static/img/placeholder.png" alt="Mission"/>
+                                        </t>
+                                    </a>
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', showRecBar);
-      } else {
-        showRecBar();
-      }
-    })();
-    ]]>
-                </script>
+                                    <div class="rv-portal-mission-body">
+                                        <div class="rv-portal-mission-head">
+                                            <div>
+                                                <h3><t t-esc="m.name or 'Mission'"/></h3>
+                                                <p>
+                                                    <t t-esc="m.hospital_id.name if m.hospital_id else 'Etablissement partenaire'"/>
+                                                    <t t-if="m.start_date or m.end_date">
+                                                        <span class="rv-portal-separator">|</span>
+                                                        <t t-if="m.start_date"><t t-esc="m.start_date"/></t>
+                                                        <t t-if="m.end_date"><t t-esc="' -> %s' % m.end_date"/></t>
+                                                    </t>
+                                                </p>
+                                            </div>
+                                            <span class="rv-portal-status-chip is-published">Publiee</span>
+                                        </div>
+
+                                        <div class="rv-portal-tag-row">
+                                            <t t-foreach="m.speciality_ids[:3]" t-as="sp">
+                                                <span class="rv-portal-tag-chip"><t t-esc="sp.name"/></span>
+                                            </t>
+                                            <t t-foreach="m.brand_ids[:2]" t-as="br">
+                                                <span class="rv-portal-tag-chip is-muted"><t t-esc="br.name"/></span>
+                                            </t>
+                                            <t t-if="len(m.speciality_ids) &gt; 3">
+                                                <span class="rv-portal-tag-chip is-muted">+<t t-esc="len(m.speciality_ids) - 3"/></span>
+                                            </t>
+                                            <t t-if="len(m.brand_ids) &gt; 2">
+                                                <span class="rv-portal-tag-chip is-muted">+<t t-esc="len(m.brand_ids) - 2"/></span>
+                                            </t>
+                                        </div>
+
+                                        <div class="rv-portal-mission-meta">
+                                            <div class="rv-portal-applicant-strip">
+                                                <div class="rv-portal-avatar-stack">
+                                                    <t t-set="apps" t-value="m.application_ids"/>
+                                                    <t t-foreach="apps[:3]" t-as="app">
+                                                        <t t-set="r" t-value="app.radiologist_id"/>
+                                                        <span class="rv-portal-avatar-stack-item" t-att-title="r.display_name">
+                                                            <t t-if="r.image_1920">
+                                                                <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id" alt="Radiologue"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
+                                                            </t>
+                                                        </span>
+                                                    </t>
+                                                </div>
+                                                <span class="rv-portal-applicant-count">
+                                                    <t t-if="len(m.application_ids)">
+                                                        <t t-esc="len(m.application_ids)"/> candidat<t t-if="len(m.application_ids) &gt; 1">s</t>
+                                                    </t>
+                                                    <t t-else="">Aucun candidat</t>
+                                                </span>
+                                            </div>
+
+                                            <div class="rv-portal-mission-price">
+                                                <strong><t t-esc="m.tarif or '-'"/> EUR</strong>
+                                                <small>
+                                                    <t t-if="m.tarif_type == 'hour'">/ heure</t>
+                                                    <t t-elif="m.tarif_type == 'day'">/ jour</t>
+                                                    <t t-else="">/ mission</t>
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <div class="rv-portal-mission-actions">
+                                            <a class="rv-portal-btn rv-portal-btn-secondary"
+                                               t-att-href="'/my/missions/%s' % m.id">Voir l'offre</a>
+                                        </div>
+                                    </div>
+                                </article>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="rv-portal-empty-state">
+                            <strong>Aucune mission ne correspond a vos filtres.</strong>
+                            <p>Reinitialisez la recherche ou publiez une nouvelle mission pour relancer le matching.</p>
+                        </div>
+                    </t>
+                </div>
             </t>
-
         </t>
     </template>
 </odoo>

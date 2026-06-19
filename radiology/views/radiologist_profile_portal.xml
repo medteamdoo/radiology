@@ -1,703 +1,465 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="portal_radiologist_profile_modern" name="Portal - Radiologist Profile (Airbnb Pro)">
-
+    <template id="portal_radiologist_profile_modern" name="Portal - Radiologist Profile (RadioVac SaaS)">
         <t t-set="rl_fullwidth" t-value="True"/>
         <t t-set="breadcrumbs" t-value="False"/>
+        <t t-set="no_breadcrumbs" t-value="True"/>
 
         <t t-call="portal.portal_layout">
-            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-set="rv_page_title" t-value="'Radiologues'"/>
+            <t t-set="rv_page_subtitle"
+               t-value="'Consultez les profils disponibles et coordonnez vos missions avec le bon specialiste.'"/>
             <t t-set="weekday_map"
-               t-value="{'0':'Lundi','1':'Mardi','2':'Mercredi','3':'Jeudi','4':'Vendredi','5':'Samedi','6':'Dimanche'}"/>
+               t-value="{'0': 'Lundi', '1': 'Mardi', '2': 'Mercredi', '3': 'Jeudi', '4': 'Vendredi', '5': 'Samedi', '6': 'Dimanche'}"/>
+            <t t-set="profile_location"
+               t-value="(radiologist.hospital_id.city or radiologist.hospital_id.name or 'France') if radiologist.hospital_id else 'France'"/>
+            <t t-set="has_active_availability" t-value="bool(availabilities)"/>
+            <t t-set="member_since"
+               t-value="radiologist.create_date.strftime('%m/%Y') if radiologist.create_date else '-'"/>
 
-            <style>
-                :root{
-                --ab-text:#0f172a;
-                --ab-muted:#64748b;
-                --ab-border: rgba(15,23,42,.10);
-                --ab-chip:#f8fafc;
-                --ab-chip-border: rgba(15,23,42,.12);
-                --ab-shadow: 0 10px 30px rgba(2,6,23,.08);
-                --ab-shadow2: 0 14px 46px rgba(2,6,23,.10);
-                --ab-radius2: 22px;
-                --ab-primary:#2563eb;
-                }
+            <t t-call="radiology.rv_portal_shell">
+                <t t-set="rv_portal_active" t-value="'radiologists'"/>
 
-                .o_portal_wrap > .container{ max-width:100% !important; padding-left:0 !important; padding-right:0
-                !important; }
-                .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+                <div class="rv-portal-stack rv-radiologist-profile-page">
+                    <a href="/my/radiologists" class="rv-radiologist-profile-back">
+                        <i class="fa fa-arrow-left"/>
+                        <span>Retour aux radiologues</span>
+                    </a>
 
-                .ab-page{ min-height:100vh; background:#fff; }
-                .ab-shell{ padding: 18px 0 56px; }
-                @media(min-width:768px){ .ab-shell{ padding: 22px 0 64px; } }
-                @media(min-width:1200px){ .ab-shell{ padding: 26px 0 70px; } }
+                    <section class="rv-portal-card rv-radiologist-profile-hero">
+                        <div class="rv-radiologist-profile-media">
+                            <t t-if="radiologist.image_1920">
+                                <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % radiologist.id"
+                                     alt="Photo radiologue"/>
+                            </t>
+                            <t t-else="">
+                                <img src="/web/static/img/user_menu_avatar.png" alt="Avatar radiologue"/>
+                            </t>
 
-                .ab-inner{
-                max-width: 1320px;
-                margin: 0 auto;
-                padding-left: 18px;
-                padding-right: 18px;
-                }
-                @media(min-width:768px){ .ab-inner{ padding-left: 28px; padding-right: 28px; } }
-                @media(min-width:1200px){ .ab-inner{ padding-left: 40px; padding-right: 40px; } }
+                            <span t-attf-class="rv-radiologist-profile-status #{'is-available' if has_active_availability else 'is-pending'}">
+                                <span class="rv-radiologist-profile-status-dot"/>
+                                <t t-esc="'Disponible' if has_active_availability else 'Planning a confirmer'"/>
+                            </span>
+                        </div>
 
-                .ab-hero{
-                border-radius: var(--ab-radius2);
-                border: 1px solid var(--ab-border);
-                background: rgba(255,255,255,.92);
-                box-shadow: var(--ab-shadow);
-                overflow:hidden;
-                }
-                .ab-hero-in{
-                display:grid;
-                grid-template-columns: 420px 1fr;
-                }
-                @media(max-width: 991px){
-                .ab-hero-in{ grid-template-columns: 1fr; }
-                }
-
-                .ab-media{
-                position:relative;
-                width:100%;
-                min-height: 340px;
-                background: #e5e7eb;
-                overflow:hidden;
-                }
-                .ab-media img{
-                width:100%;
-                height:100%;
-                min-height:340px;
-                object-fit:cover;
-                display:block;
-                transform: scale(1.02);
-                transition: transform .35s ease;
-                }
-                .ab-hero:hover .ab-media img{ transform: scale(1.06); }
-
-                .ab-badge{
-                position:absolute;
-                left: 14px;
-                bottom: 14px;
-                padding: 8px 12px;
-                border-radius: 999px;
-                background: rgba(255,255,255,.92);
-                border: 1px solid rgba(15,23,42,.10);
-                font-weight: 950;
-                font-size: 12.5px;
-                color: var(--ab-text);
-                box-shadow: 0 10px 22px rgba(2,6,23,.10);
-                display:inline-flex;
-                align-items:center;
-                gap:8px;
-                line-height:1;
-                }
-
-                .ab-body{ padding: 14px 14px 16px; }
-                @media(min-width:992px){ .ab-body{ padding: 18px 18px 20px; } }
-
-                .ab-title{
-                margin:0;
-                color: var(--ab-text);
-                font-weight: 950;
-                letter-spacing: -.02em;
-                font-size: 28px;
-                line-height: 1.1;
-                }
-                .ab-sub{
-                margin-top: 8px;
-                color: var(--ab-muted);
-                font-weight: 650;
-                font-size: 13.5px;
-                line-height: 1.55;
-                }
-
-                .ab-tags{
-                margin-top: 10px;
-                display:flex;
-                flex-wrap:wrap;
-                gap: 8px;
-                }
-                .ab-tag{
-                display:inline-flex;
-                align-items:center;
-                padding: 7px 10px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.90);
-                color: var(--ab-text);
-                font-weight: 850;
-                font-size: 12px;
-                white-space:nowrap;
-                }
-
-                .ab-cta-btn{
-                border-radius: 12px !important;
-                padding: 10px 12px !important;
-                font-weight: 950 !important;
-                font-size: 13px !important;
-                text-decoration:none !important;
-                border: 1px solid rgba(37,99,235,.22) !important;
-                background: rgba(239,246,255,.95) !important;
-                color: #1d4ed8 !important;
-                display:inline-flex !important;
-                align-items:center !important;
-                justify-content:center !important;
-                gap: 8px !important;
-                cursor:pointer;
-                white-space: nowrap;
-                }
-                .ab-cta-btn:hover{
-                background: rgba(219,234,254,.95) !important;
-                color:#1d4ed8 !important;
-                text-decoration:none !important;
-                }
-                .ab-cta-btn-primary{
-                background: var(--ab-primary) !important;
-                border-color: var(--ab-primary) !important;
-                color: #fff !important;
-                box-shadow: 0 12px 26px rgba(37,99,235,.18);
-                }
-                .ab-cta-btn-primary:hover{
-                background: #1d4ed8 !important;
-                border-color:#1d4ed8 !important;
-                color:#fff !important;
-                }
-
-                .ab-actions{
-                margin-top: 14px;
-                display:flex;
-                flex-wrap:wrap;
-                gap: 10px;
-                }
-
-                .ab-card{
-                border-radius: var(--ab-radius2);
-                border: 1px solid var(--ab-border);
-                background: rgba(255,255,255,.92);
-                box-shadow: var(--ab-shadow);
-                overflow:hidden;
-                }
-                .ab-card-hd{
-                padding: 12px 14px;
-                border-bottom: 1px solid rgba(15,23,42,.08);
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap:12px;
-                }
-                .ab-card-title{
-                margin:0;
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 15px;
-                letter-spacing: -.01em;
-                }
-                .ab-card-bd{ padding: 14px; }
-
-                .ab-row{
-                display:flex;
-                align-items:flex-start;
-                justify-content:space-between;
-                gap: 12px;
-                padding: 12px;
-                border-radius: 16px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.75);
-                }
-                .ab-rowL{ display:flex; gap: 12px; min-width:0; }
-                .ab-ico{
-                width: 36px; height: 36px;
-                border-radius: 12px;
-                display:grid;
-                place-items:center;
-                background: rgba(37,99,235,.10);
-                color:#1d4ed8;
-                font-weight: 950;
-                flex:0 0 auto;
-                }
-                .ab-k{ color: var(--ab-muted); font-weight: 750; font-size: 12px; }
-                .ab-v{
-                color: var(--ab-text);
-                font-weight: 900;
-                white-space: nowrap;
-                overflow:hidden;
-                text-overflow: ellipsis;
-                max-width: 520px;
-                }
-
-                .ab-tabs{ display:flex; gap: 10px; flex-wrap:wrap; }
-                .ab-tab-btn{
-                border-radius: 12px !important;
-                padding: 10px 12px !important;
-                font-weight: 950 !important;
-                font-size: 13px !important;
-                border: 1px solid rgba(15,23,42,.10) !important;
-                background: rgba(248,250,252,.85) !important;
-                color: var(--ab-text) !important;
-                }
-                .ab-tab-btn.active{
-                background: rgba(239,246,255,.95) !important;
-                border-color: rgba(37,99,235,.22) !important;
-                color: #1d4ed8 !important;
-                }
-
-                .ab-review{
-                padding: 12px;
-                border-radius: 16px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(248,250,252,.75);
-                }
-                .ab-reviewTop{
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                gap: 10px;
-                }
-                .ab-reviewScore{
-                display:inline-flex;
-                align-items:center;
-                gap: 8px;
-                font-weight: 950;
-                color: var(--ab-text);
-                font-size: 13px;
-                }
-                .ab-reviewScore b{
-                width: 26px; height: 26px;
-                border-radius: 10px;
-                display:grid;
-                place-items:center;
-                background: rgba(245,158,11,.16);
-                color:#92400E;
-                font-size: 12px;
-                }
-                .ab-reviewText{
-                margin-top: 10px;
-                color: var(--ab-muted);
-                font-weight: 650;
-                line-height: 1.55;
-                font-size: 13px;
-                }
-
-                .ab-avaGrid{ display:flex; flex-wrap:wrap; gap:10px; }
-                .ab-avaPill{
-                display:inline-flex;
-                align-items:center;
-                gap: 8px;
-                padding: 9px 12px;
-                border-radius: 999px;
-                border: 1px solid rgba(15,23,42,.10);
-                background: rgba(239,246,255,.95);
-                color:#1d4ed8;
-                font-weight: 950;
-                font-size: 12.5px;
-                }
-                .ab-avaPill em{
-                font-style: normal;
-                color: var(--ab-muted);
-                font-weight: 800;
-                }
-
-                /* Rating bars */
-                .ab-bars{
-                margin-top: 10px;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                }
-                .ab-bar-row{
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                }
-                .ab-bar-label{
-                min-width: 140px;
-                font-size: 12.5px;
-                font-weight: 800;
-                color: var(--ab-muted);
-                }
-                .ab-bar-track{
-                flex: 1;
-                height: 8px;
-                background: rgba(15,23,42,.10);
-                border-radius: 999px;
-                overflow: hidden;
-                }
-                .ab-bar-fill{
-                height: 100%;
-                background: linear-gradient(90deg,#f59e0b,#fbbf24);
-                border-radius: 999px;
-                }
-                /* Stars rating */
-                .ab-stars {
-                position: relative;
-                display: inline-block;
-                font-size: 16px;
-                line-height: 1;
-                }
-
-                .ab-stars::before {
-                content: "★★★★★";
-                letter-spacing: 2px;
-                color: #e5e7eb; /* gris */
-                }
-
-                .ab-stars-fill {
-                position: absolute;
-                top: 0;
-                left: 0;
-                overflow: hidden;
-                white-space: nowrap;
-                }
-
-                .ab-stars-fill::before {
-                content: "★★★★★";
-                letter-spacing: 2px;
-                color: #fbbf24; /* jaune */
-                }
-
-            </style>
-
-            <section class="ab-page">
-                <div class="container-fluid ab-shell">
-                    <div class="ab-inner">
-
-                        <!-- HERO -->
-                        <div class="ab-hero">
-                            <div class="ab-hero-in">
-
-                                <!-- PHOTO -->
-                                <div class="ab-media">
-                                    <t t-if="radiologist.image_1920">
-                                        <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % radiologist.id"
-                                             alt="Photo"/>
-                                    </t>
-                                    <t t-else="">
-                                        <img t-att-src="'/web/static/img/user_menu_avatar.png'" alt="Avatar"/>
-                                    </t>
-
-                                    <!-- ✅ RATING visible seulement Premium/Pro -->
-                                    <t t-if="can_see">
-                                        <t t-if="radiologist.rating_count and radiologist.rating_count &gt; 0">
-                                            <div class="ab-stars" style="font-size:18px;">
-                                                <div class="ab-stars-fill"
-                                                     t-att-style="'width:' + str((radiologist.rating_avg or 0) * 20) + '%;'">
-                                                </div>
-                                            </div>
-                                            <span style="font-weight:900;">
-                                                <t t-esc="round(radiologist.rating_avg or 0.0, 1)"/>
-                                                / 5
-                                            </span>
+                        <div class="rv-radiologist-profile-main">
+                            <div class="rv-radiologist-profile-head">
+                                <div>
+                                    <h2><t t-esc="radiologist.display_name or 'Radiologue'"/></h2>
+                                    <p class="rv-radiologist-profile-subtitle">
+                                        <t t-if="radiologist.specialty_ids">
+                                            Radiologue diplome, specialise en
+                                            <t t-esc="', '.join(radiologist.specialty_ids[:3].mapped('name'))"/>
                                         </t>
-                                    </t>
-                                    <t t-else="">
-                                        <div class="ab-badge">
-                                            🔒 Notes Premium
-                                            <a href="/my/subscription"
-                                               style="color:#2563eb; font-weight:950; text-decoration:none;">
-                                                Passer Premium
-                                            </a>
-                                        </div>
-                                    </t>
+                                        <t t-else="">Radiologue diplome, specialise en imagerie medicale</t>
+                                    </p>
                                 </div>
+                            </div>
 
-                                <!-- INFO -->
-                                <div class="ab-body">
-                                    <h1 class="ab-title">
-                                        <t t-esc="radiologist.display_name or 'Radiologue'"/>
-                                    </h1>
-
-                                    <div class="ab-sub">
-                                        <t t-if="radiologist.experience_years">
-                                            <b>
-                                                <t t-esc="radiologist.experience_years"/>
-                                            </b>
-                                            ans d’expérience • Spécialités &amp; marques
-                                        </t>
-                                        <t t-else="">Expérience non renseignée • Spécialités &amp; marques</t>
-                                    </div>
-
-                                    <div class="ab-tags">
-                                        <t t-foreach="radiologist.specialty_ids[:6]" t-as="sp">
-                                            <span class="ab-tag">
-                                                <t t-esc="sp.name"/>
-                                            </span>
-                                        </t>
-                                        <t t-foreach="radiologist.brand_ids[:6]" t-as="br">
-                                            <span class="ab-tag">
-                                                <t t-esc="br.name"/>
-                                            </span>
-                                        </t>
-                                    </div>
-
-                                    <div class="ab-actions">
-
-                                        <a t-att-href="'/my/chat/start/%s' % radiologist.id" class="ab-cta-btn">Lancer
-                                            une conversation
-                                        </a>
-                                        <a href="/my/radiologists" class="ab-cta-btn">← Retour</a>
-                                    </div>
-
-                                    <t t-if="radiologist.bio">
-                                        <div class="ab-sub" style="margin-top:12px;">
-                                            <t t-esc="radiologist.bio"/>
-                                        </div>
+                            <div class="rv-radiologist-profile-meta">
+                                <span>
+                                    <i class="fa fa-briefcase"/>
+                                    <t t-if="radiologist.experience_years">
+                                        <t t-esc="radiologist.experience_years"/> ans d'experience
                                     </t>
-                                </div>
+                                    <t t-else="">Experience non renseignee</t>
+                                </span>
+                                <span>
+                                    <i class="fa fa-map-marker"/>
+                                    <t t-esc="profile_location"/>
+                                </span>
+                                <span t-attf-class="rv-radiologist-profile-meta-status #{'is-available' if has_active_availability else 'is-pending'}">
+                                    <span class="rv-radiologist-profile-status-dot"/>
+                                    <t t-esc="'Disponible' if has_active_availability else 'Planning a confirmer'"/>
+                                </span>
+                            </div>
 
+                            <div class="rv-radiologist-profile-chips">
+                                <t t-if="radiologist.specialty_ids">
+                                    <t t-foreach="radiologist.specialty_ids[:4]" t-as="sp">
+                                        <span class="rv-radiologist-profile-chip">
+                                            <t t-esc="sp.name"/>
+                                        </span>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <span class="rv-radiologist-profile-chip is-muted">Specialites a completer</span>
+                                </t>
+                            </div>
+
+                            <div class="rv-radiologist-profile-chips is-secondary">
+                                <t t-if="radiologist.brand_ids">
+                                    <t t-foreach="radiologist.brand_ids[:4]" t-as="br">
+                                        <span class="rv-radiologist-profile-chip is-secondary">
+                                            <t t-esc="br.name"/>
+                                        </span>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <span class="rv-radiologist-profile-chip is-secondary">Equipements a completer</span>
+                                </t>
+                            </div>
+
+                            <div class="rv-radiologist-profile-actions">
+                                <a t-att-href="'/my/chat/start/%s' % radiologist.id"
+                                   class="rv-portal-btn rv-portal-btn-primary">
+                                    <i class="fa fa-comments-o"/>
+                                    <span>Lancer une conversation</span>
+                                </a>
+                                <a href="/my/radiologists" class="rv-portal-btn rv-portal-btn-secondary">
+                                    <i class="fa fa-arrow-left"/>
+                                    <span>Retour</span>
+                                </a>
                             </div>
                         </div>
 
-                        <!-- CONTENT -->
-                        <div class="row g-4 mt-3">
+                        <aside class="rv-radiologist-profile-summary">
+                            <span class="rv-portal-section-kicker">Presentation</span>
+                            <p>
+                                <t t-if="radiologist.bio">
+                                    <t t-esc="radiologist.bio"/>
+                                </t>
+                                <t t-else="">
+                                    Profil RadioVac disponible pour vos missions d'imagerie, avec une presentation claire
+                                    des competences, des equipements et des disponibilites.
+                                </t>
+                            </p>
 
-                            <!-- LEFT -->
-                            <div class="col-lg-4">
-                                <div class="ab-card">
-                                    <div class="ab-card-hd">
-                                        <h3 class="ab-card-title">Informations</h3>
+                            <div class="rv-radiologist-profile-summary-metrics">
+                                <t t-if="can_see and radiologist.rating_count">
+                                    <span class="rv-radiologist-profile-score">
+                                        <i class="fa fa-star"/>
+                                        <t t-esc="'%.1f' % (radiologist.rating_avg or 0.0)"/>
+                                        <small>/ 5</small>
+                                    </span>
+                                    <span class="rv-radiologist-profile-score-note">
+                                        <t t-esc="radiologist.rating_count"/> avis verifies
+                                    </span>
+                                </t>
+                                <t t-else="">
+                                    <span class="rv-radiologist-profile-score-note">Profil visible dans votre reseau RadioVac</span>
+                                </t>
+                            </div>
+                        </aside>
+                    </section>
+
+                    <div class="rv-radiologist-profile-grid">
+                        <section class="rv-portal-card rv-radiologist-profile-info-card">
+                            <div class="rv-radiologist-profile-card-head">
+                                <h3>Informations</h3>
+                            </div>
+
+                            <div class="rv-radiologist-profile-facts">
+                                <div class="rv-radiologist-profile-fact">
+                                    <span class="rv-radiologist-profile-fact-icon"><i class="fa fa-briefcase"/></span>
+                                    <div>
+                                        <small>Experience</small>
+                                        <strong>
+                                            <t t-if="radiologist.experience_years">
+                                                <t t-esc="radiologist.experience_years"/> ans
+                                            </t>
+                                            <t t-else="">Non renseignee</t>
+                                        </strong>
                                     </div>
-                                    <div class="ab-card-bd d-flex flex-column gap-2">
-                                        <div class="ab-row">
-                                            <div class="ab-rowL">
-                                                <div class="ab-ico">🎓</div>
-                                                <div class="min-w-0">
-                                                    <div class="ab-k">Expérience</div>
-                                                    <div class="ab-v">
-                                                        <t t-if="radiologist.experience_years">
-                                                            <t t-esc="radiologist.experience_years"/>
-                                                            ans
-                                                        </t>
-                                                        <t t-else="">—</t>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                </div>
 
+                                <div class="rv-radiologist-profile-fact">
+                                    <span class="rv-radiologist-profile-fact-icon"><i class="fa fa-stethoscope"/></span>
+                                    <div>
+                                        <small>Specialites</small>
+                                        <strong>
+                                            <t t-if="radiologist.specialty_ids">
+                                                <t t-esc="', '.join(radiologist.specialty_ids[:3].mapped('name'))"/>
+                                            </t>
+                                            <t t-else="">A completer</t>
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div class="rv-radiologist-profile-fact">
+                                    <span class="rv-radiologist-profile-fact-icon"><i class="fa fa-cogs"/></span>
+                                    <div>
+                                        <small>Equipements</small>
+                                        <strong>
+                                            <t t-if="radiologist.brand_ids">
+                                                <t t-esc="', '.join(radiologist.brand_ids[:3].mapped('name'))"/>
+                                            </t>
+                                            <t t-else="">A completer</t>
+                                        </strong>
+                                    </div>
+                                </div>
+
+                                <div class="rv-radiologist-profile-fact">
+                                    <span class="rv-radiologist-profile-fact-icon"><i class="fa fa-hospital-o"/></span>
+                                    <div>
+                                        <small>Etablissement</small>
+                                        <strong><t t-esc="radiologist.hospital_id.name if radiologist.hospital_id else 'RadioVac'"/></strong>
+                                    </div>
+                                </div>
+
+                                <div class="rv-radiologist-profile-fact">
+                                    <span class="rv-radiologist-profile-fact-icon"><i class="fa fa-map-marker"/></span>
+                                    <div>
+                                        <small>Localisation</small>
+                                        <strong><t t-esc="profile_location"/></strong>
+                                    </div>
+                                </div>
+
+                                <div class="rv-radiologist-profile-fact">
+                                    <span class="rv-radiologist-profile-fact-icon"><i class="fa fa-id-card-o"/></span>
+                                    <div>
+                                        <small>Membre depuis</small>
+                                        <strong><t t-esc="member_since"/></strong>
                                     </div>
                                 </div>
                             </div>
+                        </section>
 
-                            <!-- RIGHT -->
-                            <div class="col-lg-8">
-
-                                <!-- ✅ Diplômes / CV / Avis = Premium/Pro seulement -->
-                                <div class="ab-card">
-                                    <t t-if="can_see">
-
-                                        <div class="ab-card-hd">
-                                            <div class="ab-tabs nav" role="tablist">
-                                                <button class="ab-tab-btn active" data-bs-toggle="tab"
-                                                        data-bs-target="#tab_docs" type="button" role="tab">Diplômes
-                                                </button>
-                                                <button class="ab-tab-btn" data-bs-toggle="tab" data-bs-target="#tab_cv"
-                                                        type="button" role="tab">CV
-                                                </button>
-                                                <button class="ab-tab-btn" data-bs-toggle="tab"
-                                                        data-bs-target="#tab_reviews" type="button" role="tab">Avis
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="ab-card-bd tab-content">
-
-                                            <!-- Diplômes -->
-                                            <div class="tab-pane fade show active" id="tab_docs" role="tabpanel">
-                                                <t t-if="diplomes">
-                                                    <div class="d-flex flex-column gap-2">
-                                                        <t t-foreach="diplomes" t-as="att">
-                                                            <div class="ab-row">
-                                                                <div class="ab-rowL">
-                                                                    <div class="ab-ico">PDF</div>
-                                                                    <div class="min-w-0">
-                                                                        <div class="ab-v">
-                                                                            <t t-esc="att.name"/>
-                                                                        </div>
-                                                                        <div class="ab-k">Document</div>
-                                                                    </div>
-                                                                </div>
-                                                                <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
-                                                                   target="_blank" class="ab-cta-btn">Voir
-                                                                </a>
-                                                            </div>
-                                                        </t>
-                                                    </div>
-                                                </t>
-                                                <t t-else="">
-                                                    <div class="ab-sub" style="margin:0;">Aucun diplôme ajouté.</div>
-                                                </t>
-                                            </div>
-
-                                            <!-- CV -->
-                                            <div class="tab-pane fade" id="tab_cv" role="tabpanel">
-                                                <t t-if="cvs">
-                                                    <div class="d-flex flex-column gap-2">
-                                                        <t t-foreach="cvs" t-as="att">
-                                                            <div class="ab-row">
-                                                                <div class="ab-rowL">
-                                                                    <div class="ab-ico">CV</div>
-                                                                    <div class="min-w-0">
-                                                                        <div class="ab-v">
-                                                                            <t t-esc="att.name"/>
-                                                                        </div>
-                                                                        <div class="ab-k">Pièce jointe</div>
-                                                                    </div>
-                                                                </div>
-                                                                <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
-                                                                   target="_blank" class="ab-cta-btn">Voir
-                                                                </a>
-                                                            </div>
-                                                        </t>
-                                                    </div>
-                                                </t>
-                                                <t t-else="">
-                                                    <div class="ab-sub" style="margin:0;">Aucun CV ajouté.</div>
-                                                </t>
-                                            </div>
-
-                                            <!-- Avis -->
-                                            <div class="tab-pane fade" id="tab_reviews" role="tabpanel">
-
-                                                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap"
-                                                     style="margin-bottom:10px;">
-                                                    <h3 class="ab-card-title" style="margin:0;">Avis</h3>
-
-                                                    <t t-if="radiologist.rating_count and radiologist.rating_count &gt; 0">
-                                                        <div class="ab-reviewScore">
-                                                            <b>★</b>
-                                                            <span>
-                                                                <t t-esc="round(radiologist.rating_avg or 0.0, 1)"/>
-                                                                / 5
-                                                            </span>
-                                                            <span style="color:var(--ab-muted);font-weight:900;">(<t
-                                                                    t-esc="radiologist.rating_count"/>)
-                                                            </span>
-                                                        </div>
-                                                    </t>
-                                                </div>
-
-                                                <t t-if="ratings">
-                                                    <div class="d-flex flex-column gap-2">
-                                                        <t t-foreach="ratings[:10]" t-as="rev">
-                                                            <div class="ab-review">
-
-                                                                <div class="ab-reviewTop">
-                                                                    <div class="ab-reviewScore">
-
-                                                                        <div class="ab-stars">
-                                                                            <div class="ab-stars-fill"
-                                                                                 t-att-style="'width:' + str((rev.score_avg or 0) * 20) + '%;'">
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <span style="font-weight:900;">
-                                                                            <t t-esc="round(rev.score_avg or 0.0, 1)"/>
-                                                                            / 5
-                                                                        </span>
-
-                                                                    </div>
-
-                                                                    <div class="ab-k">
-                                                                        <t t-esc="rev.create_date"/>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="ab-bars">
-
-                                                                    <div class="ab-bar-row">
-                                                                        <div class="ab-bar-label">Ponctualité</div>
-                                                                        <div class="ab-bar-track">
-                                                                            <div class="ab-bar-fill"
-                                                                                 t-att-style="'width:' + str(float(rev.punctuality or 0) * 20) + '%;'"/>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="ab-bar-row">
-                                                                        <div class="ab-bar-label">Relation humaine</div>
-                                                                        <div class="ab-bar-track">
-                                                                            <div class="ab-bar-fill"
-                                                                                 t-att-style="'width:' + str(float(rev.human_relation or 0) * 20) + '%;'"/>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="ab-bar-row">
-                                                                        <div class="ab-bar-label">Compétence</div>
-                                                                        <div class="ab-bar-track">
-                                                                            <div class="ab-bar-fill"
-                                                                                 t-att-style="'width:' + str(float(rev.competence or 0) * 20) + '%;'"/>
-                                                                        </div>
-                                                                    </div>
-
-                                                                </div>
-
-                                                                <t t-if="rev.comment">
-                                                                    <div class="ab-reviewText" style="margin-top:10px;">
-                                                                        <t t-esc="rev.comment"/>
-                                                                    </div>
-                                                                </t>
-
-                                                            </div>
-                                                        </t>
-                                                    </div>
-                                                </t>
-                                                <t t-else="">
-                                                    <div class="ab-sub" style="margin:0;">Aucun avis pour le moment.</div>
-                                                </t>
-
-                                            </div>
-
-                                        </div>
-                                    </t>
-
-                                    <t t-else="">
-                                        <div class="ab-card-hd">
-                                            <h3 class="ab-card-title">Contenu Premium</h3>
-                                        </div>
-                                        <div class="ab-card-bd">
-                                            <div class="ab-sub" style="margin:0;">
-                                                🔒 Les <b>diplômes</b>, le <b>CV</b> et les <b>avis</b> sont visibles uniquement avec un abonnement
-                                                <b>Premium</b> ou <b>Pro</b>.
-                                            </div>
-                                            <div class="ab-actions" style="margin-top:12px;">
-                                                <a href="/my/subscription" class="ab-cta-btn ab-cta-btn-primary">Passer Premium</a>
-                                            </div>
-                                        </div>
-                                    </t>
+                        <section class="rv-portal-card rv-radiologist-profile-docs-card">
+                            <div class="rv-radiologist-profile-card-head">
+                                <div class="rv-radiologist-profile-tabs nav" role="tablist">
+                                    <button class="nav-link rv-radiologist-profile-tab active"
+                                            type="button"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#rv_profile_tab_diplomas"
+                                            role="tab">
+                                        Diplomes
+                                    </button>
+                                    <button class="nav-link rv-radiologist-profile-tab"
+                                            type="button"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#rv_profile_tab_cv"
+                                            role="tab">
+                                        CV
+                                    </button>
+                                    <button class="nav-link rv-radiologist-profile-tab"
+                                            type="button"
+                                            data-bs-toggle="tab"
+                                            data-bs-target="#rv_profile_tab_reviews"
+                                            role="tab">
+                                        Avis
+                                    </button>
                                 </div>
+                            </div>
 
-                                <!-- Disponibilités (visible pour tous) -->
-                                <div class="ab-card mt-4">
-                                    <div class="ab-card-hd">
-                                        <h3 class="ab-card-title">Disponibilités</h3>
-                                    </div>
-                                    <div class="ab-card-bd">
-                                        <t t-if="availabilities">
-                                            <div class="ab-avaGrid">
-                                                <t t-foreach="availabilities" t-as="a">
-                                                    <span class="ab-avaPill">
-                                                        <b>
-                                                            <t t-esc="weekday_map.get(str(a.weekday))"/>
-                                                        </b>
-                                                        <em><t t-esc="a.start_time"/>h –<t t-esc="a.end_time"/>h
-                                                        </em>
-                                                        <t t-if="a.is_weekend">🏖️</t>
-                                                        <t t-if="a.is_night">🌙</t>
-                                                    </span>
+                            <div class="tab-content rv-radiologist-profile-tab-content">
+                                <div class="tab-pane fade show active" id="rv_profile_tab_diplomas" role="tabpanel">
+                                    <t t-if="can_see">
+                                        <t t-if="diplomes">
+                                            <div class="rv-radiologist-profile-doc-list">
+                                                <t t-foreach="diplomes" t-as="att">
+                                                    <article class="rv-radiologist-profile-doc-row">
+                                                        <div class="rv-radiologist-profile-doc-main">
+                                                            <span class="rv-radiologist-profile-doc-icon">PDF</span>
+                                                            <div>
+                                                                <strong><t t-esc="att.name"/></strong>
+                                                                <small>
+                                                                    <t t-if="att.file_size">
+                                                                        PDF - <t t-esc="'%.1f' % ((att.file_size or 0) / 1048576.0)"/> Mo
+                                                                    </t>
+                                                                    <t t-else="">Document securise</t>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
+                                                           target="_blank"
+                                                           class="rv-radiologist-profile-doc-action">
+                                                            <i class="fa fa-eye"/>
+                                                            <span>Voir</span>
+                                                        </a>
+                                                    </article>
                                                 </t>
                                             </div>
                                         </t>
                                         <t t-else="">
-                                            <div class="ab-sub" style="margin:0;">Aucune disponibilité renseignée.</div>
+                                            <div class="rv-radiologist-profile-empty">Aucun diplome ajoute.</div>
                                         </t>
-                                    </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="rv-radiologist-profile-lock">
+                                            <strong>Acces reserve Premium / Pro</strong>
+                                            <p>Debloquez les diplomes et les documents verifies depuis votre abonnement.</p>
+                                        </div>
+                                    </t>
                                 </div>
 
+                                <div class="tab-pane fade" id="rv_profile_tab_cv" role="tabpanel">
+                                    <t t-if="can_see">
+                                        <t t-if="cvs">
+                                            <div class="rv-radiologist-profile-doc-list">
+                                                <t t-foreach="cvs" t-as="att">
+                                                    <article class="rv-radiologist-profile-doc-row">
+                                                        <div class="rv-radiologist-profile-doc-main">
+                                                            <span class="rv-radiologist-profile-doc-icon is-cv">CV</span>
+                                                            <div>
+                                                                <strong><t t-esc="att.name"/></strong>
+                                                                <small>
+                                                                    <t t-if="att.file_size">
+                                                                        Piece jointe - <t t-esc="'%.1f' % ((att.file_size or 0) / 1048576.0)"/> Mo
+                                                                    </t>
+                                                                    <t t-else="">Document securise</t>
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                        <a t-att-href="'/my/radiologists/attachment/%s/%s/view' % (radiologist.id, att.id)"
+                                                           target="_blank"
+                                                           class="rv-radiologist-profile-doc-action">
+                                                            <i class="fa fa-eye"/>
+                                                            <span>Voir</span>
+                                                        </a>
+                                                    </article>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="rv-radiologist-profile-empty">Aucun CV ajoute.</div>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="rv-radiologist-profile-lock">
+                                            <strong>Acces reserve Premium / Pro</strong>
+                                            <p>Le CV complet et les pieces jointes sont visibles avec votre offre avancee.</p>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <div class="tab-pane fade" id="rv_profile_tab_reviews" role="tabpanel">
+                                    <t t-if="can_see">
+                                        <t t-if="ratings">
+                                            <div class="rv-radiologist-profile-review-preview">
+                                                <t t-foreach="ratings[:3]" t-as="rev">
+                                                    <article class="rv-radiologist-profile-review-teaser">
+                                                        <div class="rv-radiologist-profile-review-teaser-top">
+                                                            <strong><t t-esc="rev.hospital_id.name or 'Etablissement'"/></strong>
+                                                            <span>
+                                                                <i t-foreach="[0,1,2,3,4]" t-as="idx"
+                                                                   t-attf-class="fa #{'fa-star' if idx &lt; int(round(rev.score_avg or 0.0)) else 'fa-star-o'}"/>
+                                                            </span>
+                                                        </div>
+                                                        <p><t t-esc="rev.comment or 'Retour positif sur la collaboration et la qualite du suivi.'"/></p>
+                                                    </article>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="rv-radiologist-profile-empty">Aucun avis disponible.</div>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="rv-radiologist-profile-lock">
+                                            <strong>Avis verifies reserves</strong>
+                                            <p>Les retours detailles et les notes moyennes sont disponibles sur les plans Premium et Pro.</p>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="rv-portal-card rv-radiologist-profile-availability-card">
+                            <div class="rv-radiologist-profile-card-head">
+                                <h3>Disponibilites</h3>
+                            </div>
+
+                            <t t-if="availabilities">
+                                <div class="rv-radiologist-profile-slot-grid">
+                                    <t t-foreach="availabilities[:6]" t-as="slot">
+                                        <t t-set="slot_start_h" t-value="int(slot.start_time or 0)"/>
+                                        <t t-set="slot_start_m" t-value="int((slot.start_time - int(slot.start_time)) * 60) if slot.start_time is not None else 0"/>
+                                        <t t-set="slot_end_h" t-value="int(slot.end_time or 0)"/>
+                                        <t t-set="slot_end_m" t-value="int((slot.end_time - int(slot.end_time)) * 60) if slot.end_time is not None else 0"/>
+                                        <article class="rv-radiologist-profile-slot">
+                                            <strong><t t-esc="weekday_map.get(slot.weekday, slot.weekday)"/></strong>
+                                            <span>
+                                                <t t-esc="'%02d:%02d' % (slot_start_h, slot_start_m)"/>
+                                                -
+                                                <t t-esc="'%02d:%02d' % (slot_end_h, slot_end_m)"/>
+                                            </span>
+                                            <i t-attf-class="fa #{'fa-moon-o' if slot.is_night else 'fa-sun-o'}"/>
+                                        </article>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="rv-radiologist-profile-empty">Aucun creneau actif renseigne.</div>
+                            </t>
+                        </section>
+                    </div>
+
+                    <section class="rv-portal-card rv-radiologist-profile-reviews-card">
+                        <div class="rv-radiologist-profile-card-head">
+                            <div>
+                                <h3>Avis</h3>
+                                <p t-if="can_see and radiologist.rating_count" class="rv-radiologist-profile-reviews-subtitle">
+                                    <t t-esc="'%.1f' % (radiologist.rating_avg or 0.0)"/> / 5 sur
+                                    <t t-esc="radiologist.rating_count"/> evaluation<t t-if="radiologist.rating_count &gt; 1">s</t>
+                                </p>
                             </div>
                         </div>
 
-                    </div>
-                </div>
-            </section>
+                        <t t-if="can_see">
+                            <t t-if="ratings">
+                                <div class="rv-radiologist-profile-review-list">
+                                    <t t-foreach="ratings[:6]" t-as="rev">
+                                        <article class="rv-radiologist-profile-review-row">
+                                            <div class="rv-radiologist-profile-review-author">
+                                                <span class="rv-radiologist-profile-review-avatar">
+                                                    <t t-esc="(rev.hospital_id.name or 'E')[0].upper()"/>
+                                                </span>
+                                                <div>
+                                                    <strong><t t-esc="rev.hospital_id.name or 'Etablissement'"/></strong>
+                                                    <small><t t-esc="rev.date.strftime('%d/%m/%Y - %H:%M') if rev.date else ''"/></small>
+                                                </div>
+                                            </div>
 
+                                            <div class="rv-radiologist-profile-review-score">
+                                                <span class="rv-radiologist-profile-review-stars">
+                                                    <i t-foreach="[0,1,2,3,4]" t-as="idx"
+                                                       t-attf-class="fa #{'fa-star' if idx &lt; int(round(rev.score_avg or 0.0)) else 'fa-star-o'}"/>
+                                                </span>
+                                                <strong><t t-esc="'%.1f' % (rev.score_avg or 0.0)"/> / 5</strong>
+                                            </div>
+
+                                            <div class="rv-radiologist-profile-review-bars">
+                                                <div class="rv-radiologist-profile-bar-row">
+                                                    <span>Ponctualite</span>
+                                                    <div class="rv-radiologist-profile-bar-track">
+                                                        <span t-att-style="'width: ' + str(float(rev.punctuality or 0) * 20) + '%'"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="rv-radiologist-profile-bar-row">
+                                                    <span>Relation humaine</span>
+                                                    <div class="rv-radiologist-profile-bar-track">
+                                                        <span t-att-style="'width: ' + str(float(rev.human_relation or 0) * 20) + '%'"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="rv-radiologist-profile-bar-row">
+                                                    <span>Competence</span>
+                                                    <div class="rv-radiologist-profile-bar-track">
+                                                        <span t-att-style="'width: ' + str(float(rev.competence or 0) * 20) + '%'"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="rv-radiologist-profile-review-comment">
+                                                <p><t t-esc="rev.comment or 'Collaboration fluide et qualite de suivi tres appreciee.'"/></p>
+                                            </div>
+                                        </article>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="rv-radiologist-profile-empty">Aucun avis disponible pour ce profil.</div>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <div class="rv-radiologist-profile-lock is-large">
+                                <strong>Acces Premium / Pro requis</strong>
+                                <p>Les avis verifies, la note moyenne et le detail des evaluations sont reserves aux offres avancees.</p>
+                            </div>
+                        </t>
+                    </section>
+                </div>
+            </t>
         </t>
     </template>
 </odoo>

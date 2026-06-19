@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from urllib import request as urllib_request
 from urllib.error import HTTPError, URLError
 
@@ -7,6 +8,10 @@ from odoo import api, fields, models
 
 
 _logger = logging.getLogger(__name__)
+EMAIL_REGEX = re.compile(
+    r"(?<![\w.+-])([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})(?![\w.-])"
+)
+PHONE_REGEX = re.compile(r"(?<!\w)(\+?\d[\d\s().-]{6,}\d)(?!\w)")
 
 
 class RadiologyChatMessage(models.Model):
@@ -29,6 +34,57 @@ class RadiologyChatMessage(models.Model):
     message = fields.Text(required=True)
     is_read_by_hospital = fields.Boolean(default=False)
     is_read_by_radiologist = fields.Boolean(default=False)
+
+    def _extract_contact_details(self, message):
+        text = (message or "").strip()
+        emails = sorted({match.group(1) for match in EMAIL_REGEX.finditer(text)})
+
+        phones = []
+        seen_digits = set()
+        for raw_phone in PHONE_REGEX.findall(text):
+            raw_phone = (raw_phone or "").strip()
+            digits_only = re.sub(r"\D", "", raw_phone)
+            if not 8 <= len(digits_only) <= 15:
+                continue
+            if digits_only in seen_digits:
+                continue
+            seen_digits.add(digits_only)
+            phones.append(raw_phone)
+
+        return emails, phones
+
+    def _create_suspicious_message_records(self):
+        suspicious_model = self.env["radiology.suspicious.message"].sudo()
+        existing_ids = set(
+            suspicious_model.search([("chat_message_id", "in", self.ids)]).mapped("chat_message_id").ids
+        )
+        vals_list = []
+
+        for record in self:
+            if record.id in existing_ids:
+                continue
+
+            emails, phones = record._extract_contact_details(record.message)
+            if not emails and not phones:
+                continue
+
+            detection_type = "email_phone" if emails and phones else "email" if emails else "phone"
+            vals = {
+                "chat_message_id": record.id,
+                "detection_type": detection_type,
+                "detected_emails": ", ".join(emails) if emails else False,
+                "detected_phones": ", ".join(phones) if phones else False,
+            }
+
+            if record.sender_type == "hospital":
+                vals["sender_hospital_id"] = record.conversation_id.hospital_id.id
+            elif record.sender_type == "radiologist":
+                vals["sender_radiologist_id"] = record.conversation_id.radiologist_id.id
+
+            vals_list.append(vals)
+
+        if vals_list:
+            suspicious_model.create(vals_list)
 
     def _send_push_notification(self, *, tokens, title, body, data=None):
         tokens = [token for token in (tokens or []) if token]
@@ -115,5 +171,6 @@ class RadiologyChatMessage(models.Model):
                 "last_message": record.message,
                 "last_message_date": record.create_date or fields.Datetime.now(),
             })
+        records._create_suspicious_message_records()
         records._notify_radiologist_for_hospital_message()
         return records

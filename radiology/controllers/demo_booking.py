@@ -35,6 +35,7 @@ class DemoBookingController(http.Controller):
         name = (post.get("name") or "").strip()
         email = (post.get("email") or "").strip().lower()
         phone = (post.get("phone") or "").strip()
+        additional_info = (post.get("additional_info") or "").strip()
         slot_id = self._safe_int(post.get("slot_id"))
 
         if not name:
@@ -66,6 +67,7 @@ class DemoBookingController(http.Controller):
                     "partner_name": name,
                     "email": email,
                     "phone": phone,
+                    "additional_info": additional_info,
                 })
         except (IntegrityError, ValidationError):
             return self._redirect_with_message(

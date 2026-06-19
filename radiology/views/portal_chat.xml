@@ -1,251 +1,285 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <template id="portal_chat" name="Portal - Chat List (RLX)">
-    <t t-set="rl_fullwidth" t-value="True"/>
-    <t t-set="breadcrumbs" t-value="False"/>
+    <template id="rv_portal_messages_panel" name="RadioVac Messages Panel">
+        <t t-set="rv_chat_message_model" t-value="request.env['radiology.chat.message'].sudo()"/>
+        <t t-set="rv_chat_total_count" t-value="len(rv_chat_conversations)"/>
+        <t t-set="rv_chat_unread_count"
+           t-value="rv_chat_message_model.search_count([('conversation_id.hospital_id', '=', rv_portal_hospital.id), ('sender_type', '=', 'radiologist'), ('is_read_by_hospital', '=', False)]) if rv_portal_hospital else 0"/>
+        <t t-set="rv_chat_active_id" t-value="rv_chat_active_conversation.id if rv_chat_active_conversation else 0"/>
+        <t t-set="rv_chat_active_radiologist"
+           t-value="rv_chat_active_conversation.radiologist_id if rv_chat_active_conversation else False"/>
+        <t t-set="rv_chat_active_location"
+           t-value="(rv_chat_active_radiologist.hospital_id.city or rv_chat_active_radiologist.hospital_id.name or 'France') if rv_chat_active_radiologist and rv_chat_active_radiologist.hospital_id else 'France'"/>
+        <t t-set="rv_chat_active_specialties"
+           t-value="rv_chat_active_radiologist.specialty_ids[:2].mapped('name') if rv_chat_active_radiologist else []"/>
 
-    <t t-call="portal.portal_layout">
-      <t t-set="breadcrumbs_searchbar" t-value="True"/>
-
-      <style>
-        :root{
-          --rlx-text:#0B1220;
-          --rlx-muted:#667085;
-          --rlx-border: rgba(15,23,42,.10);
-          --rlx-card: rgba(255,255,255,.82);
-          --rlx-shadow: 0 18px 60px rgba(2,6,23,.10);
-          --rlx-shadow2: 0 10px 26px rgba(2,6,23,.08);
-          --rlx-primary:#2563EB;
-          --rlx-primary-dark:#1D4ED8;
-          --rlx-radius: 22px;
-        }
-
-        .o_portal_wrap > .container{
-          max-width:100% !important;
-          padding-left:0 !important;
-          padding-right:0 !important;
-        }
-        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
-
-        .rlx-page{
-          min-height:100vh;
-          background:
-            radial-gradient(1200px 520px at 10% 0%, rgba(37,99,235,.10), transparent 55%),
-            linear-gradient(180deg, #EEF5FF 0%, #F8FAFC 42%, #FFFFFF 100%);
-        }
-        .rlx-shell{ padding: 22px 18px 46px; }
-        @media(min-width:992px){ .rlx-shell{ padding: 34px 34px 64px; } }
-
-        .rlx-hero{
-          border-radius: var(--rlx-radius);
-          border: 1px solid var(--rlx-border);
-          background: var(--rlx-card);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          box-shadow: var(--rlx-shadow);
-          overflow:hidden;
-          position:relative;
-        }
-        .rlx-hero:before{
-          content:"";
-          position:absolute; inset:-2px;
-          background:
-            radial-gradient(700px 260px at 18% 0%, rgba(37,99,235,.16), transparent 60%),
-            radial-gradient(700px 260px at 85% 0%, rgba(99,102,241,.12), transparent 60%);
-          pointer-events:none;
-        }
-        .rlx-hero > *{ position:relative; }
-        .rlx-hero-in{ padding: 18px; }
-        @media(min-width:992px){ .rlx-hero-in{ padding: 22px; } }
-
-        .rlx-title{
-          margin:0;
-          font-weight: 900;
-          letter-spacing:-.02em;
-          color: var(--rlx-text);
-          font-size: 28px;
-          line-height: 1.12;
-        }
-        @media(max-width:576px){ .rlx-title{ font-size: 24px; } }
-
-        .rlx-sub{
-          margin-top: 8px;
-          color: var(--rlx-muted);
-          font-weight: 650;
-          font-size: 13.5px;
-          line-height: 1.55;
-        }
-
-        .rlx-btn{
-          border-radius: 14px !important;
-          padding: 10px 14px !important;
-          font-weight: 800 !important;
-        }
-        .rlx-primary{
-          background: var(--rlx-primary) !important;
-          border: none !important;
-          color:#fff !important;
-          box-shadow: 0 14px 30px rgba(37,99,235,.22);
-        }
-        .rlx-primary:hover{ background: var(--rlx-primary-dark) !important; }
-
-        .rlx-card{
-          border-radius: var(--rlx-radius);
-          border: 1px solid rgba(2,6,23,.10);
-          background: rgba(255,255,255,.82);
-          box-shadow: var(--rlx-shadow2);
-          overflow:hidden;
-        }
-        .rlx-card-b{ padding: 14px 16px; }
-
-        .rlx-grid{
-          display:grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-        @media(min-width:992px){
-          .rlx-grid{ grid-template-columns: 1fr 1fr; }
-        }
-
-        .rlx-item{
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap: 14px;
-          padding: 14px;
-          border-radius: 20px;
-          border: 1px solid rgba(2,6,23,.08);
-          background: rgba(255,255,255,.78);
-        }
-
-        .rlx-left{
-          display:flex;
-          align-items:center;
-          gap: 12px;
-          min-width: 0;
-        }
-        .rlx-img{
-          width: 54px; height: 54px;
-          border-radius: 18px;
-          overflow:hidden;
-          background: linear-gradient(180deg,#EAF2FB 0%,#DDEBFA 100%);
-          border: 1px solid rgba(2,6,23,.10);
-          box-shadow: 0 12px 22px rgba(2,6,23,.10);
-          flex: 0 0 auto;
-        }
-        .rlx-img img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-        .rlx-name{
-          margin:0;
-          font-weight: 900;
-          color:#0F172A;
-          line-height: 1.2;
-          font-size: 14px;
-          white-space: nowrap;
-          overflow:hidden;
-          text-overflow: ellipsis;
-        }
-        .rlx-meta{
-          margin-top: 4px;
-          color: var(--rlx-muted);
-          font-weight: 650;
-          font-size: 12.5px;
-          white-space: nowrap;
-          overflow:hidden;
-          text-overflow: ellipsis;
-        }
-
-        .rlx-pill{
-          display:inline-flex; align-items:center;
-          padding: 7px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(2,6,23,.08);
-          background: rgba(255,255,255,.78);
-          font-weight: 900;
-          font-size: 12px;
-          color:#0F172A;
-          white-space: nowrap;
-        }
-      </style>
-
-      <section class="rlx-page">
-        <div class="container-fluid rlx-shell">
-
-          <!-- HERO -->
-          <div class="rlx-hero">
-            <div class="rlx-hero-in">
-              <h2 class="rlx-title">Mes conversations</h2>
-              <div class="rlx-sub">Retrouvez vos discussions avec les radiologues.</div>
-            </div>
-          </div>
-
-          <!-- LIST -->
-          <div class="rlx-card mt-3">
-            <div class="rlx-card-b">
-
-              <t t-if="conversations">
-                <div class="rlx-grid">
-                  <t t-foreach="conversations" t-as="c">
-                    <div class="rlx-item">
-
-                      <div class="rlx-left">
-                        <div class="rlx-img">
-                          <t t-if="c.radiologist_id and c.radiologist_id.image_1920">
-                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % c.radiologist_id.id"
-                                 alt="Radiologue"/>
-                          </t>
-                          <t t-else="">
-                            <div class="w-100 h-100 d-flex align-items-center justify-content-center"
-                                 style="font-weight:900;color:#2563EB;">
-                              RL
+        <div t-attf-class="rv-portal-stack rv-messages-page #{'o_portal_chat_room' if rv_chat_active_conversation else ''}">
+            <section class="rv-portal-surface rv-messages-surface">
+                <div class="rv-messages-layout">
+                    <aside class="rv-messages-list-panel">
+                        <form class="rv-messages-search" method="get" action="/my/chat">
+                            <div class="rv-messages-search-field">
+                                <i class="fa fa-search"/>
+                                <input type="search"
+                                       name="q"
+                                       t-att-value="request.params.get('q') or ''"
+                                       placeholder="Rechercher un radiologue..."
+                                       aria-label="Rechercher un radiologue"/>
                             </div>
-                          </t>
+                            <button type="submit" class="rv-messages-search-filter" aria-label="Rechercher">
+                                <i class="fa fa-sliders"/>
+                            </button>
+                        </form>
+
+                        <div class="rv-messages-tabs">
+                            <span class="rv-messages-tab is-active">Toutes</span>
+                            <span class="rv-messages-tab">
+                                Non lues
+                                <span t-if="rv_chat_unread_count" class="rv-messages-tab-badge">
+                                    <t t-esc="rv_chat_unread_count"/>
+                                </span>
+                            </span>
+                            <span class="rv-messages-tab">Actives</span>
                         </div>
 
-                        <div class="min-w-0">
-                          <p class="rlx-name">
-                            <t t-esc="c.radiologist_id.display_name"/>
-                          </p>
+                        <div class="rv-messages-list" aria-label="Conversations">
+                            <t t-if="rv_chat_conversations">
+                                <t t-foreach="rv_chat_conversations" t-as="c">
+                                    <t t-set="c_unread_count"
+                                       t-value="rv_chat_message_model.search_count([('conversation_id', '=', c.id), ('sender_type', '=', 'radiologist'), ('is_read_by_hospital', '=', False)])"/>
+                                    <t t-set="c_location"
+                                       t-value="c.radiologist_id.hospital_id.city or (c.radiologist_id.hospital_id.name if c.radiologist_id and c.radiologist_id.hospital_id else 'France')"/>
+                                    <a t-att-href="'/my/chat/%s' % c.id"
+                                       t-attf-class="rv-messages-conversation #{'is-active' if c.id == rv_chat_active_id else ''}">
+                                        <span class="rv-messages-conversation-avatar">
+                                            <t t-if="c.radiologist_id and c.radiologist_id.image_1920">
+                                                <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % c.radiologist_id.id"
+                                                     t-att-alt="c.radiologist_id.display_name or 'Radiologue'"/>
+                                            </t>
+                                            <t t-else="">
+                                                <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
+                                            </t>
+                                            <span class="rv-messages-availability-dot"/>
+                                        </span>
 
-                          <t t-if="c.radiologist_id.specialty_ids">
-                            <div class="rlx-meta">
-                              <t t-foreach="c.radiologist_id.specialty_ids[:2]" t-as="sp">
-                                <span class="me-1"><t t-esc="sp.name"/></span>
-                              </t>
-                              <t t-if="len(c.radiologist_id.specialty_ids) &gt; 2">…</t>
-                            </div>
-                          </t>
-                          <t t-else="">
-                            <div class="rlx-meta">—</div>
-                          </t>
+                                        <span class="rv-messages-conversation-body">
+                                            <span class="rv-messages-conversation-head">
+                                                <strong t-esc="c.radiologist_id.display_name or 'Radiologue'"/>
+                                                <small t-esc="c.last_message_date.strftime('%H:%M') if c.last_message_date else ''"/>
+                                            </span>
+
+                                            <span class="rv-messages-conversation-meta">
+                                                <t t-if="c.radiologist_id and c.radiologist_id.specialty_ids">
+                                                    <t t-esc="', '.join(c.radiologist_id.specialty_ids[:2].mapped('name'))"/>
+                                                </t>
+                                                <t t-else="">Specialites a completer</t>
+                                                <span class="rv-messages-meta-separator">|</span>
+                                                <t t-esc="c_location"/>
+                                            </span>
+
+                                            <span class="rv-messages-conversation-preview" t-esc="c.last_message or 'Commencez la conversation.'"/>
+                                        </span>
+
+                                        <span class="rv-messages-conversation-side">
+                                            <span t-if="c_unread_count" class="rv-messages-conversation-badge">
+                                                <t t-esc="c_unread_count"/>
+                                            </span>
+                                            <i class="fa fa-angle-right"/>
+                                        </span>
+                                    </a>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div class="rv-messages-empty-list">
+                                    <strong>Aucune conversation disponible.</strong>
+                                    <p>Activez un echange depuis un profil radiologue pour retrouver vos messages ici.</p>
+                                    <a href="/my/radiologists" class="rv-portal-btn rv-portal-btn-secondary">Voir les radiologues</a>
+                                </div>
+                            </t>
                         </div>
-                      </div>
+                    </aside>
 
-                      <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <span class="rlx-pill">Conversation</span>
-                        <a class="btn rlx-btn rlx-primary"
-                           t-att-href="'/my/chat/%s' % c.id">
-                          Ouvrir
-                        </a>
-                      </div>
+                    <section class="rv-messages-thread-panel">
+                        <t t-if="rv_chat_active_conversation">
+                            <header class="rv-messages-thread-head">
+                                <div class="rv-messages-thread-peer">
+                                    <span class="rv-messages-thread-avatar">
+                                        <t t-if="rv_chat_active_radiologist and rv_chat_active_radiologist.image_1920">
+                                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % rv_chat_active_radiologist.id"
+                                                 t-att-alt="rv_chat_active_radiologist.display_name or 'Radiologue'"/>
+                                        </t>
+                                        <t t-else="">
+                                            <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
+                                        </t>
+                                    </span>
 
-                    </div>
-                  </t>
+                                    <div class="rv-messages-thread-copy">
+                                        <h2><t t-esc="rv_chat_active_radiologist.display_name or 'Radiologue'"/></h2>
+                                        <p>
+                                            <t t-if="rv_chat_active_specialties">
+                                                <t t-esc="' - '.join(rv_chat_active_specialties)"/>
+                                            </t>
+                                            <t t-else="">Radiologue RadioVac</t>
+                                            <span class="rv-messages-meta-separator">|</span>
+                                            <t t-esc="rv_chat_active_location"/>
+                                        </p>
+                                        <span class="rv-messages-thread-status">
+                                            <span class="rv-messages-thread-status-dot"/>
+                                            En ligne
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="rv-messages-thread-actions">
+                                    <a t-att-href="'/my/radiologists/%s' % rv_chat_active_radiologist.id"
+                                       class="rv-portal-btn rv-portal-btn-secondary">
+                                        Voir le profil
+                                    </a>
+                                </div>
+                            </header>
+
+                            <div class="rv-messages-insights">
+                                <article class="rv-messages-insight-card">
+                                    <small>Experience</small>
+                                    <strong>
+                                        <t t-if="rv_chat_active_radiologist.experience_years">
+                                            <t t-esc="rv_chat_active_radiologist.experience_years"/> ans
+                                        </t>
+                                        <t t-else="">Profil verifie</t>
+                                    </strong>
+                                </article>
+
+                                <article class="rv-messages-insight-card">
+                                    <small>Contact</small>
+                                    <strong><t t-esc="rv_chat_active_radiologist.email or 'Non renseigne'"/></strong>
+                                </article>
+
+                                <article class="rv-messages-insight-card">
+                                    <small>Telephone</small>
+                                    <strong><t t-esc="rv_chat_active_radiologist.phone or 'Non renseigne'"/></strong>
+                                </article>
+
+                                <article class="rv-messages-insight-card">
+                                    <small>Creneaux</small>
+                                    <strong><t t-esc="len(rv_chat_availabilities_data or [])"/> actifs</strong>
+                                </article>
+                            </div>
+
+                            <t t-if="rv_chat_availabilities_data">
+                                <div class="rv-messages-slots">
+                                    <t t-foreach="rv_chat_availabilities_data[:3]" t-as="slot">
+                                        <span class="rv-messages-slot">
+                                            <strong><t t-esc="slot.get('day')"/></strong>
+                                            <span><t t-esc="slot.get('time')"/></span>
+                                            <em t-if="slot.get('is_night')">Nuit</em>
+                                            <em t-if="slot.get('is_weekend')">Weekend</em>
+                                        </span>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <div class="rv-messages-thread">
+                                <div class="rv-messages-thread-scroll" id="chat_box">
+                                    <div class="rv-messages-day-pill">Aujourd'hui</div>
+
+                                    <t t-if="rv_chat_messages_data">
+                                        <t t-foreach="rv_chat_messages_data" t-as="m">
+                                            <t t-set="is_hospital" t-value="m['sender_type'] == 'hospital'"/>
+
+                                            <div t-attf-class="rlx-row #{'me' if is_hospital else 'other'}">
+                                                <div t-attf-class="rlx-bubble #{'me' if is_hospital else 'other'}"
+                                                     t-att-data-id="m['id']">
+                                                    <div class="rlx-meta">
+                                                        <span><t t-esc="'Vous' if is_hospital else 'Radiologue'"/></span>
+                                                        <span class="rlx-date"><t t-esc="m['date']"/></span>
+                                                    </div>
+                                                    <div class="rlx-text"><t t-esc="m['message']"/></div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="rv-messages-empty-thread">
+                                            Aucun message pour le moment. Lancez la conversation pour coordonner la mission.
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <div class="rv-messages-composer">
+                                <form id="chat_form" action="/my/chat/send" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" id="conv_id" name="conversation_id" t-att-value="rv_chat_active_conversation.id"/>
+                                    <div class="rv-messages-composer-row">
+                                        <button type="button" class="rv-messages-composer-icon" aria-label="Piece jointe">
+                                            <i class="fa fa-paperclip"/>
+                                        </button>
+                                        <textarea id="chat_input"
+                                                  name="message"
+                                                  class="form-control rv-messages-input"
+                                                  rows="1"
+                                                  required="required"
+                                                  placeholder="Ecrire un message securise..."></textarea>
+                                        <button class="rv-messages-send" type="submit" aria-label="Envoyer">
+                                            <i class="fa fa-paper-plane"/>
+                                        </button>
+                                    </div>
+                                    <div class="rv-messages-composer-note">
+                                        <i class="fa fa-lock"/>
+                                        Messages securises et traces de bout en bout.
+                                    </div>
+                                </form>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="rv-messages-empty-state">
+                                <div class="rv-messages-empty-state-icon">
+                                    <i class="fa fa-comments-o"/>
+                                </div>
+                                <strong>Votre messagerie RadioVac est prete.</strong>
+                                <p>Selectionnez une conversation pour reprendre un echange ou ouvrez un profil radiologue pour demarrer.</p>
+                                <a href="/my/radiologists" class="rv-portal-btn rv-portal-btn-primary">Explorer les profils</a>
+                            </div>
+                        </t>
+                    </section>
                 </div>
-              </t>
-
-              <t t-else="">
-                <div class="text-center p-4" style="color:var(--rlx-muted);font-weight:650;">
-                  Aucune conversation.
-                </div>
-              </t>
-
-            </div>
-          </div>
-
+            </section>
         </div>
-      </section>
+    </template>
 
-    </t>
-  </template>
+    <template id="portal_chat" name="Portal - Messages (RadioVac SaaS)">
+        <t t-set="rl_fullwidth" t-value="True"/>
+        <t t-set="breadcrumbs" t-value="False"/>
+        <t t-set="no_breadcrumbs" t-value="True"/>
+
+        <t t-call="portal.portal_layout">
+            <t t-set="rv_page_title" t-value="'Messages'"/>
+            <t t-set="rv_page_subtitle"
+               t-value="'Echangez en toute securite avec les radiologues de notre reseau.'"/>
+
+            <t t-call="radiology.rv_portal_shell">
+                <t t-set="rv_portal_active" t-value="'messages'"/>
+
+                <t t-set="rv_chat_search" t-value="(request.params.get('q') or '').strip().lower()"/>
+                <t t-set="rv_chat_base_conversations"
+                   t-value="request.env['radiology.chat.conversation'].sudo().search([('hospital_id', '=', hospital.id)], order='last_message_date desc, id desc') if hospital else request.env['radiology.chat.conversation'].sudo().browse([])"/>
+                <t t-set="rv_chat_conversations"
+                   t-value="[c for c in rv_chat_base_conversations if rv_chat_search in (((c.radiologist_id.display_name or '') + ' ' + (c.last_message or '')).lower())] if rv_chat_search else rv_chat_base_conversations"/>
+                <t t-set="rv_chat_active_conversation"
+                   t-value="rv_chat_conversations[0] if rv_chat_conversations else False"/>
+                <t t-set="rv_chat_message_records"
+                   t-value="request.env['radiology.chat.message'].sudo().search([('conversation_id', '=', rv_chat_active_conversation.id)], order='create_date asc') if rv_chat_active_conversation else request.env['radiology.chat.message'].sudo().browse([])"/>
+                <t t-set="rv_chat_messages_data"
+                   t-value="[{'id': m.id, 'message': m.message, 'sender_type': m.sender_type, 'date': m.create_date.strftime('%H:%M') if m.create_date else ''} for m in rv_chat_message_records]"/>
+                <t t-set="rv_chat_day_map"
+                   t-value="{'0': 'Lundi', '1': 'Mardi', '2': 'Mercredi', '3': 'Jeudi', '4': 'Vendredi', '5': 'Samedi', '6': 'Dimanche'}"/>
+                <t t-set="rv_chat_availability_records"
+                   t-value="request.env['radiology.radiologist.availability'].sudo().search([('radiologist_id', '=', rv_chat_active_conversation.radiologist_id.id), ('active', '=', True)], order='weekday, start_time') if rv_chat_active_conversation else request.env['radiology.radiologist.availability'].sudo().browse([])"/>
+                <t t-set="rv_chat_availabilities_data"
+                   t-value="[{'day': rv_chat_day_map.get(a.weekday, a.weekday), 'time': ('%02d:%02d' % (int(a.start_time), int((a.start_time - int(a.start_time)) * 60))) + ' - ' + ('%02d:%02d' % (int(a.end_time), int((a.end_time - int(a.end_time)) * 60))), 'is_night': bool(a.is_night), 'is_weekend': bool(a.is_weekend)} for a in rv_chat_availability_records]"/>
+
+                <t t-call="radiology.rv_portal_messages_panel"/>
+            </t>
+        </t>
+    </template>
 </odoo>

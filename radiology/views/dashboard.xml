@@ -1,656 +1,415 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <template id="portal_hospital_dashboard" name="Portal - Hospital Dashboard (Pro SaaS)">
-    <t t-set="rl_fullwidth" t-value="True"/>
-    <t t-set="breadcrumbs" t-value="False"/>
+    <template id="portal_hospital_dashboard" name="Portal - Hospital Calendar (RadioVac SaaS)">
+        <t t-set="rl_fullwidth" t-value="True"/>
+        <t t-set="breadcrumbs" t-value="False"/>
+        <t t-set="no_breadcrumbs" t-value="True"/>
 
-    <t t-call="portal.portal_layout">
-      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+        <t t-call="portal.portal_layout">
+            <t t-set="rv_page_title" t-value="'Planning RadioVac'"/>
+            <t t-set="rv_page_subtitle"
+               t-value="'Gerez vos missions, disponibilites et echeances en un coup d oeil.'"/>
 
-      <style>
-        :root{
-          --ui-text:#0b1220;
-          --ui-muted:#6b7280;
-          --ui-border: rgba(15,23,42,.10);
-          --ui-card: rgba(255,255,255,.92);
-          --ui-shadow: 0 12px 34px rgba(2,6,23,.10);
-          --ui-shadow2: 0 18px 56px rgba(2,6,23,.14);
-          --ui-radius: 22px;
+            <t t-call="radiology.rv_portal_shell">
+                <t t-set="rv_portal_active" t-value="'calendar'"/>
 
-          /* ✅ Pro palette (teal/gray) */
-          --ui-primary:#0f766e;                 /* teal */
-          --ui-primary-2: rgba(15,118,110,.12);
+                <div class="rv-portal-stack rv-calendar-page">
+                    <section class="rv-calendar-stats">
+                        <t t-foreach="stats_cards" t-as="card">
+                            <article t-attf-class="rv-calendar-stat-card #{card['accent']}">
+                                <span class="rv-calendar-stat-icon"><i t-att-class="card['icon']"/></span>
+                                <div class="rv-calendar-stat-copy">
+                                    <small><t t-esc="card['label']"/></small>
+                                    <strong><t t-esc="card['value']"/></strong>
+                                    <span><t t-esc="card['note']"/></span>
+                                </div>
+                            </article>
+                        </t>
+                    </section>
 
-          --ui-success:#16a34a;
-          --ui-success-2: rgba(22,163,74,.10);
+                    <div class="rv-calendar-layout">
+                        <aside class="rv-calendar-left">
+                            <section class="rv-portal-card rv-calendar-mini">
+                                <div class="rv-calendar-panel-head">
+                                    <a t-att-href="prev_month_url" class="rv-calendar-nav-btn" aria-label="Mois precedent">
+                                        <i class="fa fa-chevron-left"/>
+                                    </a>
+                                    <h3><t t-esc="anchor_month_label"/></h3>
+                                    <a t-att-href="next_month_url" class="rv-calendar-nav-btn" aria-label="Mois suivant">
+                                        <i class="fa fa-chevron-right"/>
+                                    </a>
+                                </div>
 
-          --ui-warn:#f59e0b;
-          --ui-warn-2: rgba(245,158,11,.10);
+                                <div class="rv-calendar-mini-weekdays">
+                                    <t t-foreach="mini_calendar_letters" t-as="letter">
+                                        <span><t t-esc="letter"/></span>
+                                    </t>
+                                </div>
 
-          --ui-neutral:#0f172a;
-          --ui-neutral-2: rgba(15,23,42,.08);
-        }
+                                <div class="rv-calendar-mini-grid">
+                                    <t t-foreach="mini_calendar_weeks" t-as="week">
+                                        <t t-foreach="week" t-as="day">
+                                            <a t-att-href="day['url']"
+                                               t-attf-class="rv-calendar-mini-day #{'is-current' if day['is_current_month'] else 'is-out'} #{'is-today' if day['is_today'] else ''} #{'is-selected' if day['is_selected'] else ''}">
+                                                <t t-esc="day['number']"/>
+                                            </a>
+                                        </t>
+                                    </t>
+                                </div>
+                            </section>
 
-        /* Full width portal (page only) */
-        .o_portal_wrap > .container{
-          max-width:100% !important;
-          padding-left:0 !important;
-          padding-right:0 !important;
-        }
-        .o_portal_wrap > .container.pt-3{ padding-top:0 !important; }
+                            <form class="rv-portal-card rv-calendar-filters" method="get" action="/my/dashboard">
+                                <input type="hidden" name="view" t-att-value="view_mode"/>
+                                <input type="hidden" name="anchor" t-att-value="anchor_day.isoformat()"/>
 
-        /* Page shell */
-        .ui-page{
-          min-height:100vh;
-          background: radial-gradient(1200px 600px at 12% -10%, rgba(15,118,110,.08), transparent 60%) , #fff;
-        }
-        .ui-shell{ padding: 22px 0 70px; }
-        .ui-inner{
-          max-width: 1320px;
-          margin: 0 auto;
-          padding: 0 18px;
-        }
-        @media(min-width:768px){ .ui-inner{ padding: 0 28px; } }
-        @media(min-width:1200px){ .ui-inner{ padding: 0 40px; } }
+                                <div class="rv-calendar-panel-head">
+                                    <h3>Filtres</h3>
+                                    <a href="/my/dashboard" class="rv-calendar-reset-link">Reinitialiser</a>
+                                </div>
 
-        /* Header */
-        .ui-hero{
-          border-radius: var(--ui-radius);
-          border: 1px solid var(--ui-border);
-          background: var(--ui-card);
-          box-shadow: var(--ui-shadow);
-          padding: 16px;
-        }
-        @media(min-width:768px){ .ui-hero{ padding: 18px; } }
+                                <div class="rv-calendar-filter-stack">
+                                    <div class="rv-calendar-filter-field">
+                                        <label for="rv_calendar_type">Type</label>
+                                        <select id="rv_calendar_type" name="type">
+                                            <t t-foreach="type_options" t-as="opt">
+                                                <option t-att-value="opt[0]"
+                                                        t-att-selected="1 if opt[0] == selected_type else None">
+                                                    <t t-esc="opt[1]"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
 
-        .ui-top{
-          display:flex;
-          justify-content:space-between;
-          align-items:flex-start;
-          gap: 16px;
-        }
+                                    <div class="rv-calendar-filter-field">
+                                        <label for="rv_calendar_status">Statut</label>
+                                        <select id="rv_calendar_status" name="status">
+                                            <t t-foreach="status_options" t-as="opt">
+                                                <option t-att-value="opt[0]"
+                                                        t-att-selected="1 if opt[0] == selected_status else None">
+                                                    <t t-esc="opt[1]"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
 
-        .ui-title{
-          margin:0;
-          color: var(--ui-text);
-          font-weight: 950;
-          letter-spacing: -.03em;
-          font-size: 28px;
-          line-height: 1.08;
-        }
-        .ui-sub{
-          margin-top: 8px;
-          color: var(--ui-muted);
-          font-weight: 650;
-          font-size: 13.5px;
-          line-height: 1.35;
-        }
+                                    <div class="rv-calendar-filter-field">
+                                        <label for="rv_calendar_specialty">Specialite</label>
+                                        <select id="rv_calendar_specialty" name="specialty_id">
+                                            <option value="">Toutes</option>
+                                            <t t-foreach="specialties" t-as="sp">
+                                                <option t-att-value="sp.id"
+                                                        t-att-selected="1 if str(sp.id) == str(selected_specialty) else None">
+                                                    <t t-esc="sp.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
 
-        .ui-actions{
-          display:flex;
-          flex-wrap:wrap;
-          gap:10px;
-          align-items:center;
-          justify-content:flex-end;
-        }
+                                    <div class="rv-calendar-filter-field">
+                                        <label for="rv_calendar_radiologist">Radiologue favori</label>
+                                        <select id="rv_calendar_radiologist" name="radiologist_id">
+                                            <option value="">Tous</option>
+                                            <t t-foreach="favorite_options" t-as="fav">
+                                                <option t-att-value="fav.id"
+                                                        t-att-selected="1 if str(fav.id) == str(selected_radiologist) else None">
+                                                    <t t-esc="fav.display_name or 'Radiologue'"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
 
-        /* Buttons */
-        .ui-btn{
-          border-radius: 14px !important;
-          padding: 10px 12px !important;
-          font-weight: 900 !important;
-          font-size: 13px !important;
-          text-decoration:none !important;
-          border: 1px solid rgba(15,23,42,.12) !important;
-          background: rgba(248,250,252,.92) !important;
-          color: var(--ui-text) !important;
-          display:inline-flex !important;
-          align-items:center !important;
-          justify-content:center !important;
-          gap: 8px !important;
-          cursor:pointer;
-          white-space:nowrap;
-          transition: transform .14s ease, box-shadow .14s ease, background .14s ease, border-color .14s ease;
-        }
-        .ui-btn:hover{
-          transform: translateY(-1px);
-          box-shadow: 0 14px 34px rgba(2,6,23,.10);
-          background: #fff !important;
-          border-color: rgba(15,118,110,.18) !important;
-          text-decoration:none !important;
-        }
-        .ui-btn-primary{
-          background: linear-gradient(180deg, rgba(15,118,110,.98), rgba(13,148,136,.98)) !important;
-          border-color: rgba(15,118,110,.55) !important;
-          color:#fff !important;
-          box-shadow: 0 14px 30px rgba(15,118,110,.20);
-        }
-        .ui-btn-primary:hover{
-          border-color: rgba(13,148,136,.85) !important;
-          box-shadow: 0 18px 44px rgba(15,118,110,.26);
-        }
+                                    <label class="rv-calendar-filter-check">
+                                        <input type="checkbox" name="my_only" value="1"
+                                               t-att-checked="1 if selected_my_only else None"/>
+                                        <span>Mes missions uniquement</span>
+                                    </label>
 
-        /* Icons (inline SVG) */
-        .ui-ico{ width: 16px; height: 16px; display:inline-block; }
-        .ui-ico svg{ width: 16px; height: 16px; display:block; }
+                                    <div class="rv-calendar-filter-actions">
+                                        <button type="submit" class="rv-portal-btn rv-portal-btn-primary">Appliquer</button>
+                                        <a href="/my/dashboard" class="rv-portal-btn rv-portal-btn-secondary">Effacer</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </aside>
 
-        /* KPI grid */
-        .ui-kpis{
-          margin-top: 14px;
-          display:grid;
-          grid-template-columns: repeat(12, minmax(0,1fr));
-          gap: 14px;
-        }
-        .ui-kpi{
-          grid-column: span 3;
-          border-radius: var(--ui-radius);
-          border: 1px solid var(--ui-border);
-          background: var(--ui-card);
-          box-shadow: var(--ui-shadow);
-          padding: 14px 14px 12px;
-          text-decoration:none !important;
-          color: inherit !important;
-          position:relative;
-          overflow:hidden;
-          transition: transform .16s ease, box-shadow .16s ease;
-        }
-        .ui-kpi:hover{
-          transform: translateY(-2px);
-          box-shadow: var(--ui-shadow2);
-        }
-        @media(max-width: 1100px){ .ui-kpi{ grid-column: span 6; } }
-        @media(max-width: 640px){ .ui-kpi{ grid-column: span 12; } }
+                        <section class="rv-portal-card rv-calendar-board">
+                            <div class="rv-calendar-toolbar">
+                                <div class="rv-calendar-toolbar-main">
+                                    <span class="rv-portal-section-kicker">Planning compact</span>
+                                    <h3>Vue <t t-esc="'jour' if view_mode == 'day' else 'semaine' if view_mode == 'week' else 'mois'"/></h3>
+                                </div>
 
-        /* Accent line top */
-        .ui-kpi:before{
-          content:"";
-          position:absolute;
-          top:0; left:0; right:0;
-          height: 3px;
-          background: rgba(15,23,42,.10);
-        }
-        .ui-kpi.primary:before{ background: rgba(15,118,110,.55); }
-        .ui-kpi.warn:before{ background: rgba(245,158,11,.55); }
-        .ui-kpi.success:before{ background: rgba(22,163,74,.55); }
-        .ui-kpi.neutral:before{ background: rgba(15,23,42,.25); }
+                                <div class="rv-calendar-toolbar-actions">
+                                    <a t-att-href="today_url" class="rv-calendar-toolbar-btn">Aujourd'hui</a>
+                                    <div class="rv-calendar-toolbar-nav">
+                                        <a t-att-href="prev_url" class="rv-calendar-toolbar-btn" aria-label="Precedent">
+                                            <i class="fa fa-chevron-left"/>
+                                        </a>
+                                        <a t-att-href="next_url" class="rv-calendar-toolbar-btn" aria-label="Suivant">
+                                            <i class="fa fa-chevron-right"/>
+                                        </a>
+                                    </div>
+                                    <div class="rv-calendar-view-tabs">
+                                        <a t-att-href="day_url" t-attf-class="rv-calendar-view-tab #{'is-active' if view_mode == 'day' else ''}">Jour</a>
+                                        <a t-att-href="week_url" t-attf-class="rv-calendar-view-tab #{'is-active' if view_mode == 'week' else ''}">Semaine</a>
+                                        <a t-att-href="month_url" t-attf-class="rv-calendar-view-tab #{'is-active' if view_mode == 'month' else ''}">Mois</a>
+                                    </div>
+                                    <a href="/my/missions/new" class="rv-portal-btn rv-portal-btn-secondary">
+                                        <i class="fa fa-plus"/>
+                                        <span>Ajouter</span>
+                                    </a>
+                                </div>
+                            </div>
 
-        .ui-kpi-top{
-          display:flex;
-          align-items:flex-start;
-          justify-content:space-between;
-          gap: 14px;
-        }
-        .ui-kpi-title{
-          color: var(--ui-muted);
-          font-weight: 850;
-          font-size: 12.5px;
-          letter-spacing: .01em;
-        }
-        .ui-kpi-num{
-          margin-top: 8px;
-          font-weight: 950;
-          font-size: 26px;
-          color: var(--ui-text);
-          letter-spacing: -.02em;
-          line-height: 1;
-        }
+                            <t t-if="view_mode != 'month'">
+                                <div class="rv-calendar-week-shell">
+                                    <div class="rv-calendar-week-head"
+                                         t-att-style="'grid-template-columns: 5rem repeat(%s, minmax(0, 1fr));' % visible_column_count">
+                                        <div class="rv-calendar-time-spacer"/>
+                                        <t t-foreach="calendar_columns" t-as="col">
+                                            <a t-att-href="col['anchor_url']"
+                                               t-attf-class="rv-calendar-week-day #{'is-today' if col['is_today'] else ''} #{'is-selected' if col['is_selected'] else ''}">
+                                                <span><t t-esc="col['day_label']"/></span>
+                                                <strong><t t-esc="col['day_number']"/></strong>
+                                            </a>
+                                        </t>
+                                    </div>
 
-        .ui-kpi-icon{
-          width: 44px;
-          height: 44px;
-          border-radius: 16px;
-          border: 1px solid rgba(15,23,42,.10);
-          display:grid;
-          place-items:center;
-          background: rgba(248,250,252,.90);
-        }
-        .ui-kpi-icon.primary{ background: var(--ui-primary-2); border-color: rgba(15,118,110,.18); }
-        .ui-kpi-icon.warn{ background: var(--ui-warn-2); border-color: rgba(245,158,11,.18); }
-        .ui-kpi-icon.success{ background: var(--ui-success-2); border-color: rgba(22,163,74,.18); }
-        .ui-kpi-icon.neutral{ background: var(--ui-neutral-2); border-color: rgba(15,23,42,.12); }
+                                    <div class="rv-calendar-all-day-row"
+                                         t-att-style="'grid-template-columns: 5rem repeat(%s, minmax(0, 1fr));' % visible_column_count">
+                                        <div class="rv-calendar-all-day-label">Toute la journee</div>
+                                        <t t-foreach="calendar_columns" t-as="col">
+                                            <div class="rv-calendar-all-day-cell">
+                                                <t t-if="col['all_day_visible']">
+                                                    <t t-foreach="col['all_day_visible']" t-as="item">
+                                                        <a t-att-href="item['url']"
+                                                           t-attf-class="rv-calendar-event rv-calendar-event-chip #{item['css']}">
+                                                            <strong><t t-esc="item['title']"/></strong>
+                                                            <small><t t-esc="item['meta']"/></small>
+                                                        </a>
+                                                    </t>
+                                                    <span t-if="col['all_day_more']" class="rv-calendar-more-chip">
+                                                        +<t t-esc="col['all_day_more']"/> autres
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="rv-calendar-empty-chip">-</span>
+                                                </t>
+                                            </div>
+                                        </t>
+                                    </div>
 
-        .ui-kpi-icon svg{ width:18px; height:18px; }
+                                    <div class="rv-calendar-grid"
+                                         t-att-style="'grid-template-columns: 5rem repeat(%s, minmax(0, 1fr));' % visible_column_count">
+                                        <div class="rv-calendar-time-axis">
+                                            <t t-foreach="calendar_hours" t-as="hour">
+                                                <div class="rv-calendar-time-cell"><t t-esc="hour"/></div>
+                                            </t>
+                                        </div>
 
-        /* Layout sections */
-        .ui-grid{
-          margin-top: 14px;
-          display:grid;
-          grid-template-columns: repeat(12, minmax(0,1fr));
-          gap: 14px;
-        }
-        .ui-card{
-          border-radius: var(--ui-radius);
-          border: 1px solid var(--ui-border);
-          background: var(--ui-card);
-          box-shadow: var(--ui-shadow);
-          padding: 14px;
-        }
-        .ui-card.half{ grid-column: span 6; }
-        .ui-card.third{ grid-column: span 4; }
-        @media(max-width: 980px){ .ui-card.half, .ui-card.third{ grid-column: span 12; } }
+                                        <div class="rv-calendar-columns"
+                                             t-att-style="'grid-template-columns: repeat(%s, minmax(0, 1fr));' % visible_column_count">
+                                            <div t-if="current_time_marker" class="rv-calendar-now-line" t-att-style="current_time_marker['style']">
+                                                <span><t t-esc="current_time_marker['label']"/></span>
+                                            </div>
 
-        .ui-card-hd{
-          display:flex;
-          align-items:flex-start;
-          justify-content:space-between;
-          gap: 12px;
-        }
-        .ui-h4{
-          margin:0;
-          font-weight: 950;
-          color: var(--ui-text);
-          font-size: 15px;
-          letter-spacing: -.01em;
-        }
-        .ui-small{
-          margin-top: 6px;
-          color: var(--ui-muted);
-          font-weight: 650;
-          font-size: 12.5px;
-        }
+                                            <t t-foreach="calendar_columns" t-as="col">
+                                                <div class="rv-calendar-column">
+                                                    <div class="rv-calendar-column-lines">
+                                                        <t t-foreach="calendar_hours" t-as="hour">
+                                                            <span class="rv-calendar-hour-line"/>
+                                                        </t>
+                                                    </div>
+                                                    <t t-if="col['timed_items']">
+                                                        <t t-foreach="col['timed_items']" t-as="event">
+                                                            <a t-att-href="event['url']"
+                                                               t-att-style="event['style']"
+                                                               t-attf-class="rv-calendar-event rv-calendar-event-timed #{event['css']}">
+                                                                <strong><t t-esc="event['title']"/></strong>
+                                                                <span><t t-esc="event['meta']"/></span>
+                                                                <small><t t-esc="event['subtitle']"/></small>
+                                                            </a>
+                                                        </t>
+                                                    </t>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
 
-        .ui-link{
-          font-weight: 900;
-          font-size: 12.5px;
-          color: rgba(15,118,110,.95);
-          text-decoration:none !important;
-          border-radius: 12px;
-          padding: 8px 10px;
-          border: 1px solid rgba(15,118,110,.18);
-          background: rgba(240,253,250,.75);
-          white-space:nowrap;
-        }
-        .ui-link:hover{
-          background: rgba(204,251,241,.85);
-          text-decoration:none !important;
-        }
+                            <t t-else="">
+                                <div class="rv-calendar-month-board">
+                                    <div class="rv-calendar-month-weekdays">
+                                        <t t-foreach="mini_calendar_letters" t-as="letter">
+                                            <span><t t-esc="letter"/></span>
+                                        </t>
+                                    </div>
 
-        .ui-row{
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap: 12px;
-          padding: 12px 0;
-          border-bottom: 1px solid rgba(15,23,42,.06);
-        }
-        .ui-row:last-child{ border-bottom:none; padding-bottom:0; }
-        .ui-row-title{ font-weight: 900; color: var(--ui-text); font-size: 13px; }
-        .ui-row-sub{ margin-top: 3px; font-weight: 650; color: var(--ui-muted); font-size: 12px; }
+                                    <div class="rv-calendar-month-grid">
+                                        <t t-foreach="month_board_weeks" t-as="week">
+                                            <t t-foreach="week" t-as="day">
+                                                <a t-att-href="day['url']"
+                                                   t-attf-class="rv-calendar-month-cell #{'is-current' if day['is_current_month'] else 'is-out'} #{'is-today' if day['is_today'] else ''} #{'is-selected' if day['is_selected'] else ''}">
+                                                    <div class="rv-calendar-month-daynum"><t t-esc="day['number']"/></div>
+                                                    <div class="rv-calendar-month-items">
+                                                        <t t-foreach="day['items']" t-as="item">
+                                                            <span t-attf-class="rv-calendar-month-pill #{item['css']}">
+                                                                <t t-esc="item['title']"/>
+                                                            </span>
+                                                        </t>
+                                                        <span t-if="day['more']" class="rv-calendar-month-more">
+                                                            +<t t-esc="day['more']"/>
+                                                        </span>
+                                                    </div>
+                                                </a>
+                                            </t>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
 
-        .ui-pill{
-          padding: 6px 10px;
-          border-radius: 999px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(248,250,252,.90);
-          font-weight: 900;
-          font-size: 12px;
-          white-space:nowrap;
-          color: var(--ui-text);
-        }
+                            <div class="rv-calendar-mobile-board">
+                                <t t-foreach="mobile_agenda_groups" t-as="group">
+                                    <article class="rv-calendar-mobile-day">
+                                        <h4><t t-esc="group['label']"/></h4>
+                                        <t t-if="group['items']">
+                                            <div class="rv-calendar-mobile-items">
+                                                <t t-foreach="group['items']" t-as="item">
+                                                    <a t-att-href="item['url']"
+                                                       t-attf-class="rv-calendar-event rv-calendar-event-chip #{item['css']}">
+                                                        <strong><t t-esc="item['title']"/></strong>
+                                                        <small><t t-esc="item['meta']"/></small>
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="rv-calendar-mobile-empty">Aucune activite.</p>
+                                        </t>
+                                    </article>
+                                </t>
+                            </div>
 
-        /* Progress */
-        .ui-progress{
-          margin-top: 10px;
-          height: 10px;
-          border-radius: 999px;
-          background: rgba(15,23,42,.08);
-          overflow:hidden;
-        }
-        .ui-progress > div{
-          height: 100%;
-          background: linear-gradient(90deg, rgba(15,118,110,.85), rgba(13,148,136,.95));
-          width: 0%;
-        }
+                            <div class="rv-calendar-legend">
+                                <t t-foreach="legend_items" t-as="item">
+                                    <span class="rv-calendar-legend-item">
+                                        <span t-attf-class="rv-calendar-legend-dot #{item['css']}"/>
+                                        <t t-esc="item['label']"/>
+                                    </span>
+                                </t>
+                            </div>
+                        </section>
 
-        /* Avatars */
-        .ui-avatars{ display:flex; gap: 10px; flex-wrap:wrap; margin-top: 12px; }
-        .ui-avatar{
-          width: 54px; height: 54px;
-          border-radius: 999px;
-          overflow:hidden;
-          border: 2px solid rgba(15,23,42,.10);
-          background:#e5e7eb;
-          box-shadow: 0 12px 24px rgba(2,6,23,.10);
-          transition: transform .14s ease, box-shadow .14s ease;
-        }
-        .ui-avatar:hover{
-          transform: translateY(-2px);
-          box-shadow: 0 16px 34px rgba(2,6,23,.14);
-        }
-        .ui-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+                        <aside class="rv-calendar-right">
+                            <section class="rv-portal-card rv-calendar-side-panel">
+                                <div class="rv-calendar-panel-head">
+                                    <div>
+                                        <h3>Jour selectionne</h3>
+                                        <small><t t-esc="selected_day_label"/></small>
+                                    </div>
+                                </div>
 
-        /* Alert */
-        .ui-alert{
-          margin-top: 12px;
-          border-radius: 18px;
-          border: 1px solid rgba(15,23,42,.10);
-          background: rgba(248,250,252,.82);
-          padding: 12px;
-          color: var(--ui-muted);
-          font-weight: 650;
-          font-size: 12.5px;
-        }
-      </style>
+                                <div class="rv-calendar-side-stack">
+                                    <article class="rv-calendar-day-card">
+                                        <div class="rv-calendar-day-card-head">
+                                            <h4>Missions du jour</h4>
+                                            <span><t t-esc="len(selected_day_missions)"/></span>
+                                        </div>
+                                        <t t-if="selected_day_missions">
+                                            <div class="rv-calendar-side-list">
+                                                <t t-foreach="selected_day_missions[:4]" t-as="item">
+                                                    <a t-att-href="item['url']" class="rv-calendar-side-row">
+                                                        <div>
+                                                            <strong><t t-esc="item['title']"/></strong>
+                                                            <small><t t-esc="item['subtitle']"/></small>
+                                                        </div>
+                                                        <span t-attf-class="rv-calendar-status-badge #{item['css']}">
+                                                            <t t-esc="item['status']"/>
+                                                        </span>
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="rv-calendar-side-empty">Aucune mission active sur ce jour.</p>
+                                        </t>
+                                    </article>
 
-      <!-- ===================== -->
-      <!-- PAGE -->
-      <!-- ===================== -->
-      <section class="ui-page">
-        <div class="container-fluid ui-shell">
-          <div class="ui-inner">
+                                    <article class="rv-calendar-day-card">
+                                        <div class="rv-calendar-day-card-head">
+                                            <h4>Disponibilites favoris</h4>
+                                            <span><t t-esc="len(selected_day_availabilities)"/></span>
+                                        </div>
+                                        <t t-if="selected_day_availabilities">
+                                            <div class="rv-calendar-side-list">
+                                                <t t-foreach="selected_day_availabilities[:4]" t-as="item">
+                                                    <a t-att-href="item['url']" class="rv-calendar-side-row">
+                                                        <div>
+                                                            <strong><t t-esc="item['title']"/></strong>
+                                                            <small><t t-esc="item['subtitle']"/></small>
+                                                        </div>
+                                                        <span class="rv-calendar-side-meta"><t t-esc="item['meta']"/></span>
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="rv-calendar-side-empty">Aucun favori disponible sur ce jour.</p>
+                                        </t>
+                                    </article>
 
-            <!-- HERO -->
-            <div class="ui-hero">
-              <div class="ui-top">
-                <div>
-                  <h2 class="ui-title">Dashboard</h2>
-                  <div class="ui-sub">
-                    <t t-esc="hospital.name or ''"/> — aperçu des missions et de votre activité.
-                  </div>
-                </div>
+                                    <article class="rv-calendar-day-card">
+                                        <div class="rv-calendar-day-card-head">
+                                            <h4>Candidatures a traiter</h4>
+                                            <span><t t-esc="len(side_pending_applications)"/></span>
+                                        </div>
+                                        <t t-if="side_pending_applications">
+                                            <div class="rv-calendar-side-list">
+                                                <t t-foreach="side_pending_applications" t-as="item">
+                                                    <a t-att-href="item['url']" class="rv-calendar-side-row">
+                                                        <div>
+                                                            <strong><t t-esc="item['title']"/></strong>
+                                                            <small><t t-esc="item['subtitle']"/></small>
+                                                        </div>
+                                                        <span class="rv-calendar-side-meta"><t t-esc="item['meta']"/></span>
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="rv-calendar-side-empty">Aucune candidature en attente.</p>
+                                        </t>
+                                    </article>
 
-                <div class="ui-actions">
-                  <a href="/my/missions/new" class="ui-btn ui-btn-primary">
-                    <span class="ui-ico">
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M12 5v14M5 12h14" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    </span>
-                    Nouvelle mission
-                  </a>
-
-                  <a href="/my/missions" class="ui-btn">
-                    <span class="ui-ico">
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M7 7h10M7 12h10M7 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      </svg>
-                    </span>
-                    Mes missions
-                  </a>
-
-                  <a href="/my/favorites" class="ui-btn">
-                    <span class="ui-ico">
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21s-7-4.6-9.5-8.6C.7 9.2 2.4 6.7 5.1 6.2c1.6-.3 3.2.4 4.1 1.6.9-1.2 2.5-1.9 4.1-1.6 2.7.5 4.4 3 2.6 6.2C19 16.4 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    Favoris
-                  </a>
-
-                  <a href="/my/security" class="ui-btn">
-                    <span class="ui-ico">
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                      </svg>
-                    </span>
-                    Sécurité
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <!-- KPIs -->
-            <div class="ui-kpis">
-              <a class="ui-kpi neutral" href="/my/missions">
-                <div class="ui-kpi-top">
-                  <div>
-                    <div class="ui-kpi-title">Total missions</div>
-                    <div class="ui-kpi-num"><t t-esc="total_missions"/></div>
-                  </div>
-                  <div class="ui-kpi-icon neutral">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M7 7h10M7 12h10M7 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </a>
-
-              <a class="ui-kpi warn" href="/my/missions?status=draft">
-                <div class="ui-kpi-top">
-                  <div>
-                    <div class="ui-kpi-title">Draft</div>
-                    <div class="ui-kpi-num"><t t-esc="draft_count"/></div>
-                  </div>
-                  <div class="ui-kpi-icon warn">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M4 20h16M8 16l8-8 2 2-8 8H8v-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </a>
-
-              <a class="ui-kpi primary" href="/my/missions?status=published">
-                <div class="ui-kpi-top">
-                  <div>
-                    <div class="ui-kpi-title">Published</div>
-                    <div class="ui-kpi-num"><t t-esc="published_count"/></div>
-                  </div>
-                  <div class="ui-kpi-icon primary">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M5 12l4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </a>
-
-              <!-- ✅ Assigned KPI -->
-              <a class="ui-kpi primary" href="/my/missions?status=assigned">
-                <div class="ui-kpi-top">
-                  <div>
-                    <div class="ui-kpi-title">Assigned</div>
-                    <div class="ui-kpi-num"><t t-esc="assigned_count or 0"/></div>
-                  </div>
-                  <div class="ui-kpi-icon primary">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4z" stroke="currentColor" stroke-width="2"/>
-                      <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </a>
-
-              <a class="ui-kpi success" href="/my/missions?status=done">
-                <div class="ui-kpi-top">
-                  <div>
-                    <div class="ui-kpi-title">Done</div>
-                    <div class="ui-kpi-num"><t t-esc="done_count"/></div>
-                  </div>
-                  <div class="ui-kpi-icon success">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </a>
-
-              <a class="ui-kpi neutral" href="/my/favorites" style="grid-column: span 4;">
-                <div class="ui-kpi-top">
-                  <div>
-                    <div class="ui-kpi-title">Radiologues favoris</div>
-                    <div class="ui-kpi-num"><t t-esc="favorites_count"/></div>
-                  </div>
-                  <div class="ui-kpi-icon neutral">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M12 21s-7-4.6-9.5-8.6C.7 9.2 2.4 6.7 5.1 6.2c1.6-.3 3.2.4 4.1 1.6.9-1.2 2.5-1.9 4.1-1.6 2.7.5 4.4 3 2.6 6.2C19 16.4 12 21 12 21z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </a>
-
-              <div class="ui-kpi primary" style="grid-column: span 8;">
-                <div class="ui-kpi-top">
-                  <div>
-                    <div class="ui-kpi-title">Complétion du profil</div>
-                    <div class="ui-kpi-num"><t t-esc="profile_percent"/>%</div>
-                  </div>
-                  <div class="ui-kpi-icon primary">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M4 20h16M6 20V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                      <path d="M9 10h6M9 13h6M9 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                </div>
-                <div class="ui-progress" aria-label="profile progress">
-                  <div t-att-style="'width:' + str(profile_percent) + '%'"></div>
-                </div>
-                <div class="ui-small">
-                  Ajoutez photo, téléphone et email pour augmenter la confiance.
-                </div>
-              </div>
-            </div>
-
-            <!-- SECTIONS -->
-            <div class="ui-grid">
-
-              <!-- Upcoming -->
-              <div class="ui-card half">
-                <div class="ui-card-hd">
-                  <div>
-                    <h3 class="ui-h4">Prochaines missions</h3>
-                    <div class="ui-small">À partir d’aujourd’hui : <t t-esc="today"/>.</div>
-                  </div>
-                  <a class="ui-link" href="/my/missions">Voir tout</a>
-                </div>
-
-                <t t-if="upcoming_missions">
-                  <t t-foreach="upcoming_missions" t-as="m">
-                    <div class="ui-row">
-                      <div style="min-width:0;">
-                        <div class="ui-row-title"><t t-esc="m.name"/></div>
-                        <div class="ui-row-sub">
-                          <t t-if="m.start_date"><t t-esc="m.start_date"/></t>
-                          <t t-if="m.end_date"> → <t t-esc="m.end_date"/></t>
-                          <t t-if="m.status"> • <t t-esc="m.status"/></t>
-                        </div>
-                      </div>
-                      <a class="ui-btn" t-att-href="'/my/missions/%s' % m.id">Ouvrir</a>
+                                    <article class="rv-calendar-day-card">
+                                        <div class="rv-calendar-day-card-head">
+                                            <h4>Echeances a venir</h4>
+                                            <span><t t-esc="len(side_upcoming_deadlines)"/></span>
+                                        </div>
+                                        <t t-if="side_upcoming_deadlines">
+                                            <div class="rv-calendar-side-list">
+                                                <t t-foreach="side_upcoming_deadlines" t-as="item">
+                                                    <a t-att-href="item['url']" class="rv-calendar-side-row">
+                                                        <div>
+                                                            <strong><t t-esc="item['title']"/></strong>
+                                                            <small><t t-esc="item['subtitle']"/></small>
+                                                        </div>
+                                                        <span class="rv-calendar-side-meta"><t t-esc="item['meta']"/></span>
+                                                    </a>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="rv-calendar-side-empty">Aucune echeance proche.</p>
+                                        </t>
+                                    </article>
+                                </div>
+                            </section>
+                        </aside>
                     </div>
-                  </t>
-                </t>
-                <t t-else="">
-                  <div class="ui-alert">Aucune mission à venir.</div>
-                </t>
-              </div>
-
-              <!-- Recent -->
-              <div class="ui-card half">
-                <div class="ui-card-hd">
-                  <div>
-                    <h3 class="ui-h4">Missions récentes</h3>
-                    <div class="ui-small">Dernières créations.</div>
-                  </div>
-                  <a class="ui-link" href="/my/missions">Voir tout</a>
                 </div>
-
-                <t t-if="recent_missions">
-                  <t t-foreach="recent_missions" t-as="m">
-                    <div class="ui-row">
-                      <div style="min-width:0;">
-                        <div class="ui-row-title"><t t-esc="m.name"/></div>
-                        <div class="ui-row-sub">
-                          Statut : <t t-esc="m.status"/>
-                          <t t-if="m.tarif"> • Tarif : <t t-esc="m.tarif"/> €</t>
-                        </div>
-                      </div>
-                      <span class="ui-pill"><t t-esc="m.status"/></span>
-                    </div>
-                  </t>
-                </t>
-                <t t-else="">
-                  <div class="ui-alert">Aucune mission pour le moment.</div>
-                </t>
-              </div>
-
-              <!-- Favorites -->
-              <div class="ui-card third">
-                <div class="ui-card-hd">
-                  <div>
-                    <h3 class="ui-h4">Favoris</h3>
-                    <div class="ui-small">Radiologues enregistrés.</div>
-                  </div>
-                  <a class="ui-link" href="/my/favorites">Gérer</a>
-                </div>
-
-                <t t-if="favorite_radiologists">
-                  <div class="ui-avatars">
-                    <t t-foreach="favorite_radiologists" t-as="r">
-                      <a t-att-href="'/my/radiologists/%s' % r.id" title="Voir profil" style="text-decoration:none;">
-                        <div class="ui-avatar">
-                          <t t-if="r.image_1920">
-                            <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % r.id" alt="Avatar"/>
-                          </t>
-                          <t t-else="">
-                            <img t-att-src="'/web/static/img/user_menu_avatar.png'" alt="Avatar"/>
-                          </t>
-                        </div>
-                      </a>
-                    </t>
-                  </div>
-                </t>
-                <t t-else="">
-                  <div class="ui-alert">Aucun favori enregistré.</div>
-                </t>
-              </div>
-
-              <!-- Profile -->
-              <div class="ui-card third">
-                <div class="ui-card-hd">
-                  <div>
-                    <h3 class="ui-h4">Profil</h3>
-                    <div class="ui-small">Informations principales.</div>
-                  </div>
-                  <a class="ui-link" href="/my/account">Modifier</a>
-                </div>
-
-                <div class="ui-row">
-                  <div style="min-width:0;">
-                    <div class="ui-row-title">Ville</div>
-                    <div class="ui-row-sub"><t t-esc="hospital.city or '—'"/></div>
-                  </div>
-                  <span class="ui-pill">Localisation</span>
-                </div>
-
-                <div class="ui-row">
-                  <div style="min-width:0;">
-                    <div class="ui-row-title">Téléphone</div>
-                    <div class="ui-row-sub"><t t-esc="hospital.phone or '—'"/></div>
-                  </div>
-                  <span class="ui-pill">Contact</span>
-                </div>
-
-                <div class="ui-row">
-                  <div style="min-width:0;">
-                    <div class="ui-row-title">Email</div>
-                    <div class="ui-row-sub"><t t-esc="hospital.email or '—'"/></div>
-                  </div>
-                  <span class="ui-pill">Support</span>
-                </div>
-              </div>
-
-              <!-- Quick actions -->
-              <div class="ui-card third">
-                <div class="ui-card-hd">
-                  <div>
-                    <h3 class="ui-h4">Raccourcis</h3>
-                    <div class="ui-small">Accès rapide.</div>
-                  </div>
-                </div>
-
-                <div class="mt-2" style="display:flex; flex-direction:column; gap:10px;">
-                  <a href="/my/missions/new" class="ui-btn ui-btn-primary">Créer une mission</a>
-                  <a href="/my/missions" class="ui-btn">Voir mes missions</a>
-                  <a href="/my/radiologists" class="ui-btn">Parcourir radiologues</a>
-                  <a href="/my/favorites" class="ui-btn">Ouvrir favoris</a>
-                  <a href="/my/security" class="ui-btn">Paramètres sécurité</a>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-    </t>
-  </template>
+            </t>
+        </t>
+    </template>
 </odoo>

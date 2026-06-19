@@ -4,229 +4,196 @@
     <template id="radiolink_portal_layout_inherit" inherit_id="portal.portal_layout"
               name="RadioLink Portal Layout Inherit">
 
-        <!-- Injecter du CSS conditionnel dans le layout portail -->
         <xpath expr="//t[@t-call='portal.frontend_layout']" position="inside">
 
-            <!-- ✅ Appliquer full width seulement si une variable est activée dans la page -->
             <t t-if="rl_fullwidth">
                 <style>
-                    .o_portal_wrap > .container.pt-3{
-                    padding-top: 0 !important;
+                    .o_portal_wrap > .container.pt-3 { padding-top: 0 !important; }
+                    .o_portal_wrap,
+                    .o_portal_wrap main,
+                    .radiolink-radiologists-page {
+                        padding-top: 0 !important;
+                        margin-top: 0 !important;
                     }
-
-                    /* sécurité : si le thème applique aussi un padding au wrap */
-                    .o_portal_wrap{
-                    padding-top: 0 !important;
-                    }
-                    .o_portal_wrap{
-                    padding-top: 0 !important;
-                    }
-
-                    /* selon le thème, parfois c’est le main */
-                    .o_portal_wrap main{
-                    padding-top: 0 !important;
-                    }
-
-                    /* sécurité : enlever margin-top éventuel */
-                    .radiolink-radiologists-page{
-                    margin-top: 0 !important;
-                    }
-                    /* Full width du container portail */
                     .o_portal_wrap > .container,
                     .o_portal_wrap .o_portal_container,
-                    .o_portal_wrap .container.o_portal_container{
-                    max-width: 100% !important;
-                    width: 100% !important;
+                    .o_portal_wrap .container.o_portal_container {
+                        max-width: 100% !important;
+                        width: 100% !important;
                     }
-
-                    /* optionnel: enlever padding du container parent */
-                    .o_portal_wrap > .container{
-                    padding-left: 0 !important;
-                    padding-right: 0 !important;
+                    .o_portal_wrap > .container {
+                        padding-left: 0 !important;
+                        padding-right: 0 !important;
                     }
-
-                    /* full height sur la zone main */
-                    .o_portal_wrap{
-                    min-height: 100vh;
-                    }
-
-                    /* éviter scroll horizontal */
+                    .o_portal_wrap { min-height: 100vh; }
                     html, body { overflow-x: hidden; }
                 </style>
             </t>
+
             <t t-if="rl_ads">
                 <style>
-                    .rl-adcard{
-                    position: fixed;
-                    right: 18px;
-                    bottom: 18px;
-                    width: 420px;
-                    border-radius: 24px;
-                    border: 1px solid rgba(15,23,42,.12);
-                    background: rgba(255,255,255,.92);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    box-shadow: 0 18px 60px rgba(2,6,23,.22);
-                    overflow: hidden;
-                    z-index: 4000;
-
-                    transform: translateY(30px);
-                    opacity: 0;
-                    transition: transform .45s ease, opacity .45s ease;
+                    .rl-adcard {
+                        position: fixed;
+                        right: 18px;
+                        bottom: 18px;
+                        width: 420px;
+                        border-radius: 24px;
+                        border: 1px solid rgba(15, 23, 42, .12);
+                        background: rgba(255, 255, 255, .92);
+                        backdrop-filter: blur(10px);
+                        -webkit-backdrop-filter: blur(10px);
+                        box-shadow: 0 18px 60px rgba(2, 6, 23, .22);
+                        overflow: hidden;
+                        z-index: 4000;
+                        transform: translateY(30px);
+                        opacity: 0;
+                        transition: transform .45s ease, opacity .45s ease;
                     }
-                    .rl-adcard.rl-show{
-                    transform: translateY(0);
-                    opacity: 1;
+                    .rl-adcard.rl-show {
+                        transform: translateY(0);
+                        opacity: 1;
                     }
-                    .rl-adcard.rl-closed{
-                    transform: translateY(60px);
-                    opacity: 0;
-                    pointer-events: none;
+                    .rl-adcard.rl-closed {
+                        transform: translateY(60px);
+                        opacity: 0;
+                        pointer-events: none;
                     }
-
-                    .rl-adcard-head{
-                    display:flex;
-                    align-items:center;
-                    justify-content:space-between;
-                    padding: 10px 12px 0;
+                    .rl-adcard-head {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        padding: 10px 12px 0;
                     }
-                    .rl-ad-badge{
-                    font-weight: 950;
-                    font-size: 11px;
-                    color: #0f172a;
-                    background: rgba(245,158,11,.16);
-                    border: 1px solid rgba(245,158,11,.25);
-                    padding: 6px 10px;
-                    border-radius: 999px;
+                    .rl-ad-badge {
+                        font-weight: 950;
+                        font-size: 11px;
+                        color: #0f172a;
+                        background: rgba(245, 158, 11, .16);
+                        border: 1px solid rgba(245, 158, 11, .25);
+                        padding: 6px 10px;
+                        border-radius: 999px;
                     }
-                    .rl-ad-close{
-                    width: 36px;
-                    height: 36px;
-                    border-radius: 14px;
-                    border: 1px solid rgba(15,23,42,.12);
-                    background: rgba(248,250,252,.92);
-                    color:#0f172a;
-                    font-weight: 950;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    cursor:pointer;
-                    line-height:1;
-                    transition: transform .16s ease, background .16s ease;
+                    .rl-ad-close {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 14px;
+                        border: 1px solid rgba(15, 23, 42, .12);
+                        background: rgba(248, 250, 252, .92);
+                        color: #0f172a;
+                        font-weight: 950;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        line-height: 1;
+                        transition: transform .16s ease, background .16s ease;
                     }
-                    .rl-ad-close:hover{
-                    background: rgba(239,246,255,.95);
-                    transform: translateY(-1px);
+                    .rl-ad-close:hover {
+                        background: rgba(239, 246, 255, .95);
+                        transform: translateY(-1px);
                     }
-
-                    .rl-adcard-body{
-                    display:grid;
-                    grid-template-columns: 150px 1fr;
-                    gap: 12px;
-                    padding: 10px 12px 12px;
-                    align-items: center;
+                    .rl-adcard-body {
+                        display: grid;
+                        grid-template-columns: 150px 1fr;
+                        gap: 12px;
+                        padding: 10px 12px 12px;
+                        align-items: center;
                     }
-                    .rl-ad-img{
-                    width: 150px;
-                    height: 120px;
-                    border-radius: 18px;
-                    overflow:hidden;
-                    background: #e5e7eb;
-                    border: 2px solid #fff;
-                    box-shadow: 0 12px 24px rgba(2,6,23,.12);
+                    .rl-ad-img {
+                        width: 150px;
+                        height: 120px;
+                        border-radius: 18px;
+                        overflow: hidden;
+                        background: #e5e7eb;
+                        border: 2px solid #fff;
+                        box-shadow: 0 12px 24px rgba(2, 6, 23, .12);
                     }
-                    .rl-ad-img img{
-                    width:100%;
-                    height:100%;
-                    object-fit: cover;
-                    display:block;
+                    .rl-ad-img img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        display: block;
                     }
-
-                    .rl-ad-title{
-                    font-weight: 950;
-                    font-size: 15px;
-                    color:#0f172a;
-                    line-height: 1.2;
+                    .rl-ad-title {
+                        font-weight: 950;
+                        font-size: 15px;
+                        color: #0f172a;
+                        line-height: 1.2;
                     }
-                    .rl-ad-sub{
-                    margin-top: 6px;
-                    font-weight: 750;
-                    font-size: 12.5px;
-                    color:#64748b;
-                    line-height: 1.35;
+                    .rl-ad-sub {
+                        margin-top: 6px;
+                        font-weight: 750;
+                        font-size: 12.5px;
+                        color: #64748b;
+                        line-height: 1.35;
                     }
-
-                    .rl-ad-actions{
-                    margin-top: 10px;
-                    display:flex;
-                    gap: 10px;
-                    align-items:center;
-                    flex-wrap: wrap;
+                    .rl-ad-actions {
+                        margin-top: 10px;
+                        display: flex;
+                        gap: 10px;
+                        align-items: center;
+                        flex-wrap: wrap;
                     }
-                    .rl-ad-btn{
-                    border-radius: 14px;
-                    padding: 10px 12px;
-                    font-weight: 950;
-                    font-size: 12px;
-                    border: 1px solid rgba(37,99,235,.22);
-                    background: rgba(239,246,255,.95);
-                    color: #1d4ed8;
-                    text-decoration:none !important;
-                    white-space: nowrap;
-                    display:inline-flex;
-                    align-items:center;
-                    justify-content:center;
+                    .rl-ad-btn {
+                        border-radius: 14px;
+                        padding: 10px 12px;
+                        font-weight: 950;
+                        font-size: 12px;
+                        border: 1px solid rgba(37, 99, 235, .22);
+                        background: rgba(239, 246, 255, .95);
+                        color: #1d4ed8;
+                        text-decoration: none !important;
+                        white-space: nowrap;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
                     }
-                    .rl-ad-btn-primary{
-                    background: #2563eb;
-                    border-color: #2563eb;
-                    color: #fff;
-                    box-shadow: 0 12px 26px rgba(37,99,235,.18);
+                    .rl-ad-btn-primary {
+                        background: #2563eb;
+                        border-color: #2563eb;
+                        color: #fff;
+                        box-shadow: 0 12px 26px rgba(37, 99, 235, .18);
                     }
-                    .rl-ad-btn-primary:hover{
-                    background:#1d4ed8;
-                    border-color:#1d4ed8;
-                    color:#fff;
-                    text-decoration:none !important;
+                    .rl-ad-btn-primary:hover {
+                        background: #1d4ed8;
+                        border-color: #1d4ed8;
+                        color: #fff;
+                        text-decoration: none !important;
                     }
-
-                    /* responsive */
-                    @media(max-width: 520px){
-                    .rl-adcard{ left: 12px; right: 12px; width: auto; }
-                    .rl-adcard-body{ grid-template-columns: 120px 1fr; }
-                    .rl-ad-img{ width: 120px; height: 100px; }
+                    @media (max-width: 520px) {
+                        .rl-adcard { left: 12px; right: 12px; width: auto; }
+                        .rl-adcard-body { grid-template-columns: 120px 1fr; }
+                        .rl-ad-img { width: 120px; height: 100px; }
                     }
                 </style>
 
-                <div id="rl-adcard" class="rl-adcard" role="complementary" aria-label="Publicité">
+                <div id="rl-adcard" class="rl-adcard" role="complementary" aria-label="Publicite">
                     <div class="rl-adcard-head">
-                        <div class="rl-ad-badge">Publicité</div>
-                        <button type="button" class="rl-ad-close" aria-label="Fermer" title="Fermer">×</button>
+                        <div class="rl-ad-badge">Publicite</div>
+                        <button type="button" class="rl-ad-close" aria-label="Fermer" title="Fermer">x</button>
                     </div>
 
                     <div class="rl-adcard-body">
                         <div class="rl-ad-img">
-                            <img t-att-src="rl_ads_img or '/web/static/img/placeholder.png'" alt="Gel échographique"/>
+                            <img t-att-src="rl_ads_img or '/web/static/img/placeholder.png'" alt="Gel echographique"/>
                         </div>
 
                         <div>
                             <div class="rl-ad-title">
-                                <t t-esc="rl_ads_title or 'Gel échographique Pro'"/>
+                                <t t-esc="rl_ads_title or 'Gel echographique Pro'"/>
                             </div>
                             <div class="rl-ad-sub">
-                                <t t-esc="rl_ads_sub or 'Hypoallergénique • Sans bulles • Compatible toutes sondes'"/>
+                                <t t-esc="rl_ads_sub or 'Hypoallergenique - Sans bulles - Compatible toutes sondes'"/>
                             </div>
 
                             <div class="rl-ad-actions">
                                 <a class="rl-ad-btn rl-ad-btn-primary"
                                    t-att-href="rl_ads_url or '#'"
-                                   target="_blank" rel="noopener">Découvrir
-                                </a>
+                                   target="_blank" rel="noopener">Decouvrir</a>
 
                                 <a class="rl-ad-btn"
                                    t-att-href="rl_ads_url or '#'"
-                                   target="_blank" rel="noopener">Commander
-                                </a>
+                                   target="_blank" rel="noopener">Commander</a>
                             </div>
                         </div>
                     </div>
@@ -234,25 +201,23 @@
 
                 <script type="text/javascript">
                     <![CDATA[
-    (function(){
-      function bootAd(){
-        var card = document.getElementById('rl-adcard');
-        if(!card) return;
+    (function () {
+      function bootAd() {
+        var card = document.getElementById("rl-adcard");
+        if (!card) return;
 
-        // show after 1.2s
-        setTimeout(function(){ card.classList.add('rl-show'); }, 1200);
+        setTimeout(function () { card.classList.add("rl-show"); }, 1200);
 
-        // close
-        var btn = card.querySelector('.rl-ad-close');
-        if(btn){
-          btn.addEventListener('click', function(){
-            card.classList.add('rl-closed');
+        var btn = card.querySelector(".rl-ad-close");
+        if (btn) {
+          btn.addEventListener("click", function () {
+            card.classList.add("rl-closed");
           });
         }
       }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bootAd);
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bootAd);
       } else {
         bootAd();
       }
@@ -262,4 +227,289 @@
             </t>
         </xpath>
     </template>
+
+    <template id="rv_portal_shell" name="RadioVac Portal Shell">
+        <t t-set="rv_portal_hospital"
+           t-value="rv_portal_hospital if rv_portal_hospital else request.env['radiology.hospital'].sudo().search([('user_id', '=', request.env.user.id)], limit=1)"/>
+        <t t-set="rv_portal_org_name"
+           t-value="(rv_portal_hospital and rv_portal_hospital.name) or request.env.user.name or 'RadioVac'"/>
+        <t t-set="rv_portal_org_badge" t-value="(rv_portal_org_name or 'RV')[:2].upper()"/>
+        <t t-set="rv_portal_page_title" t-value="rv_page_title or 'Tableau de bord'"/>
+        <t t-set="rv_portal_page_subtitle"
+           t-value="rv_page_subtitle or 'Pilotez vos missions et vos echanges dans un espace RadioVac unifie.'"/>
+
+        <t t-set="conversation_model" t-value="request.env['radiology.chat.conversation'].sudo()"/>
+        <t t-set="chat_message_model" t-value="request.env['radiology.chat.message'].sudo()"/>
+        <t t-set="notification_model" t-value="request.env['radiology.notification'].sudo()"/>
+        <t t-set="header_conversations"
+           t-value="conversation_model.search([('hospital_id', '=', rv_portal_hospital.id)], limit=6, order='last_message_date desc, id desc') if rv_portal_hospital else request.env['radiology.chat.conversation'].sudo().browse([])"/>
+        <t t-set="unread_messages_count"
+           t-value="chat_message_model.search_count([('conversation_id.hospital_id', '=', rv_portal_hospital.id), ('sender_type', '=', 'radiologist'), ('is_read_by_hospital', '=', False)]) if rv_portal_hospital else 0"/>
+        <t t-set="header_notifications"
+           t-value="notification_model.search([('hospital_id', '=', rv_portal_hospital.id)], limit=6, order='is_read asc, create_date desc, id desc') if rv_portal_hospital else request.env['radiology.notification'].sudo().browse([])"/>
+        <t t-set="unread_notifications_count"
+           t-value="notification_model.search_count([('hospital_id', '=', rv_portal_hospital.id), ('is_read', '=', False)]) if rv_portal_hospital else 0"/>
+
+        <style>
+            #wrapwrap > header,
+            #wrapwrap > footer,
+            #o_shared_blocks,
+            .o_footer_scrolltop {
+                display: none !important;
+            }
+
+            #wrapwrap,
+            #wrapwrap main,
+            .o_portal_wrap {
+                background: #f3f9ff !important;
+            }
+
+            #wrapwrap main,
+            .o_portal_wrap main {
+                padding-top: 0 !important;
+                margin-top: 0 !important;
+            }
+        </style>
+
+        <section class="rv-portal-app">
+            <div class="rv-portal-shell">
+                <aside class="rv-portal-sidebar">
+                    <a href="/my" class="rv-portal-logo" aria-label="RadioVac">
+                        <img src="/radiology/static/src/img/radiovac.png" alt="RadioVac"/>
+                    </a>
+
+                    <nav class="rv-portal-menu" aria-label="Navigation RadioVac">
+                        <a href="/my"
+                           t-attf-class="rv-portal-menu-item #{'is-active' if rv_portal_active == 'dashboard' else ''}">
+                            <span class="rv-portal-menu-icon"><i class="fa fa-th-large"/></span>
+                            <span>Tableau de bord</span>
+                        </a>
+                        <a href="/my/missions"
+                           t-attf-class="rv-portal-menu-item #{'is-active' if rv_portal_active == 'missions' else ''}">
+                            <span class="rv-portal-menu-icon"><i class="fa fa-briefcase"/></span>
+                            <span>Missions</span>
+                        </a>
+                        <a href="/my/missionss"
+                           t-attf-class="rv-portal-menu-item #{'is-active' if rv_portal_active == 'candidatures' else ''}">
+                            <span class="rv-portal-menu-icon"><i class="fa fa-files-o"/></span>
+                            <span>Candidatures</span>
+                        </a>
+                        <a href="/my/radiologists"
+                           t-attf-class="rv-portal-menu-item #{'is-active' if rv_portal_active == 'radiologists' else ''}">
+                            <span class="rv-portal-menu-icon"><i class="fa fa-user-md"/></span>
+                            <span>Radiologues</span>
+                        </a>
+                        <a href="/my/chat"
+                           t-attf-class="rv-portal-menu-item #{'is-active' if rv_portal_active == 'messages' else ''}">
+                            <span class="rv-portal-menu-icon"><i class="fa fa-comments-o"/></span>
+                            <span>Messages</span>
+                        </a>
+                        <a href="/my/dashboard"
+                           t-attf-class="rv-portal-menu-item #{'is-active' if rv_portal_active == 'calendar' else ''}">
+                            <span class="rv-portal-menu-icon"><i class="fa fa-calendar-o"/></span>
+                            <span>Calendrier</span>
+                        </a>
+                        <a href="/my/account"
+                           t-attf-class="rv-portal-menu-item #{'is-active' if rv_portal_active == 'settings' else ''}">
+                            <span class="rv-portal-menu-icon"><i class="fa fa-cog"/></span>
+                            <span>Parametres</span>
+                        </a>
+                    </nav>
+
+                    <div class="rv-portal-sidebar-note">
+                        <span class="rv-portal-sidebar-note-icon"><i class="fa fa-bolt"/></span>
+                        <div>
+                            <strong>Flux RadioVac actif</strong>
+                            <small>Publiez, suivez et coordonnez vos missions depuis un seul espace.</small>
+                        </div>
+                    </div>
+
+                    <a href="/my/missions/new" class="rv-portal-sidebar-cta">
+                        <i class="fa fa-plus-circle"/>
+                        <span>Nouvelle mission</span>
+                    </a>
+                </aside>
+
+                <div class="rv-portal-main">
+                    <header class="rv-portal-topbar">
+                        <div class="rv-portal-topbar-copy">
+                            <p class="rv-portal-topbar-kicker">Espace connecte RadioVac</p>
+                            <h1 class="rv-portal-topbar-title"><t t-esc="rv_portal_page_title"/></h1>
+                            <p class="rv-portal-topbar-subtitle"><t t-esc="rv_portal_page_subtitle"/></p>
+                        </div>
+
+                        <div class="rv-portal-actions">
+                            <t t-if="rv_portal_hospital">
+                                <div class="dropdown rv-portal-action-group o_radiology_header_messages">
+                                    <button class="btn rv-portal-action-btn rv-portal-message-trigger"
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false"
+                                            aria-label="Messages">
+                                        <i class="fa fa-comments"/>
+                                        <span class="rv-portal-action-label">Messages</span>
+                                        <span t-attf-class="rv-portal-action-count #{'' if unread_messages_count else 'd-none'}"
+                                              data-role="message-badge">
+                                            <t t-esc="unread_messages_count or 0"/>
+                                        </span>
+                                    </button>
+
+                                    <div class="dropdown-menu dropdown-menu-end rv-portal-message-menu">
+                                        <div class="rv-portal-menu-head">
+                                            <span>Messagerie</span>
+                                            <span class="rv-portal-menu-count" data-role="message-count">
+                                                <t t-esc="unread_messages_count"/> non lus
+                                            </span>
+                                        </div>
+
+                                        <div data-role="message-list">
+                                            <t t-if="header_conversations">
+                                                <t t-foreach="header_conversations" t-as="conversation">
+                                                    <a t-att-href="'/my/chat/%s' % conversation.id"
+                                                       class="dropdown-item rl-message-item">
+                                                        <span class="rl-message-avatar">
+                                                            <t t-if="conversation.radiologist_id and conversation.radiologist_id.image_1920">
+                                                                <img t-att-src="'/web/image/radiology.radiologist/%s/image_1920' % conversation.radiologist_id.id"
+                                                                     t-att-alt="conversation.radiologist_id.display_name or 'Radiologue'"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <img src="/web/static/img/user_menu_avatar.png" alt="Radiologue"/>
+                                                            </t>
+                                                        </span>
+                                                        <span class="rl-message-content">
+                                                            <strong class="rl-message-title"
+                                                                    t-esc="conversation.radiologist_id.display_name or 'Radiologue'"/>
+                                                            <span class="rl-message-preview"
+                                                                  t-esc="conversation.last_message or 'Aucun message'"/>
+                                                            <span class="rl-message-date"
+                                                                  t-esc="conversation.last_message_date.strftime('%d/%m/%Y %H:%M') if conversation.last_message_date else ''"/>
+                                                        </span>
+                                                        <t t-set="conversation_unread_count"
+                                                           t-value="chat_message_model.search_count([('conversation_id', '=', conversation.id), ('sender_type', '=', 'radiologist'), ('is_read_by_hospital', '=', False)])"/>
+                                                        <t t-if="conversation_unread_count">
+                                                            <span class="rl-message-item-badge" t-esc="conversation_unread_count"/>
+                                                        </t>
+                                                    </a>
+                                                </t>
+                                                <div class="rl-message-menu-footer">
+                                                    <a href="/my/chat" class="btn btn-sm rl-message-link">Voir tous les messages</a>
+                                                </div>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="rl-message-empty">Aucun message pour le moment.</div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="dropdown rv-portal-action-group">
+                                    <button class="btn rv-portal-action-btn rv-portal-notification-trigger"
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false"
+                                            aria-label="Notifications">
+                                        <i class="fa fa-bell-o"/>
+                                        <span class="rv-portal-action-label">Notifications</span>
+                                        <t t-if="unread_notifications_count">
+                                            <span class="rv-portal-action-count" t-esc="unread_notifications_count"/>
+                                        </t>
+                                    </button>
+
+                                    <div class="dropdown-menu dropdown-menu-end rv-portal-notification-menu rv-notification-dropdown">
+                                        <div class="rv-notification-header">
+                                            <span>Notifications</span>
+                                            <span class="rv-notification-count">
+                                                <t t-esc="unread_notifications_count or 0"/> non lues
+                                            </span>
+                                        </div>
+
+                                        <div class="rv-notification-list">
+                                            <t t-if="header_notifications">
+                                                <t t-foreach="header_notifications" t-as="notif">
+                                                    <t t-set="notif_title_lower" t-value="(notif.title or '').lower()"/>
+                                                    <t t-set="notif_message_lower" t-value="(notif.message or '').lower()"/>
+                                                    <t t-set="notif_icon_class"
+                                                       t-value="'fa-envelope-o' if 'message' in notif_title_lower or 'message' in notif_message_lower else 'fa-user-o' if 'candidature' in notif_title_lower or 'postul' in notif_message_lower else 'fa-briefcase' if 'mission' in notif_title_lower or 'mission' in notif_message_lower else 'fa-bell-o'"/>
+
+                                                    <a t-att-href="'/my/notifications/%s/read' % notif.id"
+                                                       t-attf-class="dropdown-item rl-notification-item rv-notification-item #{'is-unread' if not notif.is_read else 'is-read'}">
+                                                        <span t-attf-class="rv-notification-icon is-#{notif.type or 'info'}">
+                                                            <i t-att-class="'fa %s' % notif_icon_class"/>
+                                                        </span>
+
+                                                        <span class="rv-notification-content">
+                                                            <span class="rv-notification-title-row">
+                                                                <span t-if="not notif.is_read" class="rv-notification-unread-dot"/>
+                                                                <strong class="rv-notification-title" t-esc="notif.title or 'Notification'"/>
+                                                            </span>
+                                                            <span class="rv-notification-text" t-esc="notif.message or 'Mise a jour disponible.'"/>
+                                                            <span class="rv-notification-date">
+                                                                <i class="fa fa-clock-o"/>
+                                                                <t t-esc="notif.create_date.strftime('%d/%m/%Y %H:%M') if notif.create_date else ''"/>
+                                                            </span>
+                                                        </span>
+
+                                                        <span class="rv-notification-chevron">
+                                                            <i class="fa fa-angle-right"/>
+                                                        </span>
+                                                    </a>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="rl-notification-empty">Aucune notification pour le moment.</div>
+                                            </t>
+                                        </div>
+
+                                        <div class="rv-notification-footer">
+                                            <a href="/my" class="rv-notification-footer-link">
+                                                Voir toutes les notifications
+                                            </a>
+                                            <a href="/my/security" class="rv-notification-footer-link is-secondary">
+                                                Parametres
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <div class="dropdown rv-portal-user-menu">
+                                <button class="btn rv-portal-user-trigger"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <span class="rv-portal-user-avatar"><t t-esc="rv_portal_org_badge"/></span>
+                                    <span class="rv-portal-user-copy">
+                                        <strong><t t-esc="rv_portal_org_name"/></strong>
+                                        <small>Compte hospitalier</small>
+                                    </span>
+                                    <i class="fa fa-angle-down"/>
+                                </button>
+
+                                <div class="dropdown-menu dropdown-menu-end rv-portal-user-dropdown">
+                                    <a href="/my/account" class="dropdown-item">
+                                        <i class="fa fa-user-o"/>
+                                        <span>Mon compte</span>
+                                    </a>
+                                    <a href="/my/security" class="dropdown-item">
+                                        <i class="fa fa-shield"/>
+                                        <span>Securite</span>
+                                    </a>
+                                    <div class="dropdown-divider"/>
+                                    <a t-attf-href="/web/session/logout?redirect=/" class="dropdown-item is-danger">
+                                        <i class="fa fa-sign-out"/>
+                                        <span>Deconnexion</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="rv-portal-surface">
+                        <t t-out="0"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+
 </odoo>

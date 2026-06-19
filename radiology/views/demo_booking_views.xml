@@ -78,6 +78,7 @@
         <field name="partner_name"/>
         <field name="email"/>
         <field name="phone"/>
+        <field name="additional_info"/>
         <field name="slot_id"/>
         <field name="booked_at"/>
         <field name="state"/>
@@ -96,6 +97,7 @@
               <field name="partner_name"/>
               <field name="email"/>
               <field name="phone"/>
+              <field name="additional_info" widget="text"/>
             </group>
             <group>
               <field name="slot_id"/>

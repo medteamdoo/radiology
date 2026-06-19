@@ -77,7 +77,7 @@ class PortalMissionsController(http.Controller):
             },
         )
 
-    def _get_recommended_radiologists(self, mission, limit=3):
+    def _get_recommended_radiologists(self, mission, limit=3, with_scores=False):
         Radiologist = request.env["radiology.radiologist"].sudo()
 
         domain = []
@@ -119,6 +119,53 @@ class PortalMissionsController(http.Controller):
 
         scored.sort(key=lambda x: x[0], reverse=True)
         return [r for _, r in scored[:limit]]
+
+    def _get_recommended_radiologist_profiles(self, mission, limit=5):
+        profiles = []
+        for radiologist in self._get_recommended_radiologists(mission, limit=limit):
+            specialty_matches = len(set(radiologist.specialty_ids.ids) & set(mission.speciality_ids.ids))
+            brand_matches = len(set(radiologist.brand_ids.ids) & set(mission.brand_ids.ids))
+
+            specialty_weight = 45 if mission.speciality_ids else 0
+            brand_weight = 25 if mission.brand_ids else 0
+            experience_weight = 15
+            rating_weight = 15
+            total_weight = specialty_weight + brand_weight + experience_weight + rating_weight
+
+            specialty_ratio = specialty_matches / len(mission.speciality_ids) if mission.speciality_ids else 0
+            brand_ratio = brand_matches / len(mission.brand_ids) if mission.brand_ids else 0
+            experience_ratio = min((radiologist.experience_years or 0) / 12.0, 1.0)
+            rating_ratio = min((radiologist.rating_avg or 0.0) / 5.0, 1.0)
+
+            compatibility = 0
+            if total_weight:
+                compatibility = round((
+                    specialty_ratio * specialty_weight
+                    + brand_ratio * brand_weight
+                    + experience_ratio * experience_weight
+                    + rating_ratio * rating_weight
+                ) / total_weight * 100)
+
+            availability_ids = radiologist.availability_ids.filtered("active").sorted(
+                key=lambda availability: (availability.weekday or "", availability.start_time or 0.0)
+            )
+            availability_label = "Disponibilites actives" if availability_ids else "Planning a confirmer"
+            location_label = (
+                (radiologist.hospital_id.city or radiologist.hospital_id.name)
+                if radiologist.hospital_id else
+                "France"
+            )
+
+            profiles.append({
+                "radiologist": radiologist,
+                "compatibility": max(38, min(98, compatibility or int((radiologist.rating_avg or 0.0) * 20) or 38)),
+                "specialty_matches": specialty_matches,
+                "brand_matches": brand_matches,
+                "availability_label": availability_label,
+                "location_label": location_label,
+            })
+
+        return profiles
 
     @http.route("/my/missions", type="http", auth="user", website=True)
     def portal_all_missions(self, **kw):
@@ -218,6 +265,7 @@ class PortalMissionsController(http.Controller):
             "is_owner": is_owner,
             "visible_application_ids": visible_application_ids,
             "can_assign": can_assign,
+            "recommended_profiles": self._get_recommended_radiologist_profiles(mission, limit=5),
         })
 
     @http.route("/my/missions/<int:mission_id>/print", type="http", auth="user", website=True)

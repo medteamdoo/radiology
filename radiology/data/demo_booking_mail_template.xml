@@ -12,6 +12,9 @@
                 <p><strong>Nom :</strong> <t t-out="object.partner_name"/></p>
                 <p><strong>Email :</strong> <t t-out="object.email"/></p>
                 <p><strong>Telephone :</strong> <t t-out="object.phone"/></p>
+                <t t-if="object.additional_info">
+                    <p><strong>Information supplementaire :</strong> <t t-out="object.additional_info"/></p>
+                </t>
                 <p><strong>Debut :</strong> <t t-out="format_datetime(object.slot_id.start_datetime)"/></p>
                 <p><strong>Fin :</strong> <t t-out="format_datetime(object.slot_id.end_datetime)"/></p>
             </div>

@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="radiovac_website_homepage" name="RadioVac Website Homepage">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="pageName" t-value="'radiovac_home'"/>
+            <t t-set="title"
+               t-value="'RadioVac | La plateforme intelligente qui orchestre vos missions de radiologie'"/>
+            <t t-set="meta_description"
+               t-value="'RadioVac connecte etablissements et radiologues pour des missions fluides, securisees et parfaitement adaptees a vos besoins.'"/>
+
+            <t t-set="mission_model" t-value="request.env['radiology.mission'].sudo()"/>
+            <t t-set="hospital_model" t-value="request.env['radiology.hospital'].sudo()"/>
+            <t t-set="radiologist_model" t-value="request.env['radiology.radiologist'].sudo()"/>
+            <t t-set="specialty_model" t-value="request.env['radiology.specialty'].sudo()"/>
+            <t t-set="recent_missions"
+               t-value="mission_model.search([('status', '=', 'published')], order='create_date desc, id desc', limit=4)"/>
+            <t t-set="featured_mission" t-value="recent_missions and recent_missions[0] or False"/>
+            <t t-set="featured_radiologist"
+               t-value="radiologist_model.search([], order='rating_avg desc, experience_years desc, id desc', limit=1)"/>
+            <t t-set="published_missions_count" t-value="mission_model.search_count([('status', '=', 'published')])"/>
+            <t t-set="hospital_count" t-value="hospital_model.search_count([])"/>
+            <t t-set="radiologist_count" t-value="radiologist_model.search_count([])"/>
+            <t t-set="specialty_count" t-value="specialty_model.search_count([])"/>
+
+            <div id="wrap" class="oe_structure rv-home-page">
+                <section id="plateforme" class="rv-home-hero rv-home-hero-main">
+                    <div class="container rv-home-shell">
+                        <nav class="rv-home-navbar" aria-label="Navigation RadioVac">
+                            <a href="/radiovac-home" class="rv-home-brand">
+                                <img src="/radiology/static/src/img/radiovac.png"
+                                     alt="Logo RadioVac"
+                                     class="rv-home-logo"/>
+                                <span class="rv-home-brand-text">RadioVac</span>
+                            </a>
+
+                            <div class="rv-home-nav-links">
+                                <a href="#plateforme">Plateforme</a>
+                                <a href="#fonctionnalites">Fonctionnalites</a>
+                                <a href="#comment-ca-marche">Comment ca marche</a>
+                                <a href="#missions">Missions</a>
+                                <a href="/radiovac-pricing" data-rv-transition-link="true">Tarifs</a>
+                                <a href="#fondatrice">Fondatrice</a>
+                            </div>
+
+                            <div class="rv-home-nav-actions">
+                                <a href="/web/login" class="rv-home-nav-login">Se connecter</a>
+                                <a href="/reserve-demo" class="rv-home-btn rv-home-btn-primary rv-home-btn-sm"
+                                   data-rv-transition-link="true">
+                                    Reserver une demo
+                                </a>
+                            </div>
+                        </nav>
+
+                        <div class="row align-items-center g-5 rv-home-hero-grid">
+                            <div class="col-12 col-xl-5">
+                                <div class="rv-home-hero-copy" data-rv-reveal="true">
+                                    <span class="rv-home-badge">
+                                        <span class="rv-home-badge-dot"/>
+                                        Healthtech SaaS pour la radiologie
+                                    </span>
+
+                                    <h1 class="rv-home-title">
+                                        La plateforme intelligente
+                                        qui orchestre vos missions
+                                        de
+                                        <span>radiologie</span>
+                                    </h1>
+
+                                    <p class="rv-home-subtitle">
+                                        RadioVac connecte etablissements et radiologues pour des missions fluides,
+                                        securisees et parfaitement adaptees a vos besoins.
+                                    </p>
+
+                                    <div class="rv-home-hero-actions">
+                                        <a href="/reserve-demo" class="rv-home-btn rv-home-btn-primary"
+                                           data-rv-transition-link="true">
+                                            Reserver une demo
+                                        </a>
+                                        <a href="#fonctionnalites" class="rv-home-btn rv-home-btn-secondary">
+                                            Decouvrir la plateforme
+                                        </a>
+                                    </div>
+
+                                    <div class="rv-home-hero-points" aria-label="Elements rassurants">
+                                        <span class="rv-home-hero-point">
+                                            <i class="fa fa-shield"/>
+                                            Securise
+                                        </span>
+                                        <span class="rv-home-hero-point">
+                                            <i class="fa fa-bolt"/>
+                                            Reactif
+                                        </span>
+                                        <span class="rv-home-hero-point">
+                                            <i class="fa fa-check-circle"/>
+                                            Fiable
+                                        </span>
+                                    </div>
+
+                                    <div class="rv-home-hero-stats" aria-label="Indicateurs RadioVac">
+                                        <div class="rv-home-hero-stat">
+                                            <span class="rv-home-hero-stat-icon">
+                                                <i class="fa fa-file-text-o"/>
+                                            </span>
+                                            <div class="rv-home-hero-stat-copy">
+                                                <strong><t t-esc="published_missions_count or 2500"/>+
+                                                </strong>
+                                                <small>missions publiees</small>
+                                            </div>
+                                        </div>
+                                        <div class="rv-home-hero-stat">
+                                            <span class="rv-home-hero-stat-icon">
+                                                <i class="fa fa-user-md"/>
+                                            </span>
+                                            <div class="rv-home-hero-stat-copy">
+                                                <strong><t t-esc="radiologist_count or 900"/>+
+                                                </strong>
+                                                <small>radiologues</small>
+                                            </div>
+                                        </div>
+                                        <div class="rv-home-hero-stat">
+                                            <span class="rv-home-hero-stat-icon">
+                                                <i class="fa fa-hospital-o"/>
+                                            </span>
+                                            <div class="rv-home-hero-stat-copy">
+                                                <strong><t t-esc="hospital_count or 200"/>+
+                                                </strong>
+                                                <small>etablissements</small>
+                                            </div>
+                                        </div>
+                                        <div class="rv-home-hero-stat">
+                                            <span class="rv-home-hero-stat-icon">
+                                                <i class="fa fa-shield"/>
+                                            </span>
+                                            <div class="rv-home-hero-stat-copy">
+                                                <strong>HDS &amp; RGPD</strong>
+                                                <small>securise et conforme</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-xl-7 d-none d-xl-block">
+                                <div class="rv-home-visual rv-home-hero-scene" data-rv-reveal="true">
+                                    <span class="rv-home-visual-glow is-a"/>
+                                    <span class="rv-home-visual-glow is-b"/>
+                                    <span class="rv-home-visual-ring is-a"/>
+                                    <span class="rv-home-visual-ring is-b"/>
+                                    <span class="rv-home-visual-ring is-c"/>
+                                    <span class="rv-home-visual-connector is-left"/>
+                                    <span class="rv-home-visual-connector is-right"/>
+
+                                    <div class="rv-home-map-plane">
+                                        <span class="rv-home-map-grid"/>
+                                        <span class="rv-home-map-node is-a"/>
+                                        <span class="rv-home-map-node is-b"/>
+                                        <span class="rv-home-map-node is-c"/>
+                                        <span class="rv-home-map-node is-d"/>
+                                        <span class="rv-home-map-path is-a"/>
+                                        <span class="rv-home-map-path is-b"/>
+                                    </div>
+
+                                    <article class="rv-home-floating-card rv-home-floating-card-mission">
+                                        <span class="rv-home-floating-label">Nouvelle mission</span>
+                                        <strong>
+                                            <t t-if="featured_mission">
+                                                <t t-esc="featured_mission.name or 'IRM cérébrale'"/>
+                                            </t>
+                                            <t t-else="">IRM cérébrale</t>
+                                        </strong>
+
+                                        <div class="rv-home-floating-meta">
+                                            <span>
+                                                <i class="fa fa-calendar-o"/>
+                                                <t t-if="featured_mission and featured_mission.start_date">
+                                                    <t t-esc="featured_mission.start_date.strftime('%d/%m/%Y')"/>
+                                                </t>
+                                                <t t-else="">Aujourd'hui · 14:30</t>
+                                            </span>
+                                            <span>
+                                                <i class="fa fa-hospital-o"/>
+                                                <t t-if="featured_mission and featured_mission.hospital_id">
+                                                    <t t-esc="featured_mission.hospital_id.name"/>
+                                                </t>
+                                                <t t-else="">CHU Nantes</t>
+                                            </span>
+                                        </div>
+
+                                        <span class="rv-home-inline-pill">
+                                            <t t-if="featured_mission and featured_mission.speciality_ids">
+                                                <t t-esc="featured_mission.speciality_ids[0].name"/>
+                                            </t>
+                                            <t t-else="">Scanner</t>
+                                        </span>
+                                    </article>
+
+                                    <article class="rv-home-floating-card rv-home-floating-card-status">
+                                        <span class="rv-home-floating-label">Système actif</span>
+                                        <span class="rv-home-system-pill">
+                                            <span class="rv-home-system-dot"/>
+                                            Demandes en temps réel
+                                        </span>
+                                    </article>
+
+                                    <div class="rv-home-match-badge">
+                                        <span class="rv-home-match-core"/>
+                                        <i class="fa fa-heartbeat"/>
+                                        <strong>Match trouvé</strong>
+                                        <small>Compatibilité 98%</small>
+                                    </div>
+
+                                    <article class="rv-home-floating-card rv-home-floating-card-radiologist">
+                                        <span class="rv-home-floating-label">Radiologue disponible</span>
+
+                                        <div class="rv-home-radiologist-row">
+                                            <div class="rv-home-radiologist-avatar">
+                                                <img src="/radiology/static/src/img/radiologist-placeholder.jpg"
+                                                     alt="Radiologue disponible"/>
+                                            </div>
+
+                                            <div class="rv-home-radiologist-copy">
+                                                <strong>
+                                                    <t t-if="featured_radiologist">
+                                                        Dr.
+                                                        <t t-esc="featured_radiologist.display_name"/>
+                                                    </t>
+                                                    <t t-else="">Dr. Martin Dubois</t>
+                                                </strong>
+                                                <small>Neuroradiologie</small>
+                                                <span class="rv-home-available-now">Disponible maintenant</span>
+                                            </div>
+
+                                            <span class="rv-home-rating">
+                                                <i class="fa fa-star"/>
+                                                4.9
+                                            </span>
+                                        </div>
+                                    </article>
+
+                                    <article
+                                            class="rv-home-floating-card rv-home-floating-card-followup rv-home-status-panel">
+                                        <span class="rv-home-floating-label">Suivi en temps réel</span>
+
+                                        <div class="rv-home-status-row">
+                                            <span>Transmission des images</span>
+                                            <strong>98%</strong>
+                                        </div>
+                                        <div class="rv-home-status-bar">
+                                            <span style="width: 98%;"/>
+                                        </div>
+
+                                        <div class="rv-home-status-row">
+                                            <span>Analyse en cours</span>
+                                            <strong>75%</strong>
+                                        </div>
+                                        <div class="rv-home-status-bar">
+                                            <span style="width: 75%;"/>
+                                        </div>
+
+                                        <div class="rv-home-status-row">
+                                            <span>Compte rendu</span>
+                                            <strong>En attente</strong>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="rv-home-section rv-home-urgency">
+                    <div class="container rv-home-shell">
+                        <div class="row align-items-center g-5">
+                            <div class="col-12 col-xl-5">
+                                <div class="rv-home-urgency-copy" data-rv-reveal="true">
+                                    <span class="rv-home-section-kicker">Le terrain ne ralentit jamais</span>
+                                    <h2 class="rv-home-urgency-title">
+                                        Des besoins qui basculent en quelques heures,
+                                        <span>pas en quelques jours.</span>
+                                    </h2>
+                                    <p>
+                                        Absences imprevues, pics d'activite, vacations a securiser : les services
+                                        d'imagerie ont besoin d'une reponse immediate.
+                                    </p>
+                                    <p>
+                                        RadioVac centralise la demande, active les bons profils et garde chaque
+                                        partie prenante alignee jusqu'a la mission confirmee.
+                                    </p>
+
+                                    <div class="rv-home-urgency-benefits" aria-label="Priorites RadioVac">
+                                        <article class="rv-home-urgency-benefit">
+                                            <span class="rv-home-urgency-benefit-icon">
+                                                <i class="fa fa-bolt"/>
+                                            </span>
+                                            <div class="rv-home-urgency-benefit-copy">
+                                                <strong>Reaction immediate</strong>
+                                                <small>Les besoins critiques remontent vite et restent visibles.</small>
+                                            </div>
+                                            <span class="rv-home-urgency-benefit-dot"/>
+                                        </article>
+                                        <article class="rv-home-urgency-benefit">
+                                            <span class="rv-home-urgency-benefit-icon">
+                                                <i class="fa fa-user-md"/>
+                                            </span>
+                                            <div class="rv-home-urgency-benefit-copy">
+                                                <strong>Profils qualifies</strong>
+                                                <small>Disponibilites et expertises verifiees au meme endroit.</small>
+                                            </div>
+                                            <span class="rv-home-urgency-benefit-dot"/>
+                                        </article>
+                                        <article class="rv-home-urgency-benefit">
+                                            <span class="rv-home-urgency-benefit-icon">
+                                                <i class="fa fa-random"/>
+                                            </span>
+                                            <div class="rv-home-urgency-benefit-copy">
+                                                <strong>Coordination fluide</strong>
+                                                <small>Publication, matching et suivi avancent dans un seul flux.
+                                                </small>
+                                            </div>
+                                            <span class="rv-home-urgency-benefit-dot"/>
+                                        </article>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-xl-7">
+                                <div class="rv-home-urgency-panel" data-rv-reveal="true">
+                                    <span class="rv-home-urgency-panel-bg"/>
+                                    <span class="rv-home-urgency-orb is-a"/>
+                                    <span class="rv-home-urgency-orb is-b"/>
+                                    <span class="rv-home-urgency-orb is-c"/>
+
+                                    <div class="rv-home-urgency-panel-head">
+                                        <span class="rv-home-urgency-pill">
+                                            <span class="rv-home-urgency-pill-dot"/>
+                                            Cellule de coordination
+                                        </span>
+                                        <span class="rv-home-urgency-pill is-live">
+                                            <i class="fa fa-heartbeat"/>
+                                            Flux live
+                                        </span>
+                                    </div>
+
+                                    <div class="rv-home-urgency-panel-copy">
+                                        <h3>Un pilotage unique pour absorber les urgences sans perdre le fil.</h3>
+                                        <span class="rv-home-urgency-accent"/>
+                                    </div>
+
+                                    <article class="rv-home-urgency-priority">
+                                        <span class="rv-home-floating-label">Besoin prioritaire</span>
+                                        <strong>IRM de remplacement</strong>
+                                        <span class="rv-home-inline-pill">Mission critique</span>
+                                        <small>Mission diffusee avec priorite, contexte et contraintes.</small>
+                                        <span class="rv-home-urgency-priority-pulse"/>
+                                    </article>
+
+                                    <div class="rv-home-urgency-visual-stream"/>
+
+                                    <div class="rv-home-urgency-flow">
+                                        <span class="rv-home-urgency-flow-line"/>
+                                        <article class="rv-home-urgency-step">
+                                            <span class="rv-home-urgency-step-index">01</span>
+                                            <strong>Besoin publie</strong>
+                                            <small>Le service partage ses priorites sans friction.</small>
+                                        </article>
+                                        <article class="rv-home-urgency-step">
+                                            <span class="rv-home-urgency-step-index">02</span>
+                                            <strong>Matching actif</strong>
+                                            <small>RadioVac fait remonter les profils les plus coherents.</small>
+                                        </article>
+                                        <article class="rv-home-urgency-step">
+                                            <span class="rv-home-urgency-step-index">03</span>
+                                            <strong>Mission verrouillee</strong>
+                                            <small>Tout le monde suit le meme statut jusqu'a la prise en charge.</small>
+                                        </article>
+                                    </div>
+
+                                    <article class="rv-home-urgency-profiles">
+                                        <div class="rv-home-urgency-card-head">
+                                            <span class="rv-home-floating-label">Profils actifs</span>
+                                            <small>Compatibilite elevee</small>
+                                        </div>
+                                        <div class="rv-home-urgency-profiles-list">
+                                            <div class="rv-home-urgency-profile">
+                                                <span class="rv-home-urgency-avatar">
+                                                    <img src="/radiology/static/src/img/personne1.webp"
+                                                         alt="Dr. Martin"/>
+                                                </span>
+                                                <div class="rv-home-urgency-profile-copy">
+                                                    <strong>Dr. Martin</strong>
+                                                    <small>Neuroradiologie</small>
+                                                </div>
+                                                <span class="rv-home-urgency-score">4.9</span>
+                                            </div>
+                                            <div class="rv-home-urgency-profile">
+                                                <span class="rv-home-urgency-avatar">
+                                                    <img src="/radiology/static/src/img/personne2.webp"
+                                                         alt="Dr. Lefevre"/>
+                                                </span>
+                                                <div class="rv-home-urgency-profile-copy">
+                                                    <strong>Dr. Lefevre</strong>
+                                                    <small>Radiologie</small>
+                                                </div>
+                                                <span class="rv-home-urgency-score">4.8</span>
+                                            </div>
+                                            <div class="rv-home-urgency-profile">
+                                                <span class="rv-home-urgency-avatar">
+                                                    <img src="/radiology/static/src/img/personne3.webp"
+                                                         alt="Dr. Benali"/>
+                                                </span>
+                                                <div class="rv-home-urgency-profile-copy">
+                                                    <strong>Dr. Benali</strong>
+                                                    <small>IRM / Scanner</small>
+                                                </div>
+                                                <span class="rv-home-urgency-score">4.7</span>
+                                            </div>
+                                        </div>
+                                    </article>
+
+                                    <article class="rv-home-urgency-tracking">
+                                        <div class="rv-home-urgency-card-head">
+                                            <span class="rv-home-floating-label">Suivi de mission</span>
+                                            <small class="is-live">
+                                                <span class="rv-home-urgency-live-dot"/>
+                                                En cours
+                                            </small>
+                                        </div>
+                                        <div class="rv-home-urgency-tracking-list">
+                                            <div class="rv-home-urgency-tracking-item">
+                                                <span>Besoin recu</span>
+                                                <strong>14:32</strong>
+                                            </div>
+                                            <div class="rv-home-urgency-tracking-item">
+                                                <span>Profils proposes</span>
+                                                <strong>14:34</strong>
+                                            </div>
+                                            <div class="rv-home-urgency-tracking-item is-active">
+                                                <span>Mission confirmee</span>
+                                                <strong>14:41</strong>
+                                            </div>
+                                            <div class="rv-home-urgency-tracking-item">
+                                                <span>Prise de poste</span>
+                                                <strong>A venir</strong>
+                                            </div>
+                                        </div>
+                                    </article>
+
+                                    <div class="rv-home-urgency-footer">
+                                        <span class="rv-home-urgency-footer-icon">
+                                            <i class="fa fa-shield"/>
+                                        </span>
+                                        <div>
+                                            <strong>Tout est centralise. Tout reste aligne. Rien ne se perd.</strong>
+                                            <small>Tracabilite complete et communication transparente a chaque etape.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="fonctionnalites" class="rv-home-section rv-home-audiences-clean">
+                    <div class="container rv-home-shell">
+                        <div class="rv-audiences-clean-head" data-rv-reveal="true">
+                            <span class="rv-home-section-kicker">Une plateforme, deux expériences nettes</span>
+                            <h2>Une solution pensée pour tous les acteurs de l'imagerie médicale</h2>
+                        </div>
+
+                        <div class="rv-audiences-clean-stage" data-rv-reveal="true">
+                            <span class="rv-audiences-clean-glow is-left"/>
+                            <span class="rv-audiences-clean-glow is-right"/>
+
+                            <div class="rv-audiences-clean-connector" aria-hidden="true">
+                                <span class="rv-audiences-clean-line is-left"/>
+                                <span class="rv-audiences-clean-core">
+                                    <span class="rv-audiences-clean-core-dot"/>
+                                </span>
+                                <span class="rv-audiences-clean-line is-right"/>
+                            </div>
+
+                            <article class="rv-audience-clean-card is-hospital">
+                                <div class="rv-audience-clean-top">
+                                    <span class="rv-audience-clean-main-icon">
+                                        <i class="fa fa-hospital-o"/>
+                                    </span>
+                                    <div>
+                                        <span class="rv-audience-clean-label">Pour les établissements</span>
+                                        <h3>Piloter les besoins avec clarté</h3>
+                                    </div>
+                                </div>
+
+                                <span class="rv-audience-clean-accent"/>
+
+                                <div class="rv-audience-clean-items">
+                                    <div class="rv-audience-clean-item">
+                                        <span class="rv-audience-clean-item-icon">
+                                            <i class="fa fa-paper-plane-o"/>
+                                        </span>
+                                        <div>
+                                            <strong>Publiez facilement vos besoins</strong>
+                                            <small>En quelques instants, avec dates, spécialités et priorités.</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="rv-audience-clean-item">
+                                        <span class="rv-audience-clean-item-icon">
+                                            <i class="fa fa-users"/>
+                                        </span>
+                                        <div>
+                                            <strong>Gardez une vision claire</strong>
+                                            <small>Suivez les candidatures et disponibilités en temps réel.</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="rv-audience-clean-item">
+                                        <span class="rv-audience-clean-item-icon">
+                                            <i class="fa fa-bar-chart"/>
+                                        </span>
+                                        <div>
+                                            <strong>Optimisez vos ressources</strong>
+                                            <small>Gagnez du temps et assurez la continuité de vos activités.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="/hospital/signup" class="rv-audience-clean-btn is-blue">
+                                    Publier un besoin
+                                    <i class="fa fa-arrow-right"/>
+                                </a>
+                            </article>
+
+                            <article class="rv-audience-clean-card is-radiologist">
+                                <div class="rv-audience-clean-top">
+                                    <span class="rv-audience-clean-main-icon">
+                                        <i class="fa fa-user-md"/>
+                                    </span>
+                                    <div>
+                                        <span class="rv-audience-clean-label">Pour les radiologues</span>
+                                        <h3>Trouver les bonnes missions au bon moment</h3>
+                                    </div>
+                                </div>
+
+                                <span class="rv-audience-clean-accent"/>
+
+                                <div class="rv-audience-clean-items">
+                                    <div class="rv-audience-clean-item">
+                                        <span class="rv-audience-clean-item-icon">
+                                            <i class="fa fa-search"/>
+                                        </span>
+                                        <div>
+                                            <strong>Découvrez des missions adaptées</strong>
+                                            <small>Accédez à des opportunités correspondant à vos compétences.</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="rv-audience-clean-item">
+                                        <span class="rv-audience-clean-item-icon">
+                                            <i class="fa fa-calendar-o"/>
+                                        </span>
+                                        <div>
+                                            <strong>Choisissez en toute liberté</strong>
+                                            <small>Sélectionnez les missions qui vous conviennent, quand vous le
+                                                souhaitez.
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="rv-audience-clean-item">
+                                        <span class="rv-audience-clean-item-icon">
+                                            <i class="fa fa-shield"/>
+                                        </span>
+                                        <div>
+                                            <strong>Intervenez en confiance</strong>
+                                            <small>Dans un environnement sécurisé et un cadre clair.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="/web/login" class="rv-audience-clean-btn is-teal">
+                                    Accéder aux missions
+                                    <i class="fa fa-arrow-right"/>
+                                </a>
+                            </article>
+                        </div>
+
+                        <div class="rv-audiences-clean-strip" data-rv-reveal="true">
+                            <div class="rv-audiences-clean-strip-item">
+                                <span>
+                                    <i class="fa fa-eye"/>
+                                </span>
+                                <div>
+                                    <strong>Visibilité en temps réel</strong>
+                                    <small>Sur les besoins et les disponibilités.</small>
+                                </div>
+                            </div>
+
+                            <div class="rv-audiences-clean-strip-item">
+                                <span>
+                                    <i class="fa fa-shield"/>
+                                </span>
+                                <div>
+                                    <strong>Sécurité &amp; conformité</strong>
+                                    <small>Données protégées, cadre maîtrisé.</small>
+                                </div>
+                            </div>
+
+                            <div class="rv-audiences-clean-strip-item">
+                                <span>
+                                    <i class="fa fa-users"/>
+                                </span>
+                                <div>
+                                    <strong>Coordination fluide</strong>
+                                    <small>Des échanges simples et efficaces.</small>
+                                </div>
+                            </div>
+
+                            <div class="rv-audiences-clean-strip-item">
+                                <span>
+                                    <i class="fa fa-line-chart"/>
+                                </span>
+                                <div>
+                                    <strong>Performance durable</strong>
+                                    <small>Moins d'allers-retours, plus d'impact.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section id="parcours" class="rv-home-section rv-home-why-image-section">
+                    <div class="container rv-home-shell">
+                        <div class="rv-home-why-image-wrapper" data-rv-reveal="true">
+                            <img src="/radiology/static/src/img/pourquoi_choisir_radiovac.png"
+                                 alt="Pourquoi choisir RadioVac - plateforme dédiée à l'imagerie médicale"
+                                 class="rv-home-why-image"/>
+                        </div>
+                    </div>
+                </section>
+                <section id="comment-ca-marche" class="rv-home-section rv-how-section">
+                    <div class="container rv-home-shell">
+                        <div class="rv-how-head" data-rv-reveal="true">
+                            <span class="rv-home-section-kicker">Comment ça marche</span>
+                            <h2>Un parcours simple, fluide et pensé pour le terrain</h2>
+                            <p>
+                                RadioVac accompagne chaque étape : publication du besoin, matching intelligent
+                                et suivi de mission dans un espace clair et centralisé.
+                            </p>
+                        </div>
+
+                        <div class="rv-how-carousel-wrap" data-rv-reveal="true">
+                            <div id="rvHowCarousel" class="carousel slide rv-how-carousel" data-bs-ride="carousel"
+                                 data-bs-interval="4500">
+
+                                <div class="carousel-indicators rv-how-indicators">
+                                    <button type="button" data-bs-target="#rvHowCarousel" data-bs-slide-to="0"
+                                            class="active" aria-current="true" aria-label="Étape 1"/>
+                                    <button type="button" data-bs-target="#rvHowCarousel" data-bs-slide-to="1"
+                                            aria-label="Étape 2"/>
+                                    <button type="button" data-bs-target="#rvHowCarousel" data-bs-slide-to="2"
+                                            aria-label="Étape 3"/>
+                                </div>
+
+                                <div class="carousel-inner rv-how-carousel-inner">
+                                    <div class="carousel-item active">
+                                        <div class="rv-how-slide">
+                                            <div class="rv-how-slide-copy">
+                                                <span class="rv-how-step">01</span>
+                                                <h3>Publiez votre besoin</h3>
+                                                <p>
+                                                    L’établissement crée une mission claire avec les dates,
+                                                    spécialités, contraintes et priorités opérationnelles.
+                                                </p>
+                                            </div>
+
+                                            <div class="rv-how-slide-media">
+                                                <img src="/radiology/static/src/img/how_1.png"
+                                                     alt="Publier un besoin sur RadioVac"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="carousel-item">
+                                        <div class="rv-how-slide">
+                                            <div class="rv-how-slide-copy">
+                                                <span class="rv-how-step">02</span>
+                                                <h3>RadioVac identifie les bons profils</h3>
+                                                <p>
+                                                    La plateforme fait remonter les profils les plus adaptés selon
+                                                    les disponibilités, compétences et besoins de la mission.
+                                                </p>
+                                            </div>
+
+                                            <div class="rv-how-slide-media">
+                                                <img src="/radiology/static/src/img/how_2.png"
+                                                     alt="Matching intelligent RadioVac"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="carousel-item">
+                                        <div class="rv-how-slide">
+                                            <div class="rv-how-slide-copy">
+                                                <span class="rv-how-step">03</span>
+                                                <h3>Suivez la mission jusqu’à confirmation</h3>
+                                                <p>
+                                                    Chaque partie garde une vision claire du statut, des échanges
+                                                    et de l’avancement jusqu’à la prise en charge.
+                                                </p>
+                                            </div>
+
+                                            <div class="rv-how-slide-media">
+                                                <img src="/radiology/static/src/img/how_3.png"
+                                                     alt="Suivi de mission RadioVac"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="carousel-control-prev rv-how-control rv-how-control-prev"
+                                        type="button"
+                                        data-bs-target="#rvHowCarousel"
+                                        data-bs-slide="prev">
+                                    <i class="fa fa-arrow-left"/>
+                                    <span class="visually-hidden">Précédent</span>
+                                </button>
+
+                                <button class="carousel-control-next rv-how-control rv-how-control-next"
+                                        type="button"
+                                        data-bs-target="#rvHowCarousel"
+                                        data-bs-slide="next">
+                                    <i class="fa fa-arrow-right"/>
+                                    <span class="visually-hidden">Suivant</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="missions" class="rv-home-section rv-home-missions-showcase">
+                    <div class="container rv-home-shell">
+
+                        <div class="rv-missions-showcase-head" data-rv-reveal="true">
+                            <div>
+                                <span class="rv-home-section-kicker">
+                                    <span class="rv-kicker-dot"></span>
+                                    Des missions récentes
+                                </span>
+                                <h2>Des missions qui avancent,<br/>partout en France
+                                </h2>
+                                <p>Des besoins publiés récemment par les établissements partenaires.</p>
+                            </div>
+
+                            <a href="/web/login" class="rv-missions-showcase-all">
+                                Voir toutes les missions
+                                <i class="fa fa-arrow-right"/>
+                            </a>
+                        </div>
+
+                        <div class="rv-missions-showcase-grid" data-rv-reveal="true">
+
+                            <!-- Mission principale -->
+                            <article class="rv-mission-featured-card">
+                                <div class="rv-mission-featured-media">
+                                    <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&amp;fit=crop&amp;w=1200&amp;q=80"
+                                         alt="Hôpital Saint-Louis"/>
+
+                                    <span class="rv-mission-featured-label">
+                                        <i class="fa fa-star"/>
+                                        Mission mise en avant
+                                    </span>
+                                </div>
+
+                                <div class="rv-mission-featured-body">
+                                    <div class="rv-mission-featured-tags">
+                                        <span class="rv-mission-icon-chip">
+                                            <i class="fa fa-hospital-o"/>
+                                        </span>
+                                        <span class="rv-mission-specialty-chip">IRM</span>
+                                        <span class="rv-mission-status-chip">
+                                            <span></span>
+                                            Publiée
+                                        </span>
+                                    </div>
+
+                                    <h3>Hôpital Saint-Louis</h3>
+
+                                    <div class="rv-mission-featured-meta">
+                                        <span>
+                                            <i class="fa fa-map-marker"/>
+                                            Lille
+                                        </span>
+                                        <span>
+                                            <i class="fa fa-calendar-o"/>
+                                            16/04/2026 - 25/04/2026
+                                        </span>
+                                        <span>
+                                            <i class="fa fa-building-o"/>
+                                            Hôpital Militaire
+                                        </span>
+                                    </div>
+
+                                    <div class="rv-mission-featured-footer">
+                                        <div class="rv-mission-tags-line">
+                                            <span>Publiée</span>
+                                            <span>Carestream</span>
+                                        </div>
+
+                                        <a href="/web/login" class="rv-mission-featured-btn">
+                                            Voir la mission
+                                            <i class="fa fa-arrow-right"/>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+
+                            <!-- Liste droite -->
+                            <div class="rv-mission-side-stack">
+
+                                <article class="rv-mission-side-showcase">
+                                    <div class="rv-mission-side-image">
+                                        <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&amp;fit=crop&amp;w=700&amp;q=80"
+                                             alt="Mission échographie"/>
+                                        <span class="rv-mission-side-icon is-purple">
+                                            <i class="fa fa-heartbeat"/>
+                                        </span>
+                                    </div>
+
+                                    <div class="rv-mission-side-content">
+                                        <span class="rv-mission-side-chip is-purple">Échographie</span>
+                                        <h3>Mission 5</h3>
+                                        <p>
+                                            <i class="fa fa-map-marker"/>
+                                            Lille
+                                        </p>
+                                        <p>
+                                            <i class="fa fa-calendar-o"/>
+                                            05/03/2026 - 06/03/2026
+                                        </p>
+                                    </div>
+
+                                    <a href="/web/login" class="rv-mission-side-arrow">
+                                        <i class="fa fa-arrow-right"/>
+                                    </a>
+                                </article>
+
+                                <article class="rv-mission-side-showcase">
+                                    <div class="rv-mission-side-image">
+                                        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&amp;fit=crop&amp;w=700&amp;q=80"
+                                             alt="Mission IRM"/>
+                                        <span class="rv-mission-side-icon is-blue">
+                                            <i class="fa fa-user-md"/>
+                                        </span>
+                                    </div>
+
+                                    <div class="rv-mission-side-content">
+                                        <span class="rv-mission-side-chip is-blue">IRM</span>
+                                        <h3>Mission 66</h3>
+                                        <p>
+                                            <i class="fa fa-map-marker"/>
+                                            Lille
+                                        </p>
+                                        <p>
+                                            <i class="fa fa-calendar-o"/>
+                                            26/02/2026 - 28/02/2026
+                                        </p>
+                                    </div>
+
+                                    <a href="/web/login" class="rv-mission-side-arrow">
+                                        <i class="fa fa-arrow-right"/>
+                                    </a>
+                                </article>
+
+                                <article class="rv-mission-side-showcase">
+                                    <div class="rv-mission-side-image">
+                                        <img src="https://images.unsplash.com/photo-1581595220892-b0739db3ba8c?auto=format&amp;fit=crop&amp;w=700&amp;q=80"
+                                             alt="Mission radiologie"/>
+                                        <span class="rv-mission-side-icon is-teal">
+                                            <i class="fa fa-desktop"/>
+                                        </span>
+                                    </div>
+
+                                    <div class="rv-mission-side-content">
+                                        <span class="rv-mission-side-chip is-teal">IRM</span>
+                                        <h3>Mission 1</h3>
+                                        <p>
+                                            <i class="fa fa-map-marker"/>
+                                            Lille
+                                        </p>
+                                        <p>
+                                            <i class="fa fa-calendar-o"/>
+                                            14/02/2026 - 06/03/2026
+                                        </p>
+                                    </div>
+
+                                    <a href="/web/login" class="rv-mission-side-arrow">
+                                        <i class="fa fa-arrow-right"/>
+                                    </a>
+                                </article>
+
+                            </div>
+                        </div>
+
+                        <div class="rv-missions-showcase-bottom" data-rv-reveal="true">
+                            <div class="rv-missions-bottom-main">
+                                <span class="rv-missions-bottom-icon">
+                                    <i class="fa fa-heartbeat"/>
+                                </span>
+                                <div>
+                                    <strong>Des missions vérifiées et mises à jour quotidiennement</strong>
+                                    <small>RadioVac vous garantit des missions fiables, actualisées et prêtes à être
+                                        pourvues.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="rv-missions-bottom-items">
+                                <span>
+                                    <i class="fa fa-shield"/>
+                                    Missions vérifiées
+                                </span>
+                                <span>
+                                    <i class="fa fa-refresh"/>
+                                    Mise à jour en temps réel
+                                </span>
+                                <span>
+                                    <i class="fa fa-map-o"/>
+                                    Partout en France
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+                <section id ="fondatrice" class="rv-home-section rv-founder-section">
+                    <div class="container rv-home-shell">
+                        <div class="rv-founder-image-wrapper" data-rv-reveal="true">
+                            <img src="/radiology/static/src/img/un_message_de_la_fondatrice.png"
+                                 alt="Un mot de la fondatrice - Abir Garroum"
+                                 class="rv-founder-image"/>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="tarifs" class="rv-home-section rv-home-final-cta">
+                    <div class="container rv-home-shell">
+                        <div class="rv-home-final-cta-card">
+                            <div class="rv-home-final-cta-copy">
+                                <span class="rv-home-section-kicker">Passez a RadioVac</span>
+                                <h2>Pret a simplifier vos missions de radiologie ?</h2>
+                                <p>
+                                    Reservez une demonstration personnalisee et decouvrez comment RadioVac
+                                    peut transformer votre organisation.
+                                </p>
+                                <div id="ressources" class="rv-home-resource-links">
+                                    <a href="/reserve-demo" data-rv-transition-link="true">Demonstration personnalisee
+                                    </a>
+                                    <a href="/hospital/signup">Onboarding etablissements</a>
+                                    <a href="/web/login">Acces plateforme</a>
+                                </div>
+                            </div>
+
+                            <div class="rv-home-final-cta-actions">
+                                <a href="/reserve-demo" class="rv-home-btn rv-home-btn-primary"
+                                   data-rv-transition-link="true">
+                                    Reserver une demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>
